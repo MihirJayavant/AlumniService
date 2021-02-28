@@ -1,0 +1,6 @@
+{
+    "omnisharp.enableEditorConfigSupport": true,
+    "omnisharp.enableRoslynAnalyzers": true,
+    "csharp.referencesCodeLens.enabled": false,
+    "csharp.semanticHighlighting.enabled": true
+}
