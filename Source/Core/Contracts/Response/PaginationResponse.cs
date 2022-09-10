@@ -1,13 +1,10 @@
+namespace Core.Contracts.Response;
 
-
-namespace Core.Contracts.Response
+public class PaginationResponse<T>
 {
-    public class PaginationResponse<T>
-    {
-        public T Data { get; set; }
-        public int PageSize { get; set; }
-        public int PageNumber { get; set; }
-        public int TotalItems { get; set; }
-        public int TotalPages { get; set; }
-    }
+    public T Data { get; set; }
+    public int PageSize { get; set; }
+    public int PageNumber { get; set; }
+    public int TotalItems { get; set; }
+    public int TotalPages { get; set; }
 }

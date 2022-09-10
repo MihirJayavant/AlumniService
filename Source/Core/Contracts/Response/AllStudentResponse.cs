@@ -1,9 +1,7 @@
-using System.Collections.Generic;
+namespace Core.Contracts.Response;
 
-namespace Core.Contracts.Response
+public class AllStudentResponse : PaginationResponse<IEnumerable<StudentResponse>>
 {
-    public class AllStudentResponse : PaginationResponse<IEnumerable<StudentResponse>>
-    {
 
-    }
 }
+

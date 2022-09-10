@@ -1,9 +1,8 @@
-namespace Core.Contracts.Response
+namespace Core.Contracts.Response;
+
+public class Response<T>
 {
-    public class Response<T>
-    {
-       public T Result { get; set; }
-       public ResponseStatus Status { get; set; }
-       public ErrorResponse Error { get; set; }
-    }
+    public T Result { get; set; }
+    public ResponseStatus Status { get; set; }
+    public ErrorResponse Error { get; set; }
 }
