@@ -1,50 +1,38 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using Core.Contracts.Response;
-using MediatR;
-using Infrastructure.Queries;
-using Infrastructure.Commands;
-using Core.Contracts.Request;
+﻿using Core.Contracts.Request;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace AlumniBackendServices.Controllers
+namespace AlumniBackendServices.Controllers;
+
+public class StudentController : IEndpoint
 {
-    [Authorize]
-    [ProducesErrorResponseType(typeof(ErrorResponse))]
-    [ProducesResponseType(400)]
-    public class StudentController : ApiController
+    public static void Add(WebApplication app)
     {
-        public StudentController(IMediator mediator): base(mediator) {}
+        var api = app.MapGroup("/student");
 
-        // GET api/student
-        [HttpGet]
-        [Produces(typeof(AllStudentResponse))]
-        public async Task<IActionResult> Get( [FromQuery] GetAllStudentRequest request)
-        {
-            var query = new GetAllStudentQuery(request.PageNumber, request.PageSize);
-            var response = await mediator.Send(query);
-            return GetResult(response);
-        }
-
-        //GET api/student/asddsa21324asa
-        [HttpGet("{email}")]
-        [Produces(typeof(StudentResponse))]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> GetByEmail(string email)
-        {
-            var query = new GetStudentQuery(email);
-            var response = await mediator.Send(query);
-            return GetResult(response);
-        }
-
-        // POST api/Student
-        [HttpPost]
-        [Produces(typeof(StudentResponse))]
-        public async Task<IActionResult> PostAsync([FromBody]AddStudentCommand student)
-        {
-            var response = await mediator.Send(student);
-            return GetResult(response);
-        }
-
+        api.MapGet("/", GetAllAsync).Produces<AllStudentResponse>();
+        api.MapGet("/{email}", GetByEmail).Produces<StudentResponse>();
+        api.MapPost("/", PostAsync).Produces<FurtherStudyResponse>();
     }
+
+    public static async Task<IResult> GetAllAsync(GetAllStudentRequest request, IMediator mediator)
+    {
+        var query = new GetAllStudentQuery(request.PageNumber, request.PageSize);
+        var response = await mediator.Send(query);
+        return EndpointHelper.GetResult(response);
+    }
+
+    public static async Task<IResult> GetByEmail(string email, IMediator mediator)
+    {
+        var query = new GetStudentQuery(email);
+        var response = await mediator.Send(query);
+        return EndpointHelper.GetResult(response);
+    }
+
+    public static async Task<IResult> PostAsync(AddStudentCommand student, IMediator mediator)
+    {
+        var response = await mediator.Send(student);
+        return EndpointHelper.GetResult(response);
+    }
+
 }

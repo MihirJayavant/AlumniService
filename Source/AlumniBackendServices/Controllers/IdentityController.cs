@@ -1,6 +1,4 @@
 using AlumniBackendServices.Services;
-using Infrastructure.Queries;
-using Microsoft.AspNetCore.Mvc;
 
 namespace AlumniBackendServices.Controllers;
 
@@ -9,7 +7,7 @@ public class IdentityController : IEndpoint
 
     public static void Add(WebApplication app)
     {
-        var api = app.MapGroup("/student");
+        var api = app.MapGroup("/auth");
 
         api.MapPost("/registration", StudentRegistration);
         api.MapPost("/login", StudentLogin);
@@ -21,7 +19,6 @@ public class IdentityController : IEndpoint
         return EndpointHelper.GetResult(result);
     }
 
-    [HttpPost("student/login")]
     public static async Task<IResult> StudentLogin(IIdentityService identity, StudentRegistration body)
     {
         var result = await identity.StudentLogin(body.Email, body.Password);

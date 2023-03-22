@@ -1,59 +1,42 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using MediatR;
-using Infrastructure.Queries;
-using Core.Contracts.Response;
-using Infrastructure.Commands;
-using Microsoft.AspNetCore.Authorization;
+﻿namespace AlumniBackendServices.Controllers;
 
-namespace AlumniBackendServices.Controllers
+public class FacultyController : IEndpoint
 {
-    [Authorize]
-    public class FacultyController : ApiController
+
+    public static void Add(WebApplication app)
     {
+        var api = app.MapGroup("/faculty");
 
-        public FacultyController(IMediator mediator): base(mediator) {}
+        api.MapGet("/", GetAsync).Produces<IEnumerable<FacultyResponse>>();
+        api.MapGet("/{email}", GetByEmailAsync).Produces<FacultyResponse>();
+        api.MapPost("/", PostAsync);
+        api.MapDelete("/{facultyId]}", DeleteAsync);
+    }
 
+    public static async Task<IResult> GetAsync(IMediator mediator)
+    {
+        var query = new GetAllFacultiesQuery();
+        var result = await mediator.Send(query);
+        return Results.Ok(result);
+    }
 
-        #region Actions
+    public static async Task<IResult> GetByEmailAsync(string email, IMediator mediator)
+    {
+        var query = new GetFacultyQuery(email);
+        var result = await mediator.Send(query);
+        return Results.Ok(result);
+    }
 
-        // GET: api/Facutly
-        [Produces(typeof(IEnumerable<FacultyResponse>))]
-        [HttpGet()]
-        public async Task<IActionResult> GetAsync()
-        {
-            var query = new GetAllFacultiesQuery();
-            var result = await mediator.Send(query);
-            return Ok(result);
-        }
+    public static async Task<IResult> PostAsync(AddFacultyCommand faculty, IMediator mediator)
+    {
+        await mediator.Send(faculty);
+        return Results.Ok();
+    }
 
-        [Produces(typeof(FacultyResponse))]
-        [HttpGet("{email}")]
-        public async Task<IActionResult> GetAsync(string email)
-        {
-            var query = new GetFacultyQuery(email);
-            var result = await mediator.Send(query);
-            return Ok(result);
-        }
-
-        // POST: api/Facutly
-        [HttpPost()]
-        public async Task<IActionResult> PostAsync([FromBody]AddFacultyCommand faculty)
-        {
-            await mediator.Send(faculty);
-            return Ok();
-        }
-
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{facultyId}")]
-        public async Task<IActionResult> DeleteAsync(int facultyId)
-        {
-            var query = new DeleteFacultyCommand(facultyId);
-            await mediator.Send(query);
-            return Ok();
-        }
-
-        #endregion
+    public static async Task<IResult> DeleteAsync(int facultyId, IMediator mediator)
+    {
+        var query = new DeleteFacultyCommand(facultyId);
+        await mediator.Send(query);
+        return Results.Ok();
     }
 }
