@@ -1,12 +1,8 @@
-using System;
-using System.Threading.Tasks;
+namespace AlumniBackendServices.Repositories;
 
-namespace AlumniBackendServices.Repositories
+public interface IUnitOfWork : IDisposable, IAsyncDisposable
 {
-    public interface IUnitOfWork : IDisposable, IAsyncDisposable
-    {
-        IStudentRepository Student { get; }
+    IStudentRepository Student { get; }
 
-        Task<int> Complete();
-    }
+    Task<int> Complete();
 }

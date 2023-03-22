@@ -1,14 +1,10 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Identity;
-using AlumniBackendServices.Options;
 using System.Text;
-using Microsoft.AspNetCore.Builder;
+using AlumniBackendServices.Options;
 using AlumniBackendServices.Services;
-using System;
 using Database;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 
 namespace AlumniBackendServices.ExtensionService;
 

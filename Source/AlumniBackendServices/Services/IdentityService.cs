@@ -1,13 +1,8 @@
-using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using AlumniBackendServices.Options;
-using Core.Contracts.Response;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AlumniBackendServices.Services
@@ -84,9 +79,9 @@ namespace AlumniBackendServices.Services
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Email ?? ""),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                    new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
                     new Claim("id", user.Id)
                 }),
                 Expires = DateTime.UtcNow.AddHours(2),
@@ -128,7 +123,7 @@ namespace AlumniBackendServices.Services
                 Status = ResponseStatus.Success,
                 Result = new()
                 {
-                    Email = user.Email,
+                    Email = user.Email ?? "",
                     Token = tokenHandler.WriteToken(token)
                 }
             };

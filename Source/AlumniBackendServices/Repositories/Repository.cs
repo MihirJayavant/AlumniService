@@ -1,10 +1,6 @@
 #pragma warning disable IDE1006
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,7 +27,7 @@ namespace AlumniBackendServices.Repositories
                                     .ToListAsync();
 
 
-        public virtual async Task<TEntity> Get(int id) =>
+        public virtual async Task<TEntity?> Get(int id) =>
                     await context.Set<TEntity>().FindAsync(id);
 
         public virtual async Task<IEnumerable<TEntity>> GetAll() =>

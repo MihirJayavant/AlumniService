@@ -1,10 +1,9 @@
-namespace AlumniBackendServices.Options
+namespace AlumniBackendServices.Options;
+
+public class SwaggerOptions
 {
-    public class SwaggerOptions
-    {
-        public string JsonRoute { get; set; }
-        public string Description { get; set; }
-        public string UIEndpoint { get; set; }
-        public string Version { get; set; }
-    }
+    public string JsonRoute { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string UIEndpoint { get; set; } = string.Empty;
+    public string Version { get; set; } = string.Empty;
 }
