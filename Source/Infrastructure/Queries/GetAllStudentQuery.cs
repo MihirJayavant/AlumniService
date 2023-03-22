@@ -1,19 +1,14 @@
-using MediatR;
-using Core.Contracts.Response;
-using System.Collections.Generic;
+namespace Infrastructure.Queries;
 
-namespace Infrastructure.Queries
+public class GetAllStudentQuery : IRequest<Response<AllStudentResponse>>
 {
-    public class GetAllStudentQuery : IRequest<Response<AllStudentResponse>>
-    {
-        public PaginationQuery Pagination { get; }
+    public PaginationQuery Pagination { get; }
 
-        public GetAllStudentQuery(int pageNumber, int pageSize)
-                => Pagination = new PaginationQuery
-                    {
-                        PageNumber = pageNumber,
-                        PageSize = pageSize
-                    };
+    public GetAllStudentQuery(int pageNumber, int pageSize)
+            => Pagination = new PaginationQuery
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                };
 
-    }
 }

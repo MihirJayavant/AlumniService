@@ -1,11 +1,7 @@
-using System;
-using MediatR;
+namespace Infrastructure.Commands;
 
-namespace Infrastructure.Commands
+public class DeleteFacultyCommand : IRequest
 {
-    public class DeleteFacultyCommand : IRequest
-    {
-        public int FacultyId { get; set; }
-        public DeleteFacultyCommand(int facultyId) => FacultyId = facultyId;
-    }
+    public int FacultyId { get; set; }
+    public DeleteFacultyCommand(int facultyId) => FacultyId = facultyId;
 }

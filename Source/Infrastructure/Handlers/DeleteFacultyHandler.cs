@@ -1,30 +1,22 @@
-using MediatR;
-using System.Threading.Tasks;
-using System.Threading;
-using AutoMapper;
-using Infrastructure.Commands;
-using Database;
+namespace Infrastructure.Handlers;
 
-namespace Infrastructure.Handlers
+public class DeleteFacultyHandler : IRequestHandler<DeleteFacultyCommand>
 {
-    public class DeleteFacultyHandler : IRequestHandler<DeleteFacultyCommand>
+    private readonly ApplicationContext context;
+
+    public DeleteFacultyHandler(ApplicationContext context)
+                    => this.context = context;
+
+    public async Task Handle(DeleteFacultyCommand request, CancellationToken cancellationToken)
     {
-        private readonly ApplicationContext context;
+        var faculty = await context.Faculties
+                        .FindAsync(new object[] { request.FacultyId }, cancellationToken: cancellationToken);
 
-        public DeleteFacultyHandler(ApplicationContext context)
-                        => this.context = context;
-
-        public async Task<Unit> Handle(DeleteFacultyCommand request, CancellationToken cancellationToken)
-        {
-            var faculty = await context.Faculties
-                            .FindAsync(request.FacultyId);
-
-            if(faculty != null) {
-                context.Faculties.Remove(faculty);
-                await context.SaveChangesAsync();
-            }
-            return new Unit();
+        if(faculty is not null) {
+            context.Faculties.Remove(faculty);
+            await context.SaveChangesAsync(cancellationToken);
         }
-
+        return;
     }
+
 }

@@ -7,28 +7,27 @@ using HotChocolate.Execution.Configuration;
 using HotChocolate.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-namespace AlumniBackendServices.ExtensionService
+namespace AlumniBackendServices.ExtensionService;
+
+public static class GraphQLExtension
 {
-    public static class GraphQLExtension
+    public static void AddApplicationGraphQL(this IServiceCollection services)
     {
-        public static void AddApplicationGraphQL(this IServiceCollection services)
-        {
-
-            var schema = SchemaBuilder.New()
-                                    .AddQueryType<QueryType>()
-                                    .AddMutationType<MutationType>()
-                                    .BindClrType<Guid, IdType>()
-                                    .BindClrType<string, StringType>()
-                                    .Create();
-
-            services.AddGraphQL(schema, new QueryExecutionOptions { ForceSerialExecution = true });
-
-        }
-
-        public static void UseApplictionGraphQL(this IApplicationBuilder app)
-                    => app.UseGraphQL("/graphql")
-                            .UsePlayground("/graphql", "/ui/playground")
-                            .UseVoyager("/graphql", "/ui/voyager");
+        services.AddGraphQLServer()
+                .AddDefaultTransactionScopeHandler()
+                .AddQueryType<QueryType>()
+                .AddMutationType<MutationType>()
+                .BindClrType<Guid, IdType>()
+                .BindClrType<string, StringType>();
     }
+
+    public static void UseApplicationGraphQL(this IApplicationBuilder app)
+        => app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapGraphQL("/graphql");
+        })
+        .UsePlayground("/graphql", "/ui/playground")
+        .UseVoyager("/graphql", "/ui/voyager");
 }

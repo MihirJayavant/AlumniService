@@ -1,11 +1,6 @@
-using MediatR;
-using Core.Contracts.Response;
-using System.Collections.Generic;
+namespace Infrastructure.Queries;
 
-namespace Infrastructure.Queries
+public class GetAllFacultiesQuery : IRequest<IEnumerable<FacultyResponse>>
 {
-    public class GetAllFacultiesQuery : IRequest<IEnumerable<FacultyResponse>>
-    {
 
-    }
 }

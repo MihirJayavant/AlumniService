@@ -1,32 +1,29 @@
-﻿using AutoMapper;
-using System;
-using System.Linq;
+using AutoMapper;
 using System.Reflection;
 
-namespace Application.Common.Mappings
+namespace Application.Common.Mappings;
+
+public class MappingProfile : Profile
 {
-    public class MappingProfile : Profile
+    public MappingProfile()
+        => ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly());
+
+    private void ApplyMappingsFromAssembly(Assembly assembly)
     {
-        public MappingProfile()
-            => ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly());
+        var types = assembly.GetExportedTypes()
+            .Where(t => t.GetInterfaces().Any(i =>
+                i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMapFrom<>)))
+            .ToList();
 
-        private void ApplyMappingsFromAssembly(Assembly assembly)
+        foreach (var type in types)
         {
-            var types = assembly.GetExportedTypes()
-                .Where(t => t.GetInterfaces().Any(i =>
-                    i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMapFrom<>)))
-                .ToList();
+            var instance = Activator.CreateInstance(type);
 
-            foreach (var type in types)
-            {
-                var instance = Activator.CreateInstance(type);
+            var methodInfo = type.GetMethod("Mapping")
+                ?? type.GetInterface("IMapFrom`1")?.GetMethod("Mapping");
 
-                var methodInfo = type.GetMethod("Mapping")
-                    ?? type.GetInterface("IMapFrom`1").GetMethod("Mapping");
+            methodInfo?.Invoke(instance, new object[] { this });
 
-                methodInfo?.Invoke(instance, new object[] { this });
-
-            }
         }
     }
 }

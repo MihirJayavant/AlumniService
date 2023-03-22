@@ -1,14 +1,12 @@
 using FluentValidation;
-using Infrastructure.Commands;
 
-namespace Infrastructure.Validators
+namespace Infrastructure.Validators;
+
+public class AddCompanyValidator : AbstractValidator<AddCompanyCommand>
 {
-    public class AddCompanyValidator : AbstractValidator<AddCompanyCommand>
+    public AddCompanyValidator()
     {
-        public AddCompanyValidator()
-        {
-            RuleFor(c => c.CompanyName).NotEmpty();
-            RuleFor(c => c.Designation).NotEmpty();
-        }
+        RuleFor(c => c.CompanyName).NotEmpty();
+        RuleFor(c => c.Designation).NotEmpty();
     }
 }

@@ -1,15 +1,10 @@
-using System;
-using Core.Contracts.Response;
-using MediatR;
+namespace Infrastructure.Commands;
 
-namespace Infrastructure.Commands
+public class AddCompanyCommand : IRequest<Response<CompanyResponse>>
 {
-    public class AddCompanyCommand : IRequest<Response<CompanyResponse>>
-    {
-        public string CompanyName { get; set; }
-        public string Designation { get; set; }
-        public int YearOfJoining { get; set; }
-        public long AnnualSalary { get; set; }
-        public int StudentId { get; set; }
-    }
+    public string CompanyName { get; set; } = string.Empty;
+    public string Designation { get; set; } = string.Empty;
+    public int YearOfJoining { get; set; }
+    public long AnnualSalary { get; set; }
+    public int StudentId { get; set; }
 }

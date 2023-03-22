@@ -1,0 +1,10 @@
+global using MediatR;
+global using Microsoft.EntityFrameworkCore;
+global using AutoMapper;
+global using Core.Entities;
+global using Infrastructure.Commands;
+global using Database;
+global using Core.Contracts.Response;
+global using Infrastructure.Services;
+global using Infrastructure.Validators;
+global using Infrastructure.Queries;

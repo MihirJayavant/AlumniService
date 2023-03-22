@@ -10,48 +10,47 @@ using AlumniBackendServices.Services;
 using System;
 using Database;
 
-namespace AlumniBackendServices.ExtensionService
+namespace AlumniBackendServices.ExtensionService;
+
+public static class AuthExtension
 {
-    public static class AuthExtension
+    public static void AddAuth(this IServiceCollection services, IConfiguration configuration)
     {
-        public static void AddAuth(this IServiceCollection services, IConfiguration configuration)
+        JwtOptions option = new();
+        configuration.Bind(nameof(JwtOptions), option);
+
+        services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationContext>();
+
+        services.AddScoped<IIdentityService, IdentityService>();
+
+        services.AddAuthentication(x =>
         {
-            JwtOptions option = new();
-            configuration.Bind(nameof(JwtOptions), option);
-
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                    .AddEntityFrameworkStores<ApplicationContext>();
-
-            services.AddScoped<IIdentityService, IdentityService>();
-
-            services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(x =>
-            {
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(option.Secret)),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    RequireExpirationTime = false,
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromMinutes(1)
-                };
-
-            });
-
-        }
-
-        public static void UseAuth(this IApplicationBuilder app)
+            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(x =>
         {
-            app.UseAuthentication();
-            app.UseAuthorization();
-        }
+            x.SaveToken = true;
+            x.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(option.Secret)),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                RequireExpirationTime = false,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.FromMinutes(1)
+            };
+
+        });
+
+    }
+
+    public static void UseAuth(this IApplicationBuilder app)
+    {
+        app.UseAuthentication();
+        app.UseAuthorization();
     }
 }

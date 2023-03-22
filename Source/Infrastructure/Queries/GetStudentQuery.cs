@@ -1,12 +1,8 @@
-using MediatR;
-using Core.Contracts.Response;
+namespace Infrastructure.Queries;
 
-namespace Infrastructure.Queries
+public class GetStudentQuery : IRequest<Response<StudentResponse>>
 {
-    public class GetStudentQuery : IRequest<Response<StudentResponse>>
-    {
-        public string Email { get; }
+    public string Email { get; }
 
-        public GetStudentQuery(string email) => Email = email;
-    }
+    public GetStudentQuery(string email) => Email = email;
 }

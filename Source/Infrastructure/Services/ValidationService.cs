@@ -1,59 +1,55 @@
-using System;
-using System.Threading.Tasks;
-using Core.Contracts.Response;
 using FluentValidation;
 
-namespace Infrastructure.Services
+namespace Infrastructure.Services;
+
+public interface IValidationService
 {
-    public interface IValidationService
-    {
-        Response<T> CreateErrorResponse<T>(string error, ResponseStatus status = ResponseStatus.BadRequest);
-        Response<T> CreateSuccessResponse<T>(T data, ResponseStatus status = ResponseStatus.Success);
-        string Validate<T>(T data, AbstractValidator<T> validator);
-        public Task<Response<TResponse>> Compose<TRequest, TResponse>
-        (
-            TRequest request,
-            AbstractValidator<TRequest> validator,
-            Func<Task<Response<TResponse>>> handler
-        );
-    }
+    Response<T> CreateErrorResponse<T>(string error, ResponseStatus status = ResponseStatus.BadRequest);
+    Response<T> CreateSuccessResponse<T>(T data, ResponseStatus status = ResponseStatus.Success);
+    string Validate<T>(T data, AbstractValidator<T> validator);
+    public Task<Response<TResponse>> Compose<TRequest, TResponse>
+    (
+        TRequest request,
+        AbstractValidator<TRequest> validator,
+        Func<Task<Response<TResponse>>> handler
+    );
+}
 
-    public class ValidationService : IValidationService
-    {
-        public string Validate<T>(T request, AbstractValidator<T> validator)
-            => validator.Validate(request).ToString();
+public class ValidationService : IValidationService
+{
+    public string Validate<T>(T request, AbstractValidator<T> validator)
+        => validator.Validate(request).ToString();
 
 
-        public Response<T> CreateErrorResponse<T>(string error, ResponseStatus status = ResponseStatus.BadRequest)
-            => new Response<T>
-            {
-                Error = new ErrorResponse(error),
-                Status = status
-            };
-
-        public Response<T> CreateSuccessResponse<T>(T data, ResponseStatus status = ResponseStatus.Success)
-            => new Response<T>
-            {
-                Status = status,
-                Result = data
-            };
-
-        public async Task<Response<TResponse>> Compose<TRequest, TResponse>
-        (
-            TRequest request,
-            AbstractValidator<TRequest> validator,
-            Func<Task<Response<TResponse>>> handler
-        )
+    public Response<T> CreateErrorResponse<T>(string error, ResponseStatus status = ResponseStatus.BadRequest)
+        => new Response<T>
         {
-            var validationResult = Validate(request, validator);
-            if(validationResult != string.Empty)
-            {
-                return CreateErrorResponse<TResponse>(validationResult);
-            }
+            Error = new ErrorResponse(error),
+            Status = status
+        };
 
-            return await handler();
+    public Response<T> CreateSuccessResponse<T>(T data, ResponseStatus status = ResponseStatus.Success)
+        => new()
+        {
+            Status = status,
+            Result = data
+        };
+
+    public async Task<Response<TResponse>> Compose<TRequest, TResponse>
+    (
+        TRequest request,
+        AbstractValidator<TRequest> validator,
+        Func<Task<Response<TResponse>>> handler
+    )
+    {
+        var validationResult = Validate(request, validator);
+        if(validationResult != string.Empty)
+        {
+            return CreateErrorResponse<TResponse>(validationResult);
         }
 
-
+        return await handler();
     }
+
+
 }

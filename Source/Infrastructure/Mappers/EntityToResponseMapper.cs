@@ -1,34 +1,30 @@
-using AutoMapper;
-using Core.Entities;
-using Core.Contracts.Response;
 using Core.ValueObjects;
 
-namespace Infrastructure.Mappers
+namespace Infrastructure.Mappers;
+
+public class EntityToResponseMapper : Profile
 {
-    public class EntityToResponseMapper : Profile
+    public EntityToResponseMapper()
     {
-        public EntityToResponseMapper()
-        {
-            CreateMap<Student, StudentResponse>()
-                    .ForMember(
-                        res => res.DateCreated,
-                        opt => opt.MapFrom(src => src.DateCreated.ToUniversalTime())
-                    )
-                    .ForMember(
-                        res => res.DateLastModified,
-                        opt => opt.MapFrom(src => src.DateLastModified.ToUniversalTime())
-                    );
+        CreateMap<Student, StudentResponse>()
+                .ForMember(
+                    res => res.DateCreated,
+                    opt => opt.MapFrom(src => src.DateCreated.ToUniversalTime())
+                )
+                .ForMember(
+                    res => res.DateLastModified,
+                    opt => opt.MapFrom(src => src.DateLastModified.ToUniversalTime())
+                );
 
-            CreateMap<Address, AddressResponse>();
+        CreateMap<Address, AddressResponse>();
 
-            CreateMap<Company, CompanyResponse>();
+        CreateMap<Company, CompanyResponse>();
 
-            CreateMap<Exam, ExamResponse>();
+        CreateMap<Exam, ExamResponse>();
 
-            CreateMap<FurtherStudy, FurtherStudyResponse>();
+        CreateMap<FurtherStudy, FurtherStudyResponse>();
 
-            CreateMap<Faculty, FacultyResponse>();
+        CreateMap<Faculty, FacultyResponse>();
 
-        }
     }
 }

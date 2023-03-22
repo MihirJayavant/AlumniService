@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
@@ -27,7 +27,7 @@ namespace AlumniBackendServices.Controllers
             return GetResult(response);
         }
 
-        // POST api/<controller>/aasds21dssad1sd
+        // POST api/<controller>/company
         [HttpPost]
         [Produces(typeof(CompanyResponse))]
         [ProducesResponseType(404), ProducesResponseType(400)]

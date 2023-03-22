@@ -1,14 +1,8 @@
-using MediatR;
-using Core.Contracts.Response;
-using System.Collections.Generic;
-using System;
+namespace Infrastructure.Queries;
 
-namespace Infrastructure.Queries
+public class GetCompanyQuery : IRequest<Response<IEnumerable<CompanyResponse>>>
 {
-    public class GetCompanyQuery : IRequest<Response<IEnumerable<CompanyResponse>>>
-    {
-        public int StudentId { get; }
+    public int StudentId { get; }
 
-        public GetCompanyQuery(int studentId) => StudentId = studentId;
-    }
+    public GetCompanyQuery(int studentId) => StudentId = studentId;
 }

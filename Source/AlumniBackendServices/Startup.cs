@@ -47,7 +47,7 @@ namespace AlumniBackendServices
             app.UseAuth();
             app.UseApplicationSwagger(Configuration);
             app.UseApplication();
-            app.UseApplictionGraphQL();
+            app.UseApplicationGraphQL();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
         }
     }

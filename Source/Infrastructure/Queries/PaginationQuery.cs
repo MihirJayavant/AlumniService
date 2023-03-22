@@ -1,12 +1,7 @@
-using MediatR;
-using Core.Contracts.Response;
-using System.Collections.Generic;
+namespace Infrastructure.Queries;
 
-namespace Infrastructure.Queries
+public class PaginationQuery
 {
-    public class PaginationQuery
-    {
-        public int PageSize { get; set; }
-        public int PageNumber { get; set; }
-    }
+    public int PageSize { get; set; }
+    public int PageNumber { get; set; }
 }
