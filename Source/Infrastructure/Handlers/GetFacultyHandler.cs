@@ -15,7 +15,7 @@ public class GetFacultyHandler : IRequestHandler<GetFacultyQuery, FacultyRespons
                                 .ProjectTo<FacultyResponse>(mapper.ConfigurationProvider)
                                 .FirstOrDefaultAsync(f => f.Email == request.FacultyEmail, cancellationToken);
 
-        return response;
+        return response!;
     }
 
 }

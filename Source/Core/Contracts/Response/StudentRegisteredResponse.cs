@@ -2,7 +2,7 @@ namespace Core.Contracts.Response;
 
 public class StudentRegisteredResponse
 {
-    public string Description { get; set; }
-    public string Email { get; set; }
-    public string Token { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Token { get; set; } = string.Empty;
 }

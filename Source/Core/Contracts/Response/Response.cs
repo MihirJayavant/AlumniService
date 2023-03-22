@@ -2,7 +2,7 @@ namespace Core.Contracts.Response;
 
 public class Response<T>
 {
-    public T Result { get; set; }
+    public T Result { get; set; } = default!;
     public ResponseStatus Status { get; set; }
-    public ErrorResponse Error { get; set; }
+    public ErrorResponse Error { get; set; } = default!;
 }
