@@ -1,32 +1,37 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+﻿using AlumniBackendServices.Controllers;
+using AlumniBackendServices.ExtensionService;
 
-namespace AlumniBackendServices
-{
-    public class Program
-    {
-        public static void Main(string[] args) => CreateHostBuilder(args).Build().Run();
+var builder = WebApplication.CreateBuilder(args);
 
-        // private static void CreateDbIfNotExists(IHost host)
-        // {
-        //     using var scope = host.Services.CreateScope();
-        //     var services = scope.ServiceProvider;
+// Add services to the container.
+builder.Services.AddControllers();
 
-        //     try
-        //     {
-        //         var context = services.GetRequiredService<ApplicationContext>();
-        //         context.Database.EnsureCreated();
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         var logger = services.GetRequiredService<ILogger<Program>>();
-        //         logger.LogError(ex, "An error occurred creating the DB.");
-        //     }
-        // }
+builder.Services.AddSwaggerGen();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddAuth(builder.Configuration);
+builder.Services.AddApplicationSwagger(builder.Configuration);
+builder.Services.AddDatabase(builder.Configuration, builder.Environment);
+builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddApplicationLogging(builder.Environment);
+builder.Services.AddApplicationGraphQL();
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>());
+var app = builder.Build();
 
-    }
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseApplication();
+// app.UseHttpsRedirection();
+app.UseAuthorization();
+
+app.UseApplicationSwagger(builder.Configuration);
+app.UseAuth();
+
+IdentityController.Add(app);
+
+// app.UseApplicationGraphQL();
+
+app.MapControllers();
+
+
+app.Run();
