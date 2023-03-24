@@ -6,7 +6,7 @@ namespace AlumniBackendServices.Repositories;
 
 public class StudentRepository : Repository<Student>, IStudentRepository
 {
-    public StudentRepository(ApplicationContext context) : base(context) { }
+    public StudentRepository(IApplicationDbContext context) : base(context) { }
 
     public async Task<IEnumerable<Student>> GetProfile() =>
                 await context.Students.Take(100)

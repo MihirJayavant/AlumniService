@@ -1,10 +1,9 @@
-namespace Core.ValueObjects
+namespace Core.ValueObjects;
+
+public enum Branch
 {
-    public enum Branch
-    {
-        IT = 1,
-        CS = 2,
-        EXTC = 3,
-        ELEX = 4
-    }
+    IT = 1,
+    CS = 2,
+    EXTC = 3,
+    ELEX = 4
 }

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using Infrastructure.Commands;
-using Core.Contracts.Response;
+using Application.Common.Commands;
+using Application.Contracts.Response;
 using MediatR;
 
 namespace AlumniBackendServices.GraphQL

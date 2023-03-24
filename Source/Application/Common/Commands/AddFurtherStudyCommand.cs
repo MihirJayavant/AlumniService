@@ -1,8 +1,7 @@
-namespace Core.Entities;
+namespace Application.Common.Commands;
 
-public class FurtherStudy
+public class AddFurtherStudyCommand : IRequest<Response<FurtherStudyResponse>>
 {
-    public int FurtherStudyId { get; set; }
     public string InstituteName { get; set; } = string.Empty;
     public string Degree { get; set; } = string.Empty;
     public int AdmissionYear { get; set; }
@@ -10,5 +9,4 @@ public class FurtherStudy
     public string Country { get; set; } = string.Empty;
     public string City { get; set; } = string.Empty;
     public int StudentId { get; set; }
-    public Student Student { get; set; } = default!;
 }

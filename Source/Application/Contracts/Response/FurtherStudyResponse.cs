@@ -1,6 +1,6 @@
-namespace Core.Entities;
+namespace Application.Contracts.Response;
 
-public class FurtherStudy
+public class FurtherStudyResponse
 {
     public int FurtherStudyId { get; set; }
     public string InstituteName { get; set; } = string.Empty;
@@ -9,6 +9,4 @@ public class FurtherStudy
     public int PassingYear { get; set; }
     public string Country { get; set; } = string.Empty;
     public string City { get; set; } = string.Empty;
-    public int StudentId { get; set; }
-    public Student Student { get; set; } = default!;
 }

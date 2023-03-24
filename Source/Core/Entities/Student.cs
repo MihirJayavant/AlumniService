@@ -20,12 +20,9 @@ public class Student
     public Address CorrespondanceAddress { get; set; } = default!;
     public int AdmissionYear { get; set; }
     public int PassingYear { get; set; }
-
     public Guid StudentAccount { get; set; }
     public StudentAccount Account { get; set; } = default!;
-
     public List<Company> Companies { get; set; } = default!;
     public List<Exam> Exams { get; set; } = default!;
     public List<FurtherStudy> FurtherStudies { get; set; } = default!;
-
 }

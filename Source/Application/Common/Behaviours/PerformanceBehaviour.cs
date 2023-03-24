@@ -1,7 +1,7 @@
+using System.Diagnostics;
+using Application.Common.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Application.Common.Interfaces;
-using System.Diagnostics;
 
 namespace Application.Common.Behaviours;
 
@@ -23,7 +23,7 @@ public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequ
         this.identityService = identityService;
     }
 
-    public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         timer.Start();
 
@@ -39,7 +39,7 @@ public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequ
             var userId = currentUserService.UserId ?? string.Empty;
             var userName = string.Empty;
 
-            if (!string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userId) is false)
             {
                 userName = await identityService.GetUserNameAsync(userId);
             }
@@ -50,4 +50,5 @@ public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequ
 
         return response;
     }
+
 }

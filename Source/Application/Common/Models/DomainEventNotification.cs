@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Common.Models;
 
-public class DomainEventNotification<TDomainEvent> : INotification where TDomainEvent : DomainEvent
+public sealed class DomainEventNotification<TDomainEvent> : INotification where TDomainEvent : DomainEvent
 {
     public DomainEventNotification(TDomainEvent domainEvent) => DomainEvent = domainEvent;
 

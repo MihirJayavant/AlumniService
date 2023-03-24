@@ -8,9 +8,9 @@ namespace AlumniBackendServices.Repositories
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        protected readonly ApplicationContext context;
+        protected readonly IApplicationDbContext context;
 
-        public Repository(ApplicationContext context) => this.context = context;
+        public Repository(IApplicationDbContext context) => this.context = context;
 
         public virtual async Task Add(TEntity entity) =>
                     await context.Set<TEntity>().AddAsync(entity);

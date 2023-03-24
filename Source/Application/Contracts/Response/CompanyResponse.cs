@@ -1,12 +1,9 @@
-namespace Core.Entities;
+namespace Application.Contracts.Response;
 
-public class Company
+public class CompanyResponse
 {
-    public int CompanyId { get; set; }
     public string CompanyName { get; set; } = string.Empty;
     public string Designation { get; set; } = string.Empty;
     public int YearOfJoining { get; set; }
     public long AnnualSalary { get; set; }
-    public int StudentId { get; set; }
-    public Student Student { get; set; } = default!;
 }
