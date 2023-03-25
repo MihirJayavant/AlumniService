@@ -1,9 +1,4 @@
-using Application.Common.Models;
-using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using OneOf;
-
-namespace Application.Exams.Commands;
+namespace Application.Exams;
 
 public sealed record AddExamCommand : IRequest<OneOf<ExamResponse, ErrorType>>
 {

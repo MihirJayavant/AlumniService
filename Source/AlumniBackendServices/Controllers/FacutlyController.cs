@@ -1,4 +1,7 @@
-﻿namespace AlumniBackendServices.Controllers;
+﻿using Application.Faculties;
+using Application.Faculties.Commands;
+
+namespace AlumniBackendServices.Controllers;
 
 public class FacultyController : IEndpoint
 {

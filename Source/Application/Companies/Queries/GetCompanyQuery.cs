@@ -1,9 +1,3 @@
-using Application.Common.Mappings;
-using Application.Common.Models;
-using AutoMapper.QueryableExtensions;
-using FluentValidation;
-using OneOf;
-
 namespace Application.Companies;
 
 public sealed record GetCompanyQuery : IRequest<OneOf<PaginatedList<CompanyResponse>, ErrorType>>

@@ -1,9 +1,3 @@
-using Application.Common.Mappings;
-using Application.Common.Models;
-using AutoMapper.QueryableExtensions;
-using FluentValidation;
-using OneOf;
-
 namespace Application.Exams;
 
 public sealed record GetExamQuery : IRequest<OneOf<PaginatedList<ExamResponse>, ErrorType>>

@@ -1,10 +1,4 @@
-using Application.Common.Mappings;
-using Application.Common.Models;
-using AutoMapper.QueryableExtensions;
-using FluentValidation;
-using OneOf;
-
-namespace Application.FurtherStudies.Queries;
+namespace Application.FurtherStudies;
 
 public class GetFurtherStudyQuery : IRequest<OneOf<PaginatedList<FurtherStudyResponse>, ErrorType>>
 {

@@ -1,8 +1,3 @@
-using Application.Common.Models;
-using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using OneOf;
-
 namespace Application.FurtherStudies;
 
 public class AddFurtherStudyCommand : IRequest<OneOf<FurtherStudyResponse, ErrorType>>

@@ -1,10 +1,10 @@
 using Application.Companies;
 using Application.Exams;
+using Application.Faculties;
 using Application.FurtherStudies;
 using Application.Students;
-using Core.ValueObjects;
 
-namespace Infrastructure.Mappers;
+namespace Application.Common.Mappings;
 
 public class EntityToResponseMapper : Profile
 {

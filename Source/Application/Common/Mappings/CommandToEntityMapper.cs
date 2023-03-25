@@ -1,10 +1,10 @@
-using Application.Companies.Commands;
-using Application.Exams.Commands;
-using Application.FurtherStudies.Commands;
+using Application.Companies;
+using Application.Exams;
+using Application.Faculties;
+using Application.FurtherStudies;
 using Application.Students;
-using Application.Students.Commands;
 
-namespace Infrastructure.Mappers;
+namespace Application.Common.Mappings;
 
 public class CommandToEntityMapper : Profile
 {

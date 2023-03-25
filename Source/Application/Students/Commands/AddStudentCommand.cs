@@ -3,7 +3,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 
-namespace Application.Students.Commands;
+namespace Application.Students;
 
 public sealed record AddStudentCommand : IRequest<OneOf<StudentResponse, ErrorType>>
 {
