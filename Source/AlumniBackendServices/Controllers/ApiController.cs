@@ -1,3 +1,5 @@
+using Application.Common.Models;
+
 namespace AlumniBackendServices.Controllers;
 
 public interface IEndpoint

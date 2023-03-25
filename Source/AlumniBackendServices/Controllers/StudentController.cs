@@ -1,4 +1,6 @@
-﻿using Core.Contracts.Request;
+﻿using Application.Students;
+using Application.Students.Queries;
+using Core.Contracts.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

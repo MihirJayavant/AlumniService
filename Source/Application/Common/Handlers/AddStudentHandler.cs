@@ -1,3 +1,5 @@
+using Application.Common.Models;
+
 namespace Application.Common.Handlers;
 
 public class AddStudentHandler : BaseHandler, IRequestHandler<AddStudentCommand, Response<StudentResponse>>

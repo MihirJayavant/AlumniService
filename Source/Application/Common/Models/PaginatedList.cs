@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Common.Models;
 
-public sealed record class PaginatedList<T>
+public record class PaginatedList<T>
 {
     public ImmutableList<T> Items { get; }
     public int PageSize { get; }

@@ -1,3 +1,5 @@
+using Application.Common.Models;
+
 namespace Application.Contracts.Response;
 
 public class Response<T>

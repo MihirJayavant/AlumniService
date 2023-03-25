@@ -1,10 +1,5 @@
-global using Application.Common.Commands;
-global using Application.Contracts.Response;
-global using AutoMapper;
 global using Core.Entities;
-global using Database;
-global using Infrastructure.Queries;
-global using Infrastructure.Services;
-global using Infrastructure.Validators;
-global using MediatR;
+global using Core.Entities;
 global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
