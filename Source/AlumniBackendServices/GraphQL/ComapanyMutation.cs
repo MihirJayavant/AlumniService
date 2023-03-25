@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Application.Common.Commands;
+using Application.Companies;
 using Application.Companies.Commands;
 using Application.Contracts.Response;
 using MediatR;

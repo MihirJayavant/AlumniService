@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.FurtherStudies;
+using Application.FurtherStudies.Commands;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AlumniBackendServices.Controllers;
 

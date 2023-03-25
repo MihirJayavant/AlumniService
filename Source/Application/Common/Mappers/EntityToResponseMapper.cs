@@ -1,3 +1,7 @@
+using Application.Companies;
+using Application.Exams;
+using Application.FurtherStudies;
+using Application.Students;
 using Core.ValueObjects;
 
 namespace Infrastructure.Mappers;

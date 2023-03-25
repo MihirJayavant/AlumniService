@@ -38,7 +38,7 @@ public class AddCompanyHandler : IRequestHandler<AddCompanyCommand, OneOf<Compan
         async Task<OneOf<CompanyResponse, ErrorType>> GetData()
         {
             var student = await context.Students
-                                .FirstAsync(s => s.StudentId == request.StudentId, cancellationToken);
+                                .FirstOrDefaultAsync(s => s.StudentId == request.StudentId, cancellationToken);
 
             if (student is null)
             {

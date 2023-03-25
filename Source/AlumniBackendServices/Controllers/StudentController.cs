@@ -1,4 +1,5 @@
-﻿using Application.Students;
+﻿using Application.FurtherStudies;
+using Application.Students;
 using Application.Students.Commands;
 using Application.Students.Queries;
 using Core.Contracts.Request;

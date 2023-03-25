@@ -1,4 +1,7 @@
 using Application.Companies.Commands;
+using Application.Exams.Commands;
+using Application.FurtherStudies.Commands;
+using Application.Students;
 using Application.Students.Commands;
 
 namespace Infrastructure.Mappers;
