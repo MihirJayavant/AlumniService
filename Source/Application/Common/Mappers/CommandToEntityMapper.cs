@@ -1,5 +1,5 @@
-using Application.Common.Commands;
-using AutoMapper;
+using Application.Companies.Commands;
+using Application.Students.Commands;
 
 namespace Infrastructure.Mappers;
 

@@ -1,3 +1,5 @@
+using Application.Companies.Commands;
+
 namespace AlumniBackendServices.Controllers;
 
 public class CompanyController : IEndpoint

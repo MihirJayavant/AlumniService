@@ -44,8 +44,6 @@ public sealed class GetAllStudentHandler
         async Task<OneOf<AllStudentResponse, ErrorType>> GetData()
         {
             var data = await context.Students
-                        .Skip(request.Pagination.PageNumber - 1)
-                        .Take(request.Pagination.PageSize)
                         .ProjectTo<StudentResponse>(mapper.ConfigurationProvider)
                         .PaginatedListAsync(request.Pagination.PageNumber, request.Pagination.PageSize, cancellationToken);
             return new AllStudentResponse(data);

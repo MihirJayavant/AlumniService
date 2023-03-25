@@ -1,4 +1,5 @@
 using AlumniBackendServices.Services;
+using Application.Students.Queries;
 
 namespace AlumniBackendServices.Controllers;
 

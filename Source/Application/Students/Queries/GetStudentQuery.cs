@@ -6,7 +6,7 @@ using OneOf;
 
 namespace Application.Students;
 
-public sealed class GetStudentQuery : IRequest<OneOf<StudentResponse, ErrorType>>
+public sealed record GetStudentQuery : IRequest<OneOf<StudentResponse, ErrorType>>
 {
     public string Email { get; }
     public GetStudentQuery(string email) => Email = email;
