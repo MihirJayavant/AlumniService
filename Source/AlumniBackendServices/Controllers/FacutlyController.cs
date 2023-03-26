@@ -1,5 +1,5 @@
-﻿using Application.Faculties;
-using Application.Faculties.Commands;
+using AlumniBackendServices.Models;
+using Application.Faculties;
 
 namespace AlumniBackendServices.Controllers;
 
@@ -16,10 +16,10 @@ public class FacultyController : IEndpoint
         api.MapDelete("/{facultyId]}", DeleteAsync);
     }
 
-    public static async Task<IResult> GetAsync(IMediator mediator)
+    public static async Task<IResult> GetAsync(PageQuery query, IMediator mediator)
     {
-        var query = new GetAllFacultiesQuery();
-        var result = await mediator.Send(query);
+        var request = new GetAllFacultiesQuery(query.PageNumber, query.PageSize);
+        var result = await mediator.Send(request);
         return Results.Ok(result);
     }
 
@@ -30,7 +30,7 @@ public class FacultyController : IEndpoint
         return Results.Ok(result);
     }
 
-    public static async Task<IResult> PostAsync(AddFacultyCommand faculty, IMediator mediator)
+    public static async Task<IResult> PostAsync([FromBody] AddFacultyCommand faculty, IMediator mediator)
     {
         await mediator.Send(faculty);
         return Results.Ok();

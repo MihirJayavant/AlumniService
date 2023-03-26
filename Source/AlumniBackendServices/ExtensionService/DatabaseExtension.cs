@@ -1,3 +1,4 @@
+using Application.Common.Interfaces;
 using Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +21,7 @@ public static class DatabaseExtension
             connection = string.Format(connection, password);
         }
 
-        services.AddDbContext<ApplicationContext>(options =>
+        services.AddDbContext<IApplicationDbContext,ApplicationContext>(options =>
            options.UseNpgsql(connection, b => b.MigrationsAssembly("AlumniBackendServices")));
     }
 }

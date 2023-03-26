@@ -1,9 +1,10 @@
+using Application.Common.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Database;
 
-public class ApplicationContext : IdentityDbContext<IdentityUser>
+public class ApplicationContext : IdentityDbContext<IdentityUser>, IApplicationDbContext
 {
     public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
     {

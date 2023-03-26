@@ -1,21 +1,21 @@
-using Database;
+//using Database;
 
-namespace AlumniBackendServices.Repositories;
+//namespace AlumniBackendServices.Repositories;
 
-public class UnitOfWork : IUnitOfWork
-{
-    private readonly IApplicationDbContext context;
-    public IStudentRepository Student { get; }
+//public class UnitOfWork : IUnitOfWork
+//{
+//    private readonly IApplicationDbContext context;
+//    public IStudentRepository Student { get; }
 
-    public UnitOfWork(IApplicationDbContext context)
-    {
-        this.context = context;
-        Student = new StudentRepository(context);
-    }
+//    public UnitOfWork(IApplicationDbContext context)
+//    {
+//        this.context = context;
+//        Student = new StudentRepository(context);
+//    }
 
-    public async Task<int> Complete() => await context.SaveChangesAsync();
+//    public async Task<int> Complete() => await context.SaveChangesAsync();
 
-    public void Dispose() => context.Dispose();
+//    public void Dispose() => context.Dispose();
 
-    public ValueTask DisposeAsync() => context.DisposeAsync();
-}
+//    public ValueTask DisposeAsync() => context.DisposeAsync();
+//}

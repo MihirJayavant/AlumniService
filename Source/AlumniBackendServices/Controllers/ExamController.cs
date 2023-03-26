@@ -1,7 +1,4 @@
-﻿using Application.Exams;
-using Application.Exams.Commands;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using Application.Exams;
 
 namespace AlumniBackendServices.Controllers;
 
@@ -22,7 +19,7 @@ public sealed class ExamController : IEndpoint
         return Results.Ok(result);
     }
 
-    public static async Task<IResult> PostAsync(AddExamCommand exam, IMediator mediator)
+    public static async Task<IResult> PostAsync([FromBody] AddExamCommand exam, IMediator mediator)
     {
         var response = await mediator.Send(exam);
         return EndpointHelper.GetResult(response);

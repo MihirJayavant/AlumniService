@@ -1,4 +1,4 @@
-﻿using AlumniBackendServices.Controllers;
+using AlumniBackendServices.Controllers;
 using AlumniBackendServices.ExtensionService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +28,11 @@ app.UseApplicationSwagger(builder.Configuration);
 app.UseAuth();
 
 IdentityController.Add(app);
+StudentController.Add(app);
+CompanyController.Add(app);
+ExamController.Add(app);
+FurtherStudiesController.Add(app);
+FacultyController.Add(app);
 
 // app.UseApplicationGraphQL();
 

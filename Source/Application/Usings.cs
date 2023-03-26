@@ -1,5 +1,5 @@
 global using AutoMapper;
-global using CleanArchitecture.Application.Common.Interfaces;
+global using Application.Common.Interfaces;
 global using Core.Entities;
 global using Core.ValueObjects;
 global using MediatR;

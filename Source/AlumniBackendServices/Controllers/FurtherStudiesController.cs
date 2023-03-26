@@ -1,6 +1,4 @@
-﻿using Application.FurtherStudies;
-using Application.FurtherStudies.Commands;
-using Microsoft.AspNetCore.Mvc;
+using Application.FurtherStudies;
 
 namespace AlumniBackendServices.Controllers;
 
@@ -22,7 +20,7 @@ public class FurtherStudiesController : IEndpoint
         return EndpointHelper.GetResult(result);
     }
 
-    public static async Task<IResult> PostAsync(AddFurtherStudyCommand study, IMediator mediator)
+    public static async Task<IResult> PostAsync([FromBody] AddFurtherStudyCommand study, IMediator mediator)
     {
         var result = await mediator.Send(study);
         return EndpointHelper.GetResult(result);

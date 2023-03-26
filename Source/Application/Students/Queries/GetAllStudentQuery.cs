@@ -1,9 +1,3 @@
-using Application.Common.Mappings;
-using Application.Common.Models;
-using AutoMapper.QueryableExtensions;
-using FluentValidation;
-using OneOf;
-
 namespace Application.Students;
 
 public sealed class GetAllStudentQuery : IRequest<OneOf<AllStudentResponse, ErrorType>>
@@ -12,7 +6,6 @@ public sealed class GetAllStudentQuery : IRequest<OneOf<AllStudentResponse, Erro
 
     public GetAllStudentQuery(int pageNumber, int pageSize)
             => Pagination = new(pageNumber, pageSize);
-
 }
 
 public sealed class GetAllStudentQueryValidator : AbstractValidator<GetAllStudentQuery>

@@ -1,7 +1,5 @@
 using System.Threading.Tasks;
-using Application.Common.Commands;
 using Application.Companies;
-using Application.Companies.Commands;
 using Application.Contracts.Response;
 using MediatR;
 
@@ -13,10 +11,10 @@ namespace AlumniBackendServices.GraphQL
 
         public CompanyMutation(IMediator mediator) => this.mediator = mediator;
 
-        public async Task<CompanyResponse> AddComapanyAsync(AddCompanyCommand company)
+        public async Task<CompanyResponse> AddCompanyAsync(AddCompanyCommand company)
         {
             var response = await mediator.Send(company);
-            return response.Result;
+            return null;
         }
     }
 }

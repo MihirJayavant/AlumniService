@@ -3,15 +3,18 @@ using System.Security.Claims;
 using System.Text;
 using AlumniBackendServices.Options;
 using Application.Common.Models;
+using Application.Students;
+using Core.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using OneOf;
 
 namespace AlumniBackendServices.Services
 {
     public interface IIdentityService
     {
-        Task<Response<StudentRegisteredResponse>> RegisterStudent(string email, string password);
-        Task<Response<StudentLoginResponse>> StudentLogin(string email, string password);
+        Task<OneOf<StudentRegisteredResponse, ErrorType>> RegisterStudent(string email, string password);
+        Task<OneOf<StudentLoginResponse, ErrorType>> StudentLogin(string email, string password);
     }
 
     public class IdentityService : IIdentityService
@@ -22,17 +25,13 @@ namespace AlumniBackendServices.Services
         public IdentityService(UserManager<IdentityUser> manager, IConfiguration configuration)
         => (this.manager, this.configuration) = (manager, configuration);
 
-        public async Task<Response<StudentRegisteredResponse>> RegisterStudent(string email, string password)
+        public async Task<OneOf<StudentRegisteredResponse, ErrorType>> RegisterStudent(string email, string password)
         {
             var existingUser = await manager.FindByEmailAsync(email);
 
             if (existingUser is not null)
             {
-                return new()
-                {
-                    Error = new("Student already registered"),
-                    Status = ResponseStatus.BadRequest
-                };
+                return new ErrorType(ResponseStatus.BadRequest, "Student already registered");
             }
 
             IdentityUser user = new()
@@ -45,25 +44,17 @@ namespace AlumniBackendServices.Services
 
             if (createdUser.Succeeded == false)
             {
-                return new()
-                {
-                    Error = new(createdUser.Errors.ToArray()[0].Description),
-                    Status = ResponseStatus.BadRequest
-                };
+                return new ErrorType(ResponseStatus.BadRequest, createdUser.Errors.ToArray()[0].Description);
             }
 
 
             var (tokenHandler, token) = GenerateToken(user);
 
-            return new()
+            return new StudentRegisteredResponse()
             {
-                Status = ResponseStatus.Success,
-                Result = new()
-                {
-                    Description = "Student Account Created",
-                    Email = user.Email,
-                    Token = tokenHandler.WriteToken(token)
-                }
+                Description = "Student Account Created",
+                Email = user.Email,
+                Token = tokenHandler.WriteToken(token)
             };
         }
 
@@ -92,43 +83,30 @@ namespace AlumniBackendServices.Services
             return (tokenHandler, token);
         }
 
-        public async Task<Response<StudentLoginResponse>> StudentLogin(string email, string password)
+        public async Task<OneOf<StudentLoginResponse, ErrorType>> StudentLogin(string email, string password)
         {
             var user = await manager.FindByEmailAsync(email);
 
             if (user is null)
             {
-                return new()
-                {
-                    Error = new("Email / Passsword Invalid"),
-                    Status = ResponseStatus.BadRequest
-                };
+                return new ErrorType(ResponseStatus.BadRequest, "Email / Password Invalid");
             }
 
             var userHasValidPassword = await manager.CheckPasswordAsync(user, password);
 
             if (userHasValidPassword == false)
             {
-                return new()
-                {
-                    Error = new("Email / Passsword Invalid"),
-                    Status = ResponseStatus.BadRequest
-                };
+                return new ErrorType(ResponseStatus.BadRequest, "Email / Password Invalid");
             }
 
 
             var (tokenHandler, token) = GenerateToken(user);
 
-            return new()
+            return new StudentLoginResponse()
             {
-                Status = ResponseStatus.Success,
-                Result = new()
-                {
-                    Email = user.Email ?? "",
-                    Token = tokenHandler.WriteToken(token)
-                }
+                Email = user.Email ?? "",
+                Token = tokenHandler.WriteToken(token)
             };
-
         }
     }
 }

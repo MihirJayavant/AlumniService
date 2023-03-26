@@ -1,5 +1,3 @@
-
-
 namespace Database.Configuration;
 
 public class CompanyConfiguration : IEntityTypeConfiguration<Company>

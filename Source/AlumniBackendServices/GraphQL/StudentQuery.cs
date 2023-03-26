@@ -3,10 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Application.Contracts.Response;
 using Application.Students;
-using Core.Contracts.Request;
 using Core.Entities;
 using HotChocolate.Types.Relay;
-using Infrastructure.Queries;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -31,7 +29,7 @@ namespace AlumniBackendServices.GraphQL
         {
             var query = new GetStudentQuery(email);
             var response = await mediator.Send(query);
-            return response.Result;
+            return null;
         }
 
     }

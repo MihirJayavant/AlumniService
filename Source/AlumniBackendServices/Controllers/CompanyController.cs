@@ -1,5 +1,5 @@
 using Application.Companies;
-using Application.Companies.Commands;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AlumniBackendServices.Controllers;
 
@@ -21,7 +21,7 @@ public class CompanyController : IEndpoint
         return EndpointHelper.GetResult(response);
     }
 
-    public static async Task<IResult> PostAsync(AddCompanyCommand company, IMediator mediator)
+    public static async Task<IResult> PostAsync([FromBody] AddCompanyCommand company, IMediator mediator)
     {
         var response = await mediator.Send(company);
         return EndpointHelper.GetResult(response);
