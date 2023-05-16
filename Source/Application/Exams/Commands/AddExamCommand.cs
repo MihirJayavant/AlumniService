@@ -24,27 +24,22 @@ public class AddExamHandler : IRequestHandler<AddExamCommand, OneOf<ExamResponse
     public AddExamHandler(IApplicationDbContext context, IMapper mapper)
                 => (this.context, this.mapper) = (context, mapper);
 
-    public Task<OneOf<ExamResponse, ErrorType>> Handle(AddExamCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<ExamResponse, ErrorType>> Handle(AddExamCommand request, CancellationToken cancellationToken)
     {
-        return ValidationHelper.ValidateAndRun(request, new AddExamCommandValidator(), GetData);
+        var student = await context.Students
+                        .FirstOrDefaultAsync(s => s.StudentId == request.StudentId, cancellationToken);
 
-        async Task<OneOf<ExamResponse, ErrorType>> GetData()
+        if (student is null)
         {
-            var student = await context.Students
-                            .FirstOrDefaultAsync(s => s.StudentId == request.StudentId, cancellationToken);
-
-            if (student is null)
-            {
-                return new ErrorType(ResponseStatus.NotFound, "Student not found");
-            }
-
-            var exam = mapper.Map<Exam>(request);
-            context.Exams.Add(exam);
-            await context.SaveChangesAsync(cancellationToken);
-            var response = mapper.Map<ExamResponse>(exam);
-
-            return response;
+            return new ErrorType(ResponseStatus.NotFound, "Student not found");
         }
+
+        var exam = mapper.Map<Exam>(request);
+        context.Exams.Add(exam);
+        await context.SaveChangesAsync(cancellationToken);
+        var response = mapper.Map<ExamResponse>(exam);
+
+        return response;
     }
 
 }

@@ -25,26 +25,21 @@ public class AddFacultyHandler : IRequestHandler<AddFacultyCommand, OneOf<Facult
     public AddFacultyHandler(IApplicationDbContext context, IMapper mapper)
                     => (this.context, this.mapper) = (context, mapper);
 
-    public Task<OneOf<FacultyResponse, ErrorType>> Handle(AddFacultyCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<FacultyResponse, ErrorType>> Handle(AddFacultyCommand request, CancellationToken cancellationToken)
     {
-        return ValidationHelper.ValidateAndRun(request, new AddFacultyCommandValidator(), GetData);
+        var faculty = await context.Faculties
+                    .FirstOrDefaultAsync(s => s.Email == request.Email, cancellationToken);
 
-        async Task<OneOf<FacultyResponse, ErrorType>> GetData()
+        if (faculty is not null)
         {
-            var faculty = await context.Faculties
-                        .FirstOrDefaultAsync(s => s.Email == request.Email, cancellationToken);
-
-            if (faculty is not null)
-            {
-                return new ErrorType(ResponseStatus.Conflict, "Email already registered");
-            }
-            var f = mapper.Map<Faculty>(request);
-            context.Faculties.Add(f);
-            await context.SaveChangesAsync(cancellationToken);
-
-            var result = mapper.Map<FacultyResponse>(f);
-            return result;
+            return new ErrorType(ResponseStatus.Conflict, "Email already registered");
         }
-    }
 
+        var f = mapper.Map<Faculty>(request);
+        context.Faculties.Add(f);
+        await context.SaveChangesAsync(cancellationToken);
+
+        var result = mapper.Map<FacultyResponse>(f);
+        return result;
+    }
 }

@@ -25,28 +25,21 @@ public class AddCompanyHandler : IRequestHandler<AddCompanyCommand, OneOf<Compan
     public AddCompanyHandler(IApplicationDbContext context, IMapper mapper)
                 => (this.context, this.mapper) = (context, mapper);
 
-    public Task<OneOf<CompanyResponse, ErrorType>> Handle(AddCompanyCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<CompanyResponse, ErrorType>> Handle(AddCompanyCommand request, CancellationToken cancellationToken)
     {
+        var student = await context.Students
+                            .FirstOrDefaultAsync(s => s.StudentId == request.StudentId, cancellationToken);
 
-        return ValidationHelper.ValidateAndRun(request, new AddCompanyValidator(), GetData);
-
-        async Task<OneOf<CompanyResponse, ErrorType>> GetData()
+        if (student is null)
         {
-            var student = await context.Students
-                                .FirstOrDefaultAsync(s => s.StudentId == request.StudentId, cancellationToken);
-
-            if (student is null)
-            {
-                return new ErrorType(ResponseStatus.NotFound, "Student not found");
-            }
-
-            var company = mapper.Map<Company>(request);
-            context.Companies.Add(company);
-            await context.SaveChangesAsync(cancellationToken);
-            var result = mapper.Map<CompanyResponse>(company);
-
-            return result;
-
+            return new ErrorType(ResponseStatus.NotFound, "Student not found");
         }
+
+        var company = mapper.Map<Company>(request);
+        context.Companies.Add(company);
+        await context.SaveChangesAsync(cancellationToken);
+        var result = mapper.Map<CompanyResponse>(company);
+
+        return result;
     }
 }

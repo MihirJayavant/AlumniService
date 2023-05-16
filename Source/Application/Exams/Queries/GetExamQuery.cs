@@ -23,14 +23,10 @@ public class GetExamHandler : IRequestHandler<GetExamQuery, OneOf<PaginatedList<
     public GetExamHandler(IApplicationDbContext context, IMapper mapper)
                 => (this.context, this.mapper) = (context, mapper);
 
-    public Task<OneOf<PaginatedList<ExamResponse>, ErrorType>> Handle(GetExamQuery request, CancellationToken cancellationToken)
-    {
-        return ValidationHelper.ValidateAndRun(request, new GetExamQueryValidator(), GetData);
-
-        async Task<OneOf<PaginatedList<ExamResponse>, ErrorType>> GetData()
+    public async Task<OneOf<PaginatedList<ExamResponse>, ErrorType>> Handle(GetExamQuery request, CancellationToken cancellationToken)
             => await context.Exams.Where(s => s.StudentId == request.StudentId)
                              .ProjectTo<ExamResponse>(mapper.ConfigurationProvider)
                              .PaginatedListAsync(1, 50, cancellationToken);
-    }
+
 
 }

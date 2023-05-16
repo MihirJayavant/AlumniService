@@ -26,14 +26,8 @@ public class GetAllFacultiesHandler : IRequestHandler<GetAllFacultiesQuery, OneO
     public GetAllFacultiesHandler(IApplicationDbContext context, IMapper mapper)
                     => (this.context, this.mapper) = (context, mapper);
 
-    public Task<OneOf<PaginatedList<FacultyResponse>, ErrorType>> Handle(GetAllFacultiesQuery request, CancellationToken cancellationToken)
-    {
-        return ValidationHelper.ValidateAndRun(request, new GetAllFacultyQueryValidator(), GetData);
-
-        async Task<OneOf<PaginatedList<FacultyResponse>, ErrorType>> GetData()
-                            => await context.Faculties
-                                    .ProjectTo<FacultyResponse>(mapper.ConfigurationProvider)
-                                    .PaginatedListAsync(request.Pagination.PageNumber, request.Pagination.PageSize, cancellationToken);
-    }
-
+    public async Task<OneOf<PaginatedList<FacultyResponse>, ErrorType>> Handle(GetAllFacultiesQuery request, CancellationToken cancellationToken)
+                 => await context.Faculties
+                            .ProjectTo<FacultyResponse>(mapper.ConfigurationProvider)
+                            .PaginatedListAsync(request.Pagination.PageNumber, request.Pagination.PageSize, cancellationToken);
 }

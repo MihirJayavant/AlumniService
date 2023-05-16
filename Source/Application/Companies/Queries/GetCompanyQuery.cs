@@ -24,13 +24,8 @@ public sealed class GetCompanyHandler : IRequestHandler<GetCompanyQuery, OneOf<P
     public GetCompanyHandler(IApplicationDbContext context, IMapper mapper)
                 => (this.context, this.mapper) = (context, mapper);
 
-    public Task<OneOf<PaginatedList<CompanyResponse>, ErrorType>> Handle(GetCompanyQuery request, CancellationToken cancellationToken)
-    {
-        return ValidationHelper.ValidateAndRun(request, new GetCompanyQueryValidator(), GetData);
-
-        async Task<OneOf<PaginatedList<CompanyResponse>, ErrorType>> GetData()
+    public async Task<OneOf<PaginatedList<CompanyResponse>, ErrorType>> Handle(GetCompanyQuery request, CancellationToken cancellationToken)
             => await context.Companies.Where(s => s.StudentId == request.StudentId)
                                     .ProjectTo<CompanyResponse>(mapper.ConfigurationProvider)
                                     .PaginatedListAsync(1, 50, cancellationToken);
-    }
 }
