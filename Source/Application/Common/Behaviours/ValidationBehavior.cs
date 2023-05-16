@@ -1,32 +1,20 @@
-// using System.Collections.Generic;
-// using System.Threading;
-// using System.Threading.Tasks;
-// using System.Linq;
-// using FluentValidation;
-// using MediatR;
-// using Application.Contracts.Response;
+namespace Infrastructure.Behaviors;
 
-// namespace Infrastructure.Behaviors
-// {
-//     public class ValidationBehaior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-//         where TRequest : IRequest<TResponse>
-//     {
-//         private readonly IEnumerable<IValidator<IRequest>> validators;
+public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, OneOf<TResponse, ErrorType>> where TRequest : notnull
+{
+    private readonly IValidator<TRequest> validator;
 
-//         public ValidationBehaior(IEnumerable<IValidator<IRequest>> validators)
-//                 => this.validators = validators;
+    public ValidationBehavior(IValidator<TRequest> validators)
+            => this.validator = validators;
 
-//         public Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
-//         {
-//             var context = new ValidationContext(request);
-//             var errors = validators.Select(x => x.Validate(context))
-//                                     .SelectMany(x => x.Errors)
-//                                     .Where(x => x != null);
-//             if(errors.Any())
-//             {
-//                 throw new ValidationException(errors);
-//             }
-//             return next();
-//         }
-//     }
-// }
+    public async Task<OneOf<TResponse, ErrorType>> Handle(TRequest request, RequestHandlerDelegate<OneOf<TResponse, ErrorType>> next, CancellationToken cancellationToken)
+    {
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        if (validationResult.IsValid is false)
+        {
+            return new ErrorType(ResponseStatus.BadRequest, validationResult.Errors.First().ErrorMessage);
+        }
+        return await next();
+    }
+
+}

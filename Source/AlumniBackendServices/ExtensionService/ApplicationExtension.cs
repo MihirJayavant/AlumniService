@@ -7,7 +7,6 @@ public static class ApplicationExtension
     public static void AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton(configuration);
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(StudentResponse).Assembly));
         services.AddAutoMapper(typeof(StudentResponse));
         services.AddCors();
     }
