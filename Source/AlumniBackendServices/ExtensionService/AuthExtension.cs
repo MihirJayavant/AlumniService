@@ -1,6 +1,7 @@
 using System.Text;
 using AlumniBackendServices.Options;
 using AlumniBackendServices.Services;
+using Application.Common.Interfaces;
 using Database;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -18,7 +19,7 @@ public static class AuthExtension
         services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationContext>();
 
-        services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<Services.IIdentityService, IdentityService>();
 
         services.AddAuthentication(x =>
         {
@@ -41,6 +42,9 @@ public static class AuthExtension
             };
 
         });
+
+        services.AddSingleton<ICurrentUserService, CurrentUserService>();
+        services.AddTransient<Application.Common.Interfaces.IIdentityService, Infrastructure.Identity.IdentityService>();
 
     }
 
