@@ -1,8 +1,3 @@
-using Application.Common.Models;
-using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using OneOf;
-
 namespace Application.Students;
 
 public sealed record AddStudentCommand : IRequest<OneOf<StudentResponse, ErrorType>>
@@ -36,31 +31,23 @@ public class AddStudentHandler : IRequestHandler<AddStudentCommand, OneOf<Studen
     public AddStudentHandler(IApplicationDbContext context, IMapper mapper)
                     => (this.context, this.mapper) = (context, mapper);
 
-    public Task<OneOf<StudentResponse, ErrorType>> Handle(AddStudentCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<StudentResponse, ErrorType>> Handle(AddStudentCommand request, CancellationToken cancellationToken)
     {
+        var account = await context.Students
+                    .FirstOrDefaultAsync(s => s.Email == request.Email, cancellationToken);
 
-        return ValidationHelper.ValidateAndRun(request, new AddStudentCommandValidator(), GetData);
-
-        async Task<OneOf<StudentResponse, ErrorType>> GetData()
+        if (account is not null)
         {
-            var account = await context.Students
-                        .FirstOrDefaultAsync(s => s.Email == request.Email, cancellationToken);
-
-            if (account is not null)
-            {
-                return new ErrorType(ResponseStatus.Conflict, "Student email id already exist");
-            }
-            var student = mapper.Map<Student>(request);
-            student.DateCreated = DateTime.Now;
-            student.DateLastModified = DateTime.Now;
-            var entity = context.Students.Add(student);
-            await context.SaveChangesAsync(cancellationToken);
-
-            var result = mapper.Map<StudentResponse>(student);
-
-            return result;
-
+            return new ErrorType(ResponseStatus.Conflict, "Student email id already exist");
         }
-    }
+        var student = mapper.Map<Student>(request);
+        student.DateCreated = DateTime.Now;
+        student.DateLastModified = DateTime.Now;
+        var entity = context.Students.Add(student);
+        await context.SaveChangesAsync(cancellationToken);
 
+        var result = mapper.Map<StudentResponse>(student);
+
+        return result;
+    }
 }

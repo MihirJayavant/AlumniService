@@ -23,14 +23,9 @@ public class GetFurtherStudyHandler : IRequestHandler<GetFurtherStudyQuery, OneO
     public GetFurtherStudyHandler(IApplicationDbContext context, IMapper mapper)
                         => (this.context, this.mapper) = (context, mapper);
 
-    public Task<OneOf<PaginatedList<FurtherStudyResponse>, ErrorType>> Handle(GetFurtherStudyQuery request, CancellationToken cancellationToken)
-    {
-        return ValidationHelper.ValidateAndRun(request, new GetFurtherStudyQueryValidator(), GetData);
-
-        async Task<OneOf<PaginatedList<FurtherStudyResponse>, ErrorType>> GetData() =>
-                            await context.FurtherStudies
+    public async Task<OneOf<PaginatedList<FurtherStudyResponse>, ErrorType>> Handle(GetFurtherStudyQuery request, CancellationToken cancellationToken)
+                         => await context.FurtherStudies
                                     .Where(s => s.StudentId == request.StudentId)
                                     .ProjectTo<FurtherStudyResponse>(mapper.ConfigurationProvider)
                                     .PaginatedListAsync(1, 50, cancellationToken);
-    }
 }

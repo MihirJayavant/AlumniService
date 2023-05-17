@@ -30,16 +30,11 @@ public sealed class GetAllStudentHandler
     public GetAllStudentHandler(IApplicationDbContext context, IMapper mapper)
                 => (this.context, this.mapper) = (context, mapper);
 
-    public Task<OneOf<AllStudentResponse, ErrorType>> Handle(GetAllStudentQuery request, CancellationToken cancellationToken)
+    public async Task<OneOf<AllStudentResponse, ErrorType>> Handle(GetAllStudentQuery request, CancellationToken cancellationToken)
     {
-        return ValidationHelper.ValidateAndRun(request, new GetAllStudentQueryValidator(), GetData);
-
-        async Task<OneOf<AllStudentResponse, ErrorType>> GetData()
-        {
-            var data = await context.Students
-                        .ProjectTo<StudentResponse>(mapper.ConfigurationProvider)
-                        .PaginatedListAsync(request.Pagination.PageNumber, request.Pagination.PageSize, cancellationToken);
-            return new AllStudentResponse(data);
-        }
+        var data = await context.Students
+                    .ProjectTo<StudentResponse>(mapper.ConfigurationProvider)
+                    .PaginatedListAsync(request.Pagination.PageNumber, request.Pagination.PageSize, cancellationToken);
+        return new AllStudentResponse(data);
     }
 }

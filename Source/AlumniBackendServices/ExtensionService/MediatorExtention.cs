@@ -2,8 +2,8 @@ using Application.Common.Models;
 using Application.Companies;
 using Application.Exams;
 using Application.Faculties;
+using Application.FurtherStudies;
 using Application.Students;
-using Core.Entities;
 using FluentValidation;
 using Infrastructure.Behaviors;
 
@@ -19,14 +19,15 @@ public static class MeditorExtension
                     .AddValidation<GetExamQuery, PaginatedList<ExamResponse>>()
                     .AddValidation<AddCompanyCommand, CompanyResponse>()
                     .AddValidation<GetCompanyQuery, PaginatedList<CompanyResponse>>()
-                    .AddValidation<GetCompanyGraphQL, IQueryable<Company>>()
                     .AddValidation<AddFacultyCommand, FacultyResponse>()
                     .AddValidation<DeleteFacultyCommand, FacultyResponse>()
                     .AddValidation<GetAllFacultiesQuery, PaginatedList<FacultyResponse>>()
                     .AddValidation<GetFacultyQuery, FacultyResponse>()
-                    .AddValidation<DeleteFacultyCommand, Faculty>()
-                    .AddValidation<DeleteFacultyCommand, Faculty>()
-                    .AddValidation<DeleteFacultyCommand, Faculty>()
+                    .AddValidation<AddFurtherStudyCommand, FurtherStudyResponse>()
+                    .AddValidation<GetFurtherStudyQuery, PaginatedList<FurtherStudyResponse>>()
+                    .AddValidation<AddStudentCommand, StudentResponse>()
+                    .AddValidation<GetAllStudentQuery, AllStudentResponse>()
+                    .AddValidation<GetStudentQuery, StudentResponse>()
                 );
 
     public static MediatRServiceConfiguration AddValidation<TRequest, TResponse>

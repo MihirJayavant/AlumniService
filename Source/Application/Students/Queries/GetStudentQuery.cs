@@ -1,9 +1,3 @@
-using Application.Common.Models;
-using AutoMapper.QueryableExtensions;
-using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using OneOf;
-
 namespace Application.Students;
 
 public sealed record GetStudentQuery : IRequest<OneOf<StudentResponse, ErrorType>>
@@ -24,24 +18,17 @@ public class GetStudentHandler : IRequestHandler<GetStudentQuery, OneOf<StudentR
     public GetStudentHandler(IApplicationDbContext context, IMapper mapper)
                     => (this.context, this.mapper) = (context, mapper);
 
-    public Task<OneOf<StudentResponse, ErrorType>> Handle(GetStudentQuery request, CancellationToken cancellationToken)
+    public async Task<OneOf<StudentResponse, ErrorType>> Handle(GetStudentQuery request, CancellationToken cancellationToken)
     {
-
-        return ValidationHelper.ValidateAndRun(request, new GetStudentQueryValidator(), GetData);
-
-        async Task<OneOf<StudentResponse, ErrorType>> GetData()
+        var result = await context.Students
+                                    .Where(s => s.Email == request.Email)
+                                    .ProjectTo<StudentResponse>(mapper.ConfigurationProvider)
+                                    .FirstOrDefaultAsync(cancellationToken);
+        if (result is null)
         {
-            var result = await context.Students
-                                        .Where(s => s.Email == request.Email)
-                                        .ProjectTo<StudentResponse>(mapper.ConfigurationProvider)
-                                        .FirstOrDefaultAsync(cancellationToken);
-            if (result is null)
-            {
-                return new ErrorType(ResponseStatus.NotFound, "Student not found");
-            }
-
-            return result;
+            return new ErrorType(ResponseStatus.NotFound, "Student not found");
         }
-    }
 
+        return result;
+    }
 }

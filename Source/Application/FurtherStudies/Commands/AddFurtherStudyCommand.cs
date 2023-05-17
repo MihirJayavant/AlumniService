@@ -27,27 +27,21 @@ public class AddFurtherStudyHandler : IRequestHandler<AddFurtherStudyCommand, On
     public AddFurtherStudyHandler(IApplicationDbContext context, IMapper mapper)
                 => (this.context, this.mapper) = (context, mapper);
 
-    public Task<OneOf<FurtherStudyResponse, ErrorType>> Handle(AddFurtherStudyCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<FurtherStudyResponse, ErrorType>> Handle(AddFurtherStudyCommand request, CancellationToken cancellationToken)
     {
-        return ValidationHelper.ValidateAndRun(request, new AddFurtherStudyValidator(), GetData);
+        var student = await context.Students
+                        .FirstOrDefaultAsync(s => s.StudentId == request.StudentId, cancellationToken);
 
-        async Task<OneOf<FurtherStudyResponse, ErrorType>> GetData()
+        if (student is null)
         {
-            var student = await context.Students
-                            .FirstOrDefaultAsync(s => s.StudentId == request.StudentId, cancellationToken);
-
-            if (student is null)
-            {
-                return new ErrorType(ResponseStatus.NotFound, "Student not found");
-            }
-
-            var furtherStudy = mapper.Map<FurtherStudy>(request);
-            await context.FurtherStudies.AddAsync(furtherStudy, cancellationToken);
-            await context.SaveChangesAsync(cancellationToken);
-            var response = mapper.Map<FurtherStudyResponse>(furtherStudy);
-
-            return response;
+            return new ErrorType(ResponseStatus.NotFound, "Student not found");
         }
-    }
 
+        var furtherStudy = mapper.Map<FurtherStudy>(request);
+        await context.FurtherStudies.AddAsync(furtherStudy, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
+        var response = mapper.Map<FurtherStudyResponse>(furtherStudy);
+
+        return response;
+    }
 }
