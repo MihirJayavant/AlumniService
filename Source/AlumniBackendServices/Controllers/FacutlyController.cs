@@ -1,5 +1,7 @@
 using AlumniBackendServices.Models;
 using Application.Faculties;
+using Microsoft.AspNetCore.OpenApi;
+using Microsoft.OpenApi.Models;
 
 namespace AlumniBackendServices.Controllers;
 
@@ -10,36 +12,37 @@ public class FacultyController : IEndpoint
     {
         var api = app.MapGroup("/faculty");
 
-        api.MapGet("/", GetAsync).Produces<IEnumerable<FacultyResponse>>();
+        api.MapGet("/", GetAsync).Produces<IEnumerable<FacultyResponse>>()
+                .WithOpenApi();
         api.MapGet("/{email}", GetByEmailAsync).Produces<FacultyResponse>();
         api.MapPost("/", PostAsync);
         api.MapDelete("/{facultyId]}", DeleteAsync);
     }
 
-    public static async Task<IResult> GetAsync(PageQuery query, IMediator mediator)
+    public static async Task<IResult> GetAsync(int pageNumber, int pageSize, IMediator mediator)
     {
-        var request = new GetAllFacultiesQuery(query.PageNumber, query.PageSize);
+        var request = new GetAllFacultiesQuery(pageNumber, pageSize);
         var result = await mediator.Send(request);
-        return Results.Ok(result);
+        return EndpointHelper.GetResult(result);
     }
 
     public static async Task<IResult> GetByEmailAsync(string email, IMediator mediator)
     {
         var query = new GetFacultyQuery(email);
         var result = await mediator.Send(query);
-        return Results.Ok(result);
+        return EndpointHelper.GetResult(result);
     }
 
     public static async Task<IResult> PostAsync([FromBody] AddFacultyCommand faculty, IMediator mediator)
     {
-        await mediator.Send(faculty);
-        return Results.Ok();
+        var result = await mediator.Send(faculty);
+        return EndpointHelper.GetResult(result);
     }
 
     public static async Task<IResult> DeleteAsync(int facultyId, IMediator mediator)
     {
         var query = new DeleteFacultyCommand(facultyId);
-        await mediator.Send(query);
-        return Results.Ok();
+        var result = await mediator.Send(query);
+        return EndpointHelper.GetResult(result);
     }
 }

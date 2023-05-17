@@ -18,8 +18,8 @@ builder.Services.AddApplicationGraphQL();
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+// app.UseSwagger();
+// app.UseSwaggerUI();
 
 app.UseApplication();
 // app.UseHttpsRedirection();

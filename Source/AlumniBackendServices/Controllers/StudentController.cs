@@ -14,9 +14,9 @@ public class StudentController : IEndpoint
         api.MapPost("/", PostAsync).Produces<StudentResponse>();
     }
 
-    public static async Task<IResult> GetAllAsync(PageQuery request, IMediator mediator)
+    public static async Task<IResult> GetAllAsync(int pageNumber, int pageSize, IMediator mediator)
     {
-        var query = new GetAllStudentQuery(request.PageNumber, request.PageSize);
+        var query = new GetAllStudentQuery(pageNumber, pageSize);
         var response = await mediator.Send(query);
         return EndpointHelper.GetResult(response);
     }
