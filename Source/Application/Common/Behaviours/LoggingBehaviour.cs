@@ -13,18 +13,20 @@ public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where T
     public LoggingBehaviour(ILogger<TRequest> logger, ICurrentUserService currentUserService, IIdentityService identityService)
         => (this.logger, this.currentUserService, this.identityService) = (logger, currentUserService, identityService);
 
-    public async Task Process(TRequest request, CancellationToken cancellationToken)
+    public Task Process(TRequest request, CancellationToken cancellationToken)
     {
         var requestName = typeof(TRequest).Name;
         var userId = currentUserService.UserId ?? string.Empty;
         var userName = string.Empty;
 
-        if (string.IsNullOrEmpty(userId) is false)
-        {
-            userName = await identityService.GetUserNameAsync(userId);
-        }
+        // if (string.IsNullOrEmpty(userId) is false)
+        // {
+        //     userName = await identityService.GetUserNameAsync(userId);
+        // }
 
         logger.LogInformation("Request: {Name} {@UserId} {@UserName} {@Request}",
             requestName, userId, userName, request);
+
+        return Task.CompletedTask;
     }
 }

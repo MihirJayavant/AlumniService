@@ -1,5 +1,4 @@
-using AlumniBackendServices.Services;
-using Application.Common.Models;
+using Application.Common.Interfaces;
 using Application.Identity;
 
 namespace AlumniBackendServices.Controllers;
@@ -15,13 +14,13 @@ public class IdentityController : IEndpoint
         api.MapPost("/login", StudentLogin);
     }
 
-    public static async Task<IResult> StudentRegistration([FromBody] StudentRegistration body, IIdentityService identity)
+    public static async Task<IResult> StudentRegistration([FromBody] IdentityRequest body, IIdentityService identity)
     {
         var result = await identity.RegisterStudent(body.Email, body.Password);
         return EndpointHelper.GetResult(result);
     }
 
-    public static async Task<IResult> StudentLogin([FromBody] StudentRegistration body, IIdentityService identity)
+    public static async Task<IResult> StudentLogin([FromBody] IdentityRequest body, IIdentityService identity)
     {
         var result = await identity.StudentLogin(body.Email, body.Password);
         return EndpointHelper.GetResult(result);

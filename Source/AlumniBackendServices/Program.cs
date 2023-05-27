@@ -14,7 +14,6 @@ builder.Services.AddMediatorServices();
 builder.Services.AddDatabase(builder.Configuration, builder.Environment);
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddApplicationLogging(builder.Environment);
-builder.Services.AddApplicationGraphQL();
 
 var app = builder.Build();
 

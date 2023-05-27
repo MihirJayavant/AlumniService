@@ -39,10 +39,10 @@ public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequ
             var userId = currentUserService.UserId ?? string.Empty;
             var userName = string.Empty;
 
-            if (string.IsNullOrEmpty(userId) is false)
-            {
-                userName = await identityService.GetUserNameAsync(userId);
-            }
+            // if (string.IsNullOrEmpty(userId) is false)
+            // {
+            //     userName = await identityService.GetUserNameAsync(userId);
+            // }
 
             logger.LogWarning("Long Running Request: {Name} ({ElapsedMilliseconds} milliseconds) {@UserId} {@UserName} {@Request}",
                 requestName, elapsedMilliseconds, userId, userName, request);
