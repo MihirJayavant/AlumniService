@@ -1,5 +1,4 @@
 using Application.Companies;
-using Microsoft.AspNetCore.Mvc;
 
 namespace AlumniBackendServices.Controllers;
 
@@ -8,7 +7,7 @@ public class CompanyController : IEndpoint
 
     public static void Add(WebApplication app)
     {
-        var api = app.MapGroup("/company");
+        var api = app.MapGroup("/company").RequireAuthorization();
 
         api.MapGet("/{studentId}", GetAsyncByID).Produces<IEnumerable<CompanyResponse>>();
         api.MapPost("/", PostAsync).Produces<CompanyResponse>();

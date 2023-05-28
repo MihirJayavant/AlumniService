@@ -17,12 +17,8 @@ builder.Services.AddApplicationLogging(builder.Environment);
 
 var app = builder.Build();
 
-// app.UseSwagger();
-// app.UseSwaggerUI();
-
 app.UseApplication();
 // app.UseHttpsRedirection();
-app.UseAuthorization();
 
 app.UseApplicationSwagger(builder.Configuration);
 app.UseAuth();

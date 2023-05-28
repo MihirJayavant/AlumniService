@@ -3,7 +3,6 @@ namespace Application.Faculties;
 public sealed record AddFacultyCommand : IRequest<OneOf<FacultyResponse, ErrorType>>
 {
     public required string Email { get; init; }
-    public required DateTime DateCreated { get; init; }
     public required bool Admin { get; init; }
     public required string Password { get; init; }
     public required string FirstName { get; init; }
