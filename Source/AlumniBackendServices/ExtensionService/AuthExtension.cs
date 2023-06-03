@@ -11,40 +11,7 @@ namespace AlumniBackendServices.ExtensionService;
 
 public static class AuthExtension
 {
-    public static void AddAuth(this IServiceCollection services, IConfiguration configuration)
-    {
-        JwtOptions option = new();
-        configuration.Bind(nameof(JwtOptions), option);
-
-        services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationContext>();
-
-        services.AddAuthentication(x =>
-        {
-            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(x =>
-        {
-            x.SaveToken = true;
-            x.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(option.Secret)),
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                RequireExpirationTime = false,
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.FromMinutes(1)
-            };
-
-        });
-
-        services.AddSingleton<ICurrentUserService, CurrentUserService>();
-        services.AddTransient<IIdentityService, IdentityService>();
-
-    }
+    public static void AddAuth(this IServiceCollection services) => services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
     public static void UseAuth(this IApplicationBuilder app)
     {

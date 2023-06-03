@@ -1,5 +1,8 @@
 using AlumniBackendServices.Controllers;
 using AlumniBackendServices.ExtensionService;
+using AlumniBackendServices.Services;
+using Application;
+using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,11 +11,12 @@ builder.Services.AddControllers();
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddAuth(builder.Configuration);
+builder.Services.AddSingleton<ISettingService>(new SettingService(builder.Configuration));
+builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices(new SettingService(builder.Configuration));
+builder.Services.AddAuth();
 builder.Services.AddApplicationSwagger(builder.Configuration);
-builder.Services.AddMediatorServices();
-builder.Services.AddDatabase(builder.Configuration, builder.Environment);
-builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddWebApiServices(builder.Configuration);
 builder.Services.AddApplicationLogging(builder.Environment);
 
 var app = builder.Build();

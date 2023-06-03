@@ -1,14 +1,15 @@
-using Application.Students;
+using AlumniBackendServices.Services;
+using Application;
 
 namespace AlumniBackendServices.ExtensionService;
 
-public static class ApplicationExtension
+public static class WebApiExtension
 {
-    public static void AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
+    public static void AddWebApiServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton(configuration);
-        services.AddAutoMapper(typeof(StudentResponse));
         services.AddCors();
+        services.AddSingleton<ISettingService>(new SettingService(configuration));
     }
 
     public static void UseApplication(this IApplicationBuilder app)

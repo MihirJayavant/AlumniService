@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Application;
 using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.Identity;
@@ -17,11 +18,11 @@ public class JwtOptions
 }
 public class IdentityService : IIdentityService
 {
-    private readonly UserManager<IdentityUser> manager;
-    private readonly IConfiguration configuration;
+    private readonly UserManager<ApplicationUser> manager;
+    private readonly ISettingService settingService;
 
-    public IdentityService(UserManager<IdentityUser> manager, IConfiguration configuration)
-    => (this.manager, this.configuration) = (manager, configuration);
+    public IdentityService(UserManager<ApplicationUser> manager, ISettingService settingService)
+    => (this.manager, this.settingService) = (manager, settingService);
 
     public async Task<OneOf<IdentityResponse, ErrorType>> RegisterStudent(string email, string password)
     {
@@ -32,7 +33,7 @@ public class IdentityService : IIdentityService
             return new ErrorType(ResponseStatus.BadRequest, "Student already registered");
         }
 
-        IdentityUser user = new()
+        ApplicationUser user = new()
         {
             UserName = email,
             Email = email
@@ -81,13 +82,13 @@ public class IdentityService : IIdentityService
         };
     }
 
-    private (JwtSecurityTokenHandler, SecurityToken) GenerateToken(IdentityUser user)
+    private (JwtSecurityTokenHandler, SecurityToken) GenerateToken(ApplicationUser user)
     {
         JwtSecurityTokenHandler tokenHandler = new();
 
         JwtOptions options = new()
         {
-            Secret = configuration["JwtOptions:Secret"] ?? ""
+            Secret = settingService.TokenSecret
         };
 
         var key = Encoding.ASCII.GetBytes(options.Secret);
@@ -99,6 +100,8 @@ public class IdentityService : IIdentityService
                     new Claim(JwtRegisteredClaimNames.Sub, user.Email ?? ""),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
+                    new Claim(JwtRegisteredClaimNames.Aud, "http://localhost:5001"),
+                    // new Claim(JwtRegisteredClaimNames.),
                     new Claim("id", user.Id)
                 }),
             Expires = DateTime.UtcNow.AddHours(2),

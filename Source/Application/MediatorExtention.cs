@@ -1,13 +1,12 @@
-using Application.Common.Models;
 using Application.Companies;
 using Application.Exams;
 using Application.Faculties;
 using Application.FurtherStudies;
 using Application.Students;
-using FluentValidation;
 using Infrastructure.Behaviors;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace AlumniBackendServices.ExtensionService;
+namespace Application;
 
 public static class MeditorExtension
 {
