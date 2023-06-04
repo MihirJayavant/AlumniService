@@ -34,15 +34,25 @@ public static class ConfigureServices
             x.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(setting.TokenSecret)),
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                RequireExpirationTime = false,
-                ValidateLifetime = false,
-                ClockSkew = TimeSpan.FromMinutes(1)
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(setting.AuthSetting.Secret)),
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                RequireExpirationTime = true,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.FromMinutes(1),
+                ValidAudience = setting.AuthSetting.ValidAudience,
+                ValidIssuer = setting.AuthSetting.ValidIssuer
             };
 
         });
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("StudentAccess", policy => policy.RequireRole("Student"));
+            options.AddPolicy("AdminAccess", policy => policy.RequireRole("Admin"));
+            options.AddPolicy("SuperAdminAccess", policy => policy.RequireRole("SuperAdmin"));
+        });
+
 
         services.AddTransient<IIdentityService, IdentityService>();
 

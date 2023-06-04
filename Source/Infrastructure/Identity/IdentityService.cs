@@ -6,7 +6,6 @@ using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.Identity;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using OneOf;
 
@@ -20,9 +19,10 @@ public class IdentityService : IIdentityService
 {
     private readonly UserManager<ApplicationUser> manager;
     private readonly ISettingService settingService;
+    private readonly RoleManager<IdentityRole> roleManager;
 
-    public IdentityService(UserManager<ApplicationUser> manager, ISettingService settingService)
-    => (this.manager, this.settingService) = (manager, settingService);
+    public IdentityService(UserManager<ApplicationUser> manager, RoleManager<IdentityRole> roleManager, ISettingService settingService)
+    => (this.manager, this.roleManager, this.settingService) = (manager, roleManager, settingService);
 
     public async Task<OneOf<IdentityResponse, ErrorType>> RegisterStudent(string email, string password)
     {
@@ -46,8 +46,18 @@ public class IdentityService : IIdentityService
             return new ErrorType(ResponseStatus.BadRequest, createdUser.Errors.ToArray()[0].Description);
         }
 
+        var exists = await roleManager.RoleExistsAsync("Student");
 
-        var (tokenHandler, token) = GenerateToken(user);
+        if (exists is false)
+        {
+            await AddCustomRole("Student");
+        }
+
+        await manager.AddToRoleAsync(user, "Student");
+
+        var roles = await manager.GetRolesAsync(user);
+
+        var (tokenHandler, token) = GenerateToken(user, roles);
 
         return new IdentityResponse()
         {
@@ -72,8 +82,9 @@ public class IdentityService : IIdentityService
             return new ErrorType(ResponseStatus.BadRequest, "Email / Password Invalid");
         }
 
+        var roles = await manager.GetRolesAsync(user);
 
-        var (tokenHandler, token) = GenerateToken(user);
+        var (tokenHandler, token) = GenerateToken(user, roles);
 
         return new IdentityResponse()
         {
@@ -82,28 +93,36 @@ public class IdentityService : IIdentityService
         };
     }
 
-    private (JwtSecurityTokenHandler, SecurityToken) GenerateToken(ApplicationUser user)
+    private (JwtSecurityTokenHandler, SecurityToken) GenerateToken(ApplicationUser user, IList<string> roles)
     {
         JwtSecurityTokenHandler tokenHandler = new();
 
         JwtOptions options = new()
         {
-            Secret = settingService.TokenSecret
+            Secret = settingService.AuthSetting.Secret
         };
 
         var key = Encoding.ASCII.GetBytes(options.Secret);
 
+        var claims = new List<Claim>()
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Email ?? ""),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
+                new Claim(JwtRegisteredClaimNames.Aud, settingService.AuthSetting.ValidAudience),
+                new Claim(JwtRegisteredClaimNames.Iss, settingService.AuthSetting.ValidIssuer),
+                new Claim("id", user.Id)
+            };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim("roles", role));
+        }
+
+
         SecurityTokenDescriptor descriptor = new()
         {
-            Subject = new ClaimsIdentity(new[]
-            {
-                    new Claim(JwtRegisteredClaimNames.Sub, user.Email ?? ""),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
-                    new Claim(JwtRegisteredClaimNames.Aud, "http://localhost:5001"),
-                    // new Claim(JwtRegisteredClaimNames.),
-                    new Claim("id", user.Id)
-                }),
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddHours(2),
             SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
@@ -111,4 +130,14 @@ public class IdentityService : IIdentityService
         return (tokenHandler, token);
     }
 
+    public async Task<OneOf<RoleResponse, ErrorType>> AddCustomRole(string role)
+    {
+        var result = await roleManager.CreateAsync(new(role));
+        if (result.Succeeded is false)
+        {
+            return new ErrorType(ResponseStatus.BadRequest, result.Errors.ToArray()[0].Description);
+        }
+
+        return new RoleResponse();
+    }
 }

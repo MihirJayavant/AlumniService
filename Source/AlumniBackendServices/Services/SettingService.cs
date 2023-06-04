@@ -1,5 +1,4 @@
 using Application;
-using NuGet.Common;
 
 namespace AlumniBackendServices.Services;
 
@@ -7,7 +6,7 @@ public class SettingService : ISettingService
 {
     public string Environment { get; init; }
     public DatabaseSetting DatabaseSetting { get; init; }
-    public string TokenSecret { get; init; }
+    public AuthSetting AuthSetting { get; init; }
 
     public bool IsDevelopment => Environment == "Development";
 
@@ -20,6 +19,12 @@ public class SettingService : ISettingService
             Connection = configuration["Database:Connection"] ?? "",
             Password = pass ?? ""
         };
-        TokenSecret = configuration["Authentication:Secret"] ?? "";
+
+        AuthSetting = new()
+        {
+            Secret = configuration["Authentication:Secret"] ?? "",
+            ValidAudience = configuration["Authentication:ValidAudience"] ?? "",
+            ValidIssuer = configuration["Authentication:ValidIssuer"] ?? ""
+        };
     }
 }

@@ -7,7 +7,7 @@ public class CompanyController : IEndpoint
 
     public static void Add(WebApplication app)
     {
-        var api = app.MapGroup("/company").RequireAuthorization();
+        var api = app.MapGroup("/company").RequireAuthorization("StudentAccess");
 
         api.MapGet("/{studentId}", GetAsyncByID).Produces<IEnumerable<CompanyResponse>>();
         api.MapPost("/", PostAsync).Produces<CompanyResponse>();
