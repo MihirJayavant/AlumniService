@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "AlumniBackendServices.Grpc";
+
+package identity;
+
+// The greeting service definition.
+service Identity {
+  // Sends a greeting
+  rpc StudentRegister (IdentityRequest) returns (IdentityResponse);
+}
+
+// The request message containing the user's name.
+message IdentityRequest {
+  string email = 1;
+  string pasword = 2;
+}
+
+// The response message containing the greetings.
+message IdentityResponse {
+  string message = 1;
+}
