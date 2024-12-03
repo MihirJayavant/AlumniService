@@ -3,19 +3,13 @@
   "isRoot": true,
   "tools": {
     "dotnet-ef": {
-      "version": "7.0.4",
+      "version": "9.0.0",
       "commands": [
         "dotnet-ef"
       ]
     },
-    "microsoft.tye": {
-      "version": "0.11.0-alpha.22111.1",
-      "commands": [
-        "tye"
-      ]
-    },
     "cake.tool": {
-      "version": "3.0.0",
+      "version": "5.0.0",
       "commands": [
         "dotnet-cake"
       ]
