@@ -1,7 +1,5 @@
-using AlumniBackendServices.Grpc;
 using AlumniBackendServices.Services;
 using Application;
-using Grpc.AspNetCore.Server;
 
 namespace AlumniBackendServices.ExtensionService;
 
@@ -15,10 +13,8 @@ public static class WebApiExtension
         services.AddGrpc();
     }
 
-    public static void UseApplication(this WebApplication app)
-    {
+    public static void UseApplication(this WebApplication app) =>
         app.UseCors(builder => builder.AllowAnyOrigin()
-                                                           .AllowAnyHeader()
-                                                           .AllowAnyMethod());
-    }
+            .AllowAnyHeader()
+            .AllowAnyMethod());
 }

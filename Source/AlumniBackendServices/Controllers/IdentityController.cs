@@ -2,7 +2,7 @@ using Application.Identity;
 
 namespace AlumniBackendServices.Controllers;
 
-public class IdentityController : IEndpoint
+public static class IdentityController
 {
 
     public static void Add(WebApplication app)
@@ -13,16 +13,16 @@ public class IdentityController : IEndpoint
         api.MapPost("/login", StudentLogin);
     }
 
-    public static async Task<IResult> StudentRegistration([FromBody] AddStudentIdentityCommand body, IMediator mediator)
+    private static async Task<IResult> StudentRegistration([FromBody] AddStudentIdentityCommand body, IMediator mediator)
     {
         var result = await mediator.Send(body);
-        return EndpointHelper.GetResult(result);
+        return result.ToServerResult();
     }
 
-    public static async Task<IResult> StudentLogin([FromBody] StudentLoginQuery body, IMediator mediator)
+    private static async Task<IResult> StudentLogin([FromBody] StudentLoginQuery body, IMediator mediator)
     {
         var result = await mediator.Send(body);
-        return EndpointHelper.GetResult(result);
+        return result.ToServerResult();
     }
 
 }

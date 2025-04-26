@@ -2,28 +2,28 @@ using Application.Companies;
 
 namespace AlumniBackendServices.Controllers;
 
-public class CompanyController : IEndpoint
+public static class CompanyController
 {
 
     public static void Add(WebApplication app)
     {
         var api = app.MapGroup("/company").RequireAuthorization("StudentAccess");
 
-        api.MapGet("/{studentId}", GetAsyncByID).Produces<IEnumerable<CompanyResponse>>();
+        api.MapGet("/{studentId}", GetByIdAsync).Produces<IEnumerable<CompanyResponse>>();
         api.MapPost("/", PostAsync).Produces<CompanyResponse>();
     }
 
-    public static async Task<IResult> GetAsyncByID(int studentId, IMediator mediator)
+    private static async Task<IResult> GetByIdAsync(int studentId, IMediator mediator)
     {
         var query = new GetCompanyQuery(studentId);
         var response = await mediator.Send(query);
-        return EndpointHelper.GetResult(response);
+        return response.ToServerResult();
     }
 
-    public static async Task<IResult> PostAsync([FromBody] AddCompanyCommand company, IMediator mediator)
+    private static async Task<IResult> PostAsync([FromBody] AddCompanyCommand company, IMediator mediator)
     {
         var response = await mediator.Send(company);
-        return EndpointHelper.GetResult(response);
+        return response.ToServerResult();
     }
 
 }

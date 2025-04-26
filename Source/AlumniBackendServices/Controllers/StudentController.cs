@@ -1,9 +1,8 @@
-using AlumniBackendServices.Models;
 using Application.Students;
 
 namespace AlumniBackendServices.Controllers;
 
-public class StudentController : IEndpoint
+public static class StudentController
 {
     public static void Add(WebApplication app)
     {
@@ -14,24 +13,24 @@ public class StudentController : IEndpoint
         api.MapPost("/", PostAsync).Produces<StudentResponse>();
     }
 
-    public static async Task<IResult> GetAllAsync(int pageNumber, int pageSize, IMediator mediator)
+    private static async Task<IResult> GetAllAsync(int pageNumber, int pageSize, IMediator mediator)
     {
         var query = new GetAllStudentQuery(pageNumber, pageSize);
         var response = await mediator.Send(query);
-        return EndpointHelper.GetResult(response);
+        return response.ToServerResult();
     }
 
-    public static async Task<IResult> GetByEmail(string email, IMediator mediator)
+    private static async Task<IResult> GetByEmail(string email, IMediator mediator)
     {
         var query = new GetStudentQuery(email);
         var response = await mediator.Send(query);
-        return EndpointHelper.GetResult(response);
+        return response.ToServerResult();
     }
 
-    public static async Task<IResult> PostAsync([FromBody] AddStudentCommand student, IMediator mediator)
+    private static async Task<IResult> PostAsync([FromBody] AddStudentCommand student, IMediator mediator)
     {
         var response = await mediator.Send(student);
-        return EndpointHelper.GetResult(response);
+        return response.ToServerResult();
     }
 
 }

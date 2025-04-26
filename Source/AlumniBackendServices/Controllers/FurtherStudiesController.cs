@@ -2,7 +2,7 @@ using Application.FurtherStudies;
 
 namespace AlumniBackendServices.Controllers;
 
-public class FurtherStudiesController : IEndpoint
+public static class FurtherStudiesController
 {
 
     public static void Add(WebApplication app)
@@ -13,17 +13,17 @@ public class FurtherStudiesController : IEndpoint
         api.MapPost("/", PostAsync).Produces<FurtherStudyResponse>();
     }
 
-    public static async Task<IResult> GetAsync(int studentId, IMediator mediator)
+    private static async Task<IResult> GetAsync(int studentId, IMediator mediator)
     {
         var query = new GetFurtherStudyQuery(studentId);
         var result = await mediator.Send(query);
-        return EndpointHelper.GetResult(result);
+        return result.ToServerResult();
     }
 
-    public static async Task<IResult> PostAsync([FromBody] AddFurtherStudyCommand study, IMediator mediator)
+    private static async Task<IResult> PostAsync([FromBody] AddFurtherStudyCommand study, IMediator mediator)
     {
         var result = await mediator.Send(study);
-        return EndpointHelper.GetResult(result);
+        return result.ToServerResult();
     }
 
 }
