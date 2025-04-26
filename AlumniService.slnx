@@ -1,0 +1,18 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Source/" />
+  <Folder Name="/Source/Apps/">
+    <Project Path="Source/Apps/AlumniBackendServices/AlumniBackendServices.csproj" />
+    <Project Path="Source/Apps/AppHost/AppHost.csproj" />
+    <Project Path="Source/Apps/ProxyApp/ProxyApp.csproj" />
+  </Folder>
+  <Folder Name="/Source/Libraries/">
+    <Project Path="Source/Libraries/Application/Application.csproj" />
+    <Project Path="Source/Libraries/Core/Core.csproj" />
+    <Project Path="Source/Libraries/Infrastructure/Infrastructure.csproj" />
+  </Folder>
+</Solution>
