@@ -5,17 +5,17 @@ VisualStudioVersion = 17.5.33402.96
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{E7D03659-5D64-448D-A692-987C9C824C39}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlumniBackendServices", "Source\AlumniBackendServices\AlumniBackendServices.csproj", "{306D6E05-2C38-4CC4-AD84-DCB10212C647}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlumniBackendServices", "Source\Apps\AlumniBackendServices\AlumniBackendServices.csproj", "{306D6E05-2C38-4CC4-AD84-DCB10212C647}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Source\Core\Core.csproj", "{92D3D712-9041-42CD-9EC6-BCB33676DD86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Source\Libraries\Core\Core.csproj", "{92D3D712-9041-42CD-9EC6-BCB33676DD86}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Source\Infrastructure\Infrastructure.csproj", "{44ED9266-8F5F-4FB2-88A7-57311A2F0E76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Source\Libraries\Infrastructure\Infrastructure.csproj", "{44ED9266-8F5F-4FB2-88A7-57311A2F0E76}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProxyApp", "Source\ProxyApp\ProxyApp.csproj", "{F6719D60-71DA-49E7-BE68-CD3094A1FD19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProxyApp", "Source\Apps\ProxyApp\ProxyApp.csproj", "{F6719D60-71DA-49E7-BE68-CD3094A1FD19}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Source\Application\Application.csproj", "{EEA79151-90AC-4926-A0D5-0525ADA44CAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Source\Libraries\Application\Application.csproj", "{EEA79151-90AC-4926-A0D5-0525ADA44CAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppHost", "AppHost\AppHost.csproj", "{38C7BB85-B1EC-45F8-917E-084AD27616CB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppHost", "Source\AppsAppHost\AppHost.csproj", "{38C7BB85-B1EC-45F8-917E-084AD27616CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
