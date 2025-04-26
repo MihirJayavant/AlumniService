@@ -12,20 +12,19 @@ public static class LoggingExtension
             (
                 service => LoggerFactory.Create(builder => builder.AddConsole())
             );
+            return;
         }
-        else
-        {
-            services.AddLogging
-            (
-                service => LoggerFactory
-                                .Create(builder => builder
-                                .AddFilter
-                                (
-                                    (category, level) =>
-                                            category != DbLoggerCategory.Database.Command.Name
-                                )
-                                .AddConsole())
-            );
-        }
+
+        services.AddLogging
+        (
+            service => LoggerFactory
+                .Create(builder => builder
+                    .AddFilter
+                    (
+                        (category, level) =>
+                            category != DbLoggerCategory.Database.Command.Name
+                    )
+                    .AddConsole())
+        );
     }
 }

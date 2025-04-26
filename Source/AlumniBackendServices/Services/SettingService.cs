@@ -2,7 +2,7 @@ using Application;
 
 namespace AlumniBackendServices.Services;
 
-public class SettingService : ISettingService
+public sealed class SettingService : ISettingService
 {
     public string Environment { get; init; }
     public DatabaseSetting DatabaseSetting { get; init; }

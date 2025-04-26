@@ -2,18 +2,13 @@ using Application.Common.Models;
 
 namespace AlumniBackendServices.Controllers;
 
-public interface IEndpoint
-{
-    static abstract void Add(WebApplication app);
-}
-
 internal record ErrorResponse(string Error);
 
-public class EndpointHelper
+public static class EndpointHelper
 {
-    public static IResult GetResult<T>(OneOf<T, ErrorType> response)
+    public static IResult ToServerResult<T>(this OneOf<T, ErrorType> response)
         => response.Match(
-                (p) => Results.Ok(p),
+                Results.Ok,
                 (e) => e.Status switch
                 {
                     ResponseStatus.BadRequest => Results.BadRequest(new ErrorResponse(e.Message)),

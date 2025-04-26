@@ -1,12 +1,9 @@
-using System.Net;
 using AlumniBackendServices.Controllers;
 using AlumniBackendServices.ExtensionService;
 using AlumniBackendServices.Grpc;
 using AlumniBackendServices.Services;
 using Application;
 using Infrastructure;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,11 +31,10 @@ builder.Services.AddApplicationLogging(builder.Environment);
 var app = builder.Build();
 
 app.UseApplication();
-// app.UseHttpsRedirection();
-
 app.UseApplicationSwagger(builder.Configuration);
 app.UseAuth();
 
+// Add Controllers
 IdentityController.Add(app);
 StudentController.Add(app);
 CompanyController.Add(app);

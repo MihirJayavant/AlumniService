@@ -1,11 +1,8 @@
-using AlumniBackendServices.Models;
-using Application.Faculties;
-using Microsoft.AspNetCore.OpenApi;
-using Microsoft.OpenApi.Models;
 
+using Application.Faculties;
 namespace AlumniBackendServices.Controllers;
 
-public class FacultyController : IEndpoint
+public static class FacultyController
 {
 
     public static void Add(WebApplication app)
@@ -16,33 +13,33 @@ public class FacultyController : IEndpoint
                 .WithOpenApi();
         api.MapGet("/{email}", GetByEmailAsync).Produces<FacultyResponse>();
         api.MapPost("/", PostAsync);
-        api.MapDelete("/{facultyId]}", DeleteAsync);
+        api.MapDelete("/{facultyId}", DeleteAsync);
     }
 
-    public static async Task<IResult> GetAsync(int pageNumber, int pageSize, IMediator mediator)
+    private static async Task<IResult> GetAsync(int pageNumber, int pageSize, IMediator mediator)
     {
         var request = new GetAllFacultiesQuery(pageNumber, pageSize);
         var result = await mediator.Send(request);
-        return EndpointHelper.GetResult(result);
+        return result.ToServerResult();
     }
 
-    public static async Task<IResult> GetByEmailAsync(string email, IMediator mediator)
+    private static async Task<IResult> GetByEmailAsync(string email, IMediator mediator)
     {
         var query = new GetFacultyQuery(email);
         var result = await mediator.Send(query);
-        return EndpointHelper.GetResult(result);
+        return result.ToServerResult();
     }
 
-    public static async Task<IResult> PostAsync([FromBody] AddFacultyCommand faculty, IMediator mediator)
+    private static async Task<IResult> PostAsync([FromBody] AddFacultyCommand faculty, IMediator mediator)
     {
         var result = await mediator.Send(faculty);
-        return EndpointHelper.GetResult(result);
+        return result.ToServerResult();
     }
 
-    public static async Task<IResult> DeleteAsync(int facultyId, IMediator mediator)
+    private static async Task<IResult> DeleteAsync(int facultyId, IMediator mediator)
     {
         var query = new DeleteFacultyCommand(facultyId);
         var result = await mediator.Send(query);
-        return EndpointHelper.GetResult(result);
+        return result.ToServerResult();
     }
 }

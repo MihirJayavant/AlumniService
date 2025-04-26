@@ -2,7 +2,7 @@ using Application.Exams;
 
 namespace AlumniBackendServices.Controllers;
 
-public sealed class ExamController : IEndpoint
+public static class ExamController
 {
     public static void Add(WebApplication app)
     {
@@ -12,16 +12,16 @@ public sealed class ExamController : IEndpoint
         api.MapPost("/", PostAsync).Produces<ExamResponse>();
     }
 
-    public static async Task<IResult> GetAsync(int studentId, IMediator mediator)
+    private static async Task<IResult> GetAsync(int studentId, IMediator mediator)
     {
         var query = new GetExamQuery(studentId);
         var result = await mediator.Send(query);
-        return Results.Ok(result);
+        return result.ToServerResult();
     }
 
-    public static async Task<IResult> PostAsync([FromBody] AddExamCommand exam, IMediator mediator)
+    private static async Task<IResult> PostAsync([FromBody] AddExamCommand exam, IMediator mediator)
     {
         var response = await mediator.Send(exam);
-        return EndpointHelper.GetResult(response);
+        return response.ToServerResult();
     }
 }
