@@ -1,8 +1,8 @@
 {
   "omnisharp.enableEditorConfigSupport": true,
   "omnisharp.enableRoslynAnalyzers": true,
-  "csharp.referencesCodeLens.enabled": false,
   "csharp.semanticHighlighting.enabled": true,
   "editor.formatOnSave": true,
-  "dotnet.defaultSolution": "AlumniBackendServices.sln"
+  "dotnet.defaultSolution": "AlumniBackendServices.sln",
+  "dotnet.codeLens.enableReferencesCodeLens": false
 }
