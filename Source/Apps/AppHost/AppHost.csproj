@@ -16,7 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Source\AlumniBackendServices\AlumniBackendServices.csproj" />
+      <ProjectReference Include="..\AlumniBackendServices\AlumniBackendServices.csproj" />
     </ItemGroup>
 
 </Project>
