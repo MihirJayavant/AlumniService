@@ -1,7 +1,7 @@
 using FluentValidation;
 using OneOf;
 
-namespace Domain.Common;
+namespace Domain;
 
 public interface IHandler<TRequest, TResponse>
 {

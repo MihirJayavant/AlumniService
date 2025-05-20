@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Domain.Common;
+namespace Domain;
 
 public readonly partial record struct Email
 {

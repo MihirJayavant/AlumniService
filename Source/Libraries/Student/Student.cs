@@ -1,6 +1,6 @@
-using Domain.Common;
+using Domain;
 
-namespace Domain.Student;
+namespace Student;
 
 public record class Student : IEntity<string>
 {
@@ -9,12 +9,12 @@ public record class Student : IEntity<string>
     public required string LastName { get; init; }
     public required long MobileNo { get; init; }
     public required string Extension { get; init; }
-    public required Gender Gender { get; init; }
+    public required string Gender { get; init; }
     public required DateTime DateOfBirth { get; init; }
     public required string Email { get; init; }
-    public required Branch Branch { get; init; }
+    public required string Branch { get; init; }
     public required Address CurrentAddress { get; init; }
-    public required Address CorrespondanceAddress { get; init; }
+    public required Address CorrespondenceAddress { get; init; }
     public required int AdmissionYear { get; init; }
     public required int PassingYear { get; init; }
 }
@@ -27,16 +27,16 @@ public record Address(
     string UserAddress
 );
 
-public enum Branch
+public static class Branch
 {
-    IT = 1,
-    CS = 2,
-    EXTC = 3,
-    ELEX = 4
+    public static readonly string IT = "IT";
+    public static readonly string CS = "CS";
+    public static readonly string EXTC = "EXTC";
+    public static readonly string ELEX = "ELEX";
 }
 
-public enum Gender
+public static class Gender
 {
-    Male = 1,
-    Female = 2
+    public static readonly string Male = "Male";
+    public static readonly string Female = "Female";
 }
