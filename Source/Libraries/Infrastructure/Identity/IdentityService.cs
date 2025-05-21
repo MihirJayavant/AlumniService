@@ -30,7 +30,7 @@ public class IdentityService : IIdentityService
 
         if (existingUser is not null)
         {
-            return new ErrorType(ResponseStatus.BadRequest, "Student already registered");
+            return new ErrorType(ResponseStatus.BadRequest, "Students already registered");
         }
 
         ApplicationUser user = new()
@@ -46,14 +46,14 @@ public class IdentityService : IIdentityService
             return new ErrorType(ResponseStatus.BadRequest, createdUser.Errors.ToArray()[0].Description);
         }
 
-        var exists = await roleManager.RoleExistsAsync("Student");
+        var exists = await roleManager.RoleExistsAsync("Students");
 
         if (exists is false)
         {
-            await AddCustomRole("Student");
+            await AddCustomRole("Students");
         }
 
-        await manager.AddToRoleAsync(user, "Student");
+        await manager.AddToRoleAsync(user, "Students");
 
         var roles = await manager.GetRolesAsync(user);
 

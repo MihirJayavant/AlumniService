@@ -18,9 +18,9 @@
 //             => this.mediator = mediator;
 
 //         [UsePaging]
-//         public async Task<IQueryable<Student>> GetAllStudentAsync()
+//         public async Task<IQueryable<Students>> GetAllStudentAsync()
 //         {
-//             Console.WriteLine("Student");
+//             Console.WriteLine("Students");
 //             var query = new GetAllStudentGraphQL();
 //             return await mediator.Send(query);
 //         }

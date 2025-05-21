@@ -27,7 +27,7 @@ public class GetFacultyHandler : IRequestHandler<GetFacultyQuery, OneOf<FacultyR
                                 .FirstOrDefaultAsync(cancellationToken);
         if (result is null)
         {
-            return new ErrorType(ResponseStatus.NotFound, "Student not found");
+            return new ErrorType(ResponseStatus.NotFound, "Students not found");
         }
         return result;
     }

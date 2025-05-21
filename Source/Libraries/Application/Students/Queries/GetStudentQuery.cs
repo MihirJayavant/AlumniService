@@ -26,7 +26,7 @@ public class GetStudentHandler : IRequestHandler<GetStudentQuery, OneOf<StudentR
                                     .FirstOrDefaultAsync(cancellationToken);
         if (result is null)
         {
-            return new ErrorType(ResponseStatus.NotFound, "Student not found");
+            return new ErrorType(ResponseStatus.NotFound, "Students not found");
         }
 
         return result;

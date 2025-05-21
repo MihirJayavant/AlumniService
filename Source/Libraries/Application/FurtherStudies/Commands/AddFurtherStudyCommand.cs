@@ -34,7 +34,7 @@ public class AddFurtherStudyHandler : IRequestHandler<AddFurtherStudyCommand, On
 
         if (student is null)
         {
-            return new ErrorType(ResponseStatus.NotFound, "Student not found");
+            return new ErrorType(ResponseStatus.NotFound, "Students not found");
         }
 
         var furtherStudy = mapper.Map<FurtherStudy>(request);

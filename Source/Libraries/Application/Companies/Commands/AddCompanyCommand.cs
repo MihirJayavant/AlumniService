@@ -32,7 +32,7 @@ public class AddCompanyHandler : IRequestHandler<AddCompanyCommand, OneOf<Compan
 
         if (student is null)
         {
-            return new ErrorType(ResponseStatus.NotFound, "Student not found");
+            return new ErrorType(ResponseStatus.NotFound, "Students not found");
         }
 
         var company = mapper.Map<Company>(request);

@@ -1,10 +1,10 @@
 using Domain;
 
-namespace Student;
+namespace Students;
 
-public record class Student : IEntity<string>
+public record class Student : IEntity<int>
 {
-    public required string Id { get; init; }
+    public required int Id { get; init; }
     public required string FirstName { get; init; }
     public required string LastName { get; init; }
     public required long MobileNo { get; init; }
@@ -19,13 +19,14 @@ public record class Student : IEntity<string>
     public required int PassingYear { get; init; }
 }
 
-public record Address(
-    int Pincode,
-    string Country,
-    string State,
-    string City,
-    string UserAddress
-);
+public record Address
+{
+    public required int Pincode { get; init; }
+    public required string Country { get; init; }
+    public required string State { get; init; }
+    public required string City { get; init; }
+    public required string UserAddress { get; init; }
+}
 
 public static class Branch
 {

@@ -48,7 +48,7 @@ public static class ConfigureServices
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("StudentAccess", policy => policy.RequireRole("Student"));
+            options.AddPolicy("StudentAccess", policy => policy.RequireRole("Students"));
             options.AddPolicy("AdminAccess", policy => policy.RequireRole("Admin"));
             options.AddPolicy("SuperAdminAccess", policy => policy.RequireRole("SuperAdmin"));
         });

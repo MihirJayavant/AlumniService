@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppHost", "Source\Apps\AppH
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Source\Libraries\Domain\Domain.csproj", "{D4D87255-9DFA-4EEC-9502-DFCE2FDD59E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Student", "Source\Libraries\Student\Student.csproj", "{94A1C251-508E-4A9A-979E-A9D3F6155D06}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Students", "Source\Libraries\Students\Students.csproj", "{94A1C251-508E-4A9A-979E-A9D3F6155D06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

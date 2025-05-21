@@ -31,7 +31,7 @@ public class AddExamHandler : IRequestHandler<AddExamCommand, OneOf<ExamResponse
 
         if (student is null)
         {
-            return new ErrorType(ResponseStatus.NotFound, "Student not found");
+            return new ErrorType(ResponseStatus.NotFound, "Students not found");
         }
 
         var exam = mapper.Map<Exam>(request);

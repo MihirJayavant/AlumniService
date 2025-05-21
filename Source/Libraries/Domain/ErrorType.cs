@@ -1,3 +1,6 @@
 namespace Domain;
 
-public sealed record ErrorType(string Message, ResponseStatus Status = ResponseStatus.InternalError);
+public sealed record ErrorType{
+    public required string Message { get; init; }
+    public ResponseStatus Status { get; init; } = ResponseStatus.InternalError;
+};

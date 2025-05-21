@@ -18,10 +18,13 @@ public static class HandlerExtensions
     {
         try
         {
-            var validationResult = handler.Validator.Validate(request);
+            var validationResult = await handler.Validator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid)
             {
-                return new ErrorType(validationResult.Errors.First().ErrorMessage);
+                return new ErrorType
+                {
+                    Message = validationResult.Errors.First().ErrorMessage,
+                };
             }
 
             return await handler.Handle(request, cancellationToken);
@@ -29,7 +32,7 @@ public static class HandlerExtensions
         }
         catch (Exception ex)
         {
-            return new ErrorType(ex.Message);
+            return new ErrorType { Message = ex.Message };
         }
     }
 }

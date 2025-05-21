@@ -38,7 +38,7 @@ public class AddStudentHandler : IRequestHandler<AddStudentCommand, OneOf<Studen
 
         if (account is not null)
         {
-            return new ErrorType(ResponseStatus.Conflict, "Student email id already exist");
+            return new ErrorType(ResponseStatus.Conflict, "Students email id already exist");
         }
         var student = mapper.Map<Student>(request);
         student.DateCreated = DateTime.Now;

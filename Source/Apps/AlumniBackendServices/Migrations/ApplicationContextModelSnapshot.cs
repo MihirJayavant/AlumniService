@@ -168,7 +168,7 @@ namespace AlumniBackendServices.Migrations
                     b.ToTable("FurtherStudies");
                 });
 
-            modelBuilder.Entity("Core.Entities.Student", b =>
+            modelBuilder.Entity("Core.Entities.Students", b =>
                 {
                     b.Property<int>("StudentId")
                         .ValueGeneratedOnAdd()
@@ -454,38 +454,38 @@ namespace AlumniBackendServices.Migrations
 
             modelBuilder.Entity("Core.Entities.Company", b =>
                 {
-                    b.HasOne("Core.Entities.Student", "Student")
+                    b.HasOne("Core.Entities.Students", "Students")
                         .WithMany("Companies")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Student");
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("Core.Entities.Exam", b =>
                 {
-                    b.HasOne("Core.Entities.Student", "Student")
+                    b.HasOne("Core.Entities.Students", "Students")
                         .WithMany("Exams")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Student");
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("Core.Entities.FurtherStudy", b =>
                 {
-                    b.HasOne("Core.Entities.Student", "Student")
+                    b.HasOne("Core.Entities.Students", "Students")
                         .WithMany("FurtherStudies")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Student");
+                    b.Navigation("Students");
                 });
 
-            modelBuilder.Entity("Core.Entities.Student", b =>
+            modelBuilder.Entity("Core.Entities.Students", b =>
                 {
                     b.OwnsOne("Core.ValueObjects.Address", "CorrespondanceAddress", b1 =>
                         {
@@ -560,13 +560,13 @@ namespace AlumniBackendServices.Migrations
 
             modelBuilder.Entity("Core.Entities.StudentAccount", b =>
                 {
-                    b.HasOne("Core.Entities.Student", "Student")
+                    b.HasOne("Core.Entities.Students", "Students")
                         .WithOne("Account")
                         .HasForeignKey("Core.Entities.StudentAccount", "StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Student");
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -620,7 +620,7 @@ namespace AlumniBackendServices.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Core.Entities.Student", b =>
+            modelBuilder.Entity("Core.Entities.Students", b =>
                 {
                     b.Navigation("Account")
                         .IsRequired();
