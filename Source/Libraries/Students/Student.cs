@@ -1,5 +1,3 @@
-using Domain;
-
 namespace Students;
 
 public record class Student : IEntity<int>

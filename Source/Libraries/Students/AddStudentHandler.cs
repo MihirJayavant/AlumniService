@@ -1,8 +1,3 @@
-using Domain;
-using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using OneOf;
-
 namespace Students;
 
 [RecordView(typeof(Student), nameof(Student.Id))]
@@ -11,7 +6,7 @@ public sealed partial record AddStudent
 
 }
 
-public sealed class AddStudentValidator : AbstractValidator<AddStudent>
+file sealed class AddStudentValidator : AbstractValidator<AddStudent>
 {
     public AddStudentValidator() => RuleFor(x => x.Email).EmailAddress();
 }

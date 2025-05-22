@@ -1,5 +1,3 @@
-using Domain;
-
 namespace Students;
 
 [RecordView(typeof(Student), nameof(Student.Uuid), nameof(Student.Id))]

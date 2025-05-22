@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace Students;
 
 public interface IStudentDbContext
