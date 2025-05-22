@@ -1,18 +1,11 @@
-using System;
+namespace Domain;
 
-namespace Domain
-{
 [AttributeUsage(AttributeTargets.Class)]
-public sealed class RecordView: Attribute
+public sealed class RecordView(Type sourceType, params string[] exclude) : Attribute
 {
-    public RecordView(Type sourceType, params string[] exclude)
-    {
-        SourceType = sourceType;
-        Exclude = exclude;
-    }
-    public Type SourceType { get; }
-    public string[] Exclude { get; }
+    public Type SourceType { get; } = sourceType;
+    public string[] Exclude { get; } = exclude;
 }
 
-}
+
 

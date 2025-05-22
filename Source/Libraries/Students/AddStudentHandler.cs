@@ -2,25 +2,12 @@ using Domain;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
-using Riok.Mapperly.Abstractions;
 
 namespace Students;
 
-public sealed record AddStudent
+[RecordView(typeof(Student), nameof(Student.Id))]
+public sealed partial record AddStudent
 {
-    public required string FirstName { get; init; }
-    public required string LastName { get; init; }
-    public required long MobileNo { get; init; }
-    public required string Extension { get; init; }
-    public required string Gender { get; init; }
-    public required string Email { get; init; }
-    public required DateTime DateOfBirth { get; init; }
-
-    public required string Branch { get; init; }
-    public required Address CurrentAddress { get; init; }
-    public required Address CorrespondenceAddress { get; init; }
-    public required int AdmissionYear { get; init; }
-    public required int PassingYear { get; init; }
 
 }
 
@@ -48,8 +35,7 @@ public class AddStudentHandler(IStudentDbContext context) : IHandler<AddStudent,
             };
         }
 
-        var mapper = new AddStudentMapper();
-        var student = mapper.ToCore(request);
+        var student = request.ToStudent();
         context.Students.Add(student);
         await context.SaveChangesAsync(cancellationToken);
 
@@ -57,9 +43,24 @@ public class AddStudentHandler(IStudentDbContext context) : IHandler<AddStudent,
     }
 }
 
-[Mapper]
-public partial class AddStudentMapper
+
+public static class AddStudentMapper
 {
-    [MapValue(nameof(Student.Id), 0)]
-    public partial Student ToCore(AddStudent student);
+    public static Student ToStudent(this AddStudent student) =>
+        new()
+        {
+            Id = 0,
+            FirstName = student.FirstName,
+            LastName = student.LastName,
+            MobileNo = student.MobileNo,
+            Extension = student.Extension,
+            Gender = student.Gender,
+            DateOfBirth = student.DateOfBirth,
+            Email = student.Email,
+            Branch = student.Branch,
+            CurrentAddress = student.CurrentAddress,
+            CorrespondenceAddress = student.CorrespondenceAddress,
+            AdmissionYear = student.AdmissionYear,
+            PassingYear = student.PassingYear
+        };
 }
