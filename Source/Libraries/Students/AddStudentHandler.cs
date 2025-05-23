@@ -57,6 +57,8 @@ public static class AddStudentMapper
             CurrentAddress = student.CurrentAddress,
             CorrespondenceAddress = student.CorrespondenceAddress,
             AdmissionYear = student.AdmissionYear,
-            PassingYear = student.PassingYear
+            PassingYear = student.PassingYear,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
         };
 }
