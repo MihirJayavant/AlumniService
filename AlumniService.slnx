@@ -14,5 +14,7 @@
     <Project Path="Source/Libraries/Application/Application.csproj" />
     <Project Path="Source/Libraries/Core/Core.csproj" />
     <Project Path="Source/Libraries/Infrastructure/Infrastructure.csproj" />
+    <Project Path="Source/Libraries/Students/Students.csproj" />
+    <Project Path="Source/Libraries/Generators/Generators.csproj" />
   </Folder>
 </Solution>

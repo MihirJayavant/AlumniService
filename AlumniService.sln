@@ -25,7 +25,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Source\Libraries\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Students", "Source\Libraries\Students\Students.csproj", "{94A1C251-508E-4A9A-979E-A9D3F6155D06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Generators", "Generators\Generators.csproj", "{11E6B3B6-AF03-49F9-B6AB-ED09751CDC60}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Generators", "Source\Libraries\Generators\Generators.csproj", "{11E6B3B6-AF03-49F9-B6AB-ED09751CDC60}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
