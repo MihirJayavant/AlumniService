@@ -1,9 +1,9 @@
 namespace Students;
 
-[RecordView(typeof(Student), nameof(Student.Uuid), nameof(Student.Id))]
+[RecordView(typeof(Student), nameof(Student.Id))]
 public partial record StudentResponse
 {
-    public required Guid Id { get; set; }
+
 }
 
 public static class StudentResponseMapper
@@ -11,7 +11,7 @@ public static class StudentResponseMapper
     public static StudentResponse ToStudentResponse(this Student student) =>
         new()
         {
-            Id = student.Uuid,
+            StudentId = student.StudentId,
             FirstName = student.FirstName,
             LastName = student.LastName,
             MobileNo = student.MobileNo,

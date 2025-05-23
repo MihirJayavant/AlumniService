@@ -45,7 +45,7 @@ public static class AddStudentMapper
         new()
         {
             Id = 0,
-            Uuid = Guid.CreateVersion7(),
+            StudentId = Guid.CreateVersion7(),
             FirstName = student.FirstName,
             LastName = student.LastName,
             MobileNo = student.MobileNo,

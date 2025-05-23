@@ -8,8 +8,10 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
     {
         builder.HasKey(s => s.Id);
 
-        builder.Property(s => s.Uuid);
-        builder.HasIndex(s => s.Uuid).IsUnique();
+        builder.Property(s => s.Id).ValueGeneratedOnAdd();
+
+        builder.Property(s => s.StudentId);
+        builder.HasIndex(s => s.StudentId).IsUnique();
 
         builder.Property(s => s.Email).HasColumnType("varchar(100)")
                                         .IsRequired();

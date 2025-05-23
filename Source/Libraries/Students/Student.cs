@@ -3,7 +3,7 @@ namespace Students;
 public record class Student : IAuditableEntity
 {
     public required int Id { get; init; }
-    public required Guid Uuid { get; init; }
+    public required Guid StudentId { get; init; }
     public required string FirstName { get; init; }
     public required string LastName { get; init; }
     public required string MobileNo { get; init; }

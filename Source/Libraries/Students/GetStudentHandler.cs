@@ -18,7 +18,7 @@ public class GetStudentHandler(IStudentDbContext context) : IHandler<GetStudent,
         CancellationToken cancellationToken)
     {
         var result = await context.Students
-            .Where(s => s.Uuid == request.Id)
+            .Where(s => s.StudentId == request.Id)
             .FirstOrDefaultAsync(cancellationToken);
         return result switch
         {
