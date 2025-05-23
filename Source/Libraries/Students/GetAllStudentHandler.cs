@@ -2,7 +2,7 @@ namespace Students;
 
 public sealed record GetAllStudent
 {
-    public required PaginationQuery Pagination { get; init; }
+    public required PaginationInput Pagination { get; init; }
 }
 
 public sealed class GetAllStudentValidator : AbstractValidator<GetAllStudent>
@@ -25,18 +25,14 @@ public sealed class GetAllStudentHandler(IStudentDbContext context)
     public async Task<OneOf<PaginatedList<StudentResponse>, ErrorType>> Handle(GetAllStudent request,
         CancellationToken cancellationToken = default)
     {
-        var data = await context.Students.Skip((request.Pagination.PageNumber -1 ) * request.Pagination.PageSize)
-            .Take(request.Pagination.PageSize)
-            .ToListAsync(cancellationToken);
-        var totalCount = await context.Students.CountAsync(cancellationToken);
-        var result = data.Select(s => s.ToStudentResponse()).ToList();
+        var data = await context.Students.Paginate(request.Pagination.PageNumber, request.Pagination.PageSize, cancellationToken);
 
         return new PaginatedList<StudentResponse>()
         {
-            Items = result,
-            PageNumber = request.Pagination.PageNumber,
-            PageSize = request.Pagination.PageSize,
-            TotalCount = totalCount,
+            Items = data.Items.Select(s => s.ToStudentResponse()).ToList(),
+            TotalCount = data.TotalCount,
+            PageNumber = data.PageNumber,
+            PageSize = data.PageSize,
         };
     }
 }
