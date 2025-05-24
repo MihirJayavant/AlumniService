@@ -41,7 +41,7 @@ public class AddStudentHandler(IStudentDbContext context) : IHandler<AddStudent,
 
 public static class AddStudentMapper
 {
-    public static Student ToStudent(this AddStudent student) =>
+    public static StudentEntity ToStudent(this AddStudent student) =>
         new()
         {
             Id = 0,

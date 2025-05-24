@@ -1,6 +1,6 @@
 namespace Alumni.Student.Exam;
 
-[RecordView(typeof(Exam), nameof(Exam.Id), nameof(Exam.StudentId), nameof(Exam.Student))]
+[RecordView(typeof(Exam), nameof(Exam.Id))]
 public sealed partial record ExamResponse
 {
 

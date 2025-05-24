@@ -1,9 +1,11 @@
+using Alumni.Student.Exam;
+
 namespace Alumni.Student;
 
 public interface IStudentDbContext
 {
-    public DbSet<Student> Students { get; }
+    public DbSet<StudentEntity> Students { get; }
     public DbSet<Company.Company> Companies { get; }
-    public DbSet<Exam.Exam> Exams { get; }
+    public DbSet<ExamEntity> Exams { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

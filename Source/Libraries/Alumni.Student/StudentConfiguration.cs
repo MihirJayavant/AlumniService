@@ -2,9 +2,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Alumni.Student;
 
-public class StudentConfiguration : IEntityTypeConfiguration<Student>
+public class StudentConfiguration : IEntityTypeConfiguration<StudentEntity>
 {
-    public void Configure(EntityTypeBuilder<Student> builder)
+    public void Configure(EntityTypeBuilder<StudentEntity> builder)
     {
         builder.Metadata.SetSchema("Student");
         builder.ToTable("students");

@@ -1,6 +1,6 @@
 namespace Alumni.Student.Exam;
 
-[RecordView(typeof(Exam), nameof(Exam.Id), nameof(Exam.Student), nameof(Exam.StudentId))]
+[RecordView(typeof(Exam), nameof(Exam.Id))]
 public sealed partial record AddExam
 {
     public required Guid StudentId { get; init; }
@@ -25,17 +25,15 @@ public class AddExamHandler(IStudentDbContext context) : IHandler<AddExam, ExamR
             return new ErrorType { Message = "Student not found", Status = ResponseStatus.NotFound };
         }
 
-        var exam = new Exam()
+        var exam = new ExamEntity()
         {
             Id = 0,
             ExamId = Guid.CreateVersion7(),
             ExamName = request.ExamName,
             Score = request.Score,
             Year = request.Year,
-            StudentId = student.Id,
-            Student = student,
         };
-        context.Exams.Add(exam);
+        student.Exams.Add(exam);
         await context.SaveChangesAsync(cancellationToken);
 
         return exam.ToExamResponse();
