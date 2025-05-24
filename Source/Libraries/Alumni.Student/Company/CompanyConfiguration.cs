@@ -8,7 +8,13 @@ public class CompanyConfiguration : IEntityTypeConfiguration<CompanyEntity>
     {
         builder.Metadata.SetSchema("Student");
         builder.ToTable("companies");
-        builder.HasIndex(c => new { c.CompanyName, c.Designation });
+
+        builder.HasKey(c => c.Id);
+
+        builder.Property(c => c.Id).ValueGeneratedOnAdd();
+
+        builder.Property(c => c.CompanyId).IsRequired();
+        builder.HasIndex(c => c.CompanyId).IsUnique();
 
         builder.Property(c => c.CompanyName)
                                         .HasColumnType("varchar(50)")

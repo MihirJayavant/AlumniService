@@ -16,4 +16,13 @@ public static class PaginationQuery
             Items = items, TotalCount = count, PageNumber = pageNumber, PageSize = pageSize,
         };
     }
+
+    public static PaginatedList<TOutput> WithItems<TInput, TOutput>(this PaginatedList<TInput> source, Func<TInput, TOutput> selector) =>
+        new()
+        {
+            Items = source.Items.Select(selector).ToList(),
+            TotalCount = source.TotalCount,
+            PageNumber = source.PageNumber,
+            PageSize = source.PageSize,
+        };
 }
