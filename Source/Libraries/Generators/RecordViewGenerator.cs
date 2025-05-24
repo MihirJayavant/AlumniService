@@ -110,7 +110,7 @@ namespace Generators
 
             foreach (var m in model.Members)
             {
-                sb.AppendLine($"    public {m.TypeName} {m.Name} {{ get; set; }}");
+                sb.AppendLine($"    public required {m.TypeName} {m.Name} {{ get; init; }}");
             }
 
             sb.AppendLine("}");

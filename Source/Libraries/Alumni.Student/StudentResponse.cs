@@ -23,6 +23,8 @@ public static class StudentResponseMapper
             CurrentAddress = student.CurrentAddress,
             CorrespondenceAddress = student.CorrespondenceAddress,
             AdmissionYear = student.AdmissionYear,
-            PassingYear = student.PassingYear
+            PassingYear = student.PassingYear,
+            CreatedAt = student.CreatedAt,
+            UpdatedAt = student.UpdatedAt,
         };
 }
