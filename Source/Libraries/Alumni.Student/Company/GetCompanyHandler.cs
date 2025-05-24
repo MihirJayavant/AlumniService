@@ -1,4 +1,4 @@
-namespace Alumni.Student.Companies;
+namespace Alumni.Student.Company;
 
 public sealed record GetCompany
 {

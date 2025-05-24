@@ -1,4 +1,4 @@
-namespace Alumni.Student.Companies;
+namespace Alumni.Student.Company;
 
 [RecordView(typeof(Company), nameof(Company.Id), nameof(Company.Student), nameof(Company.StudentId))]
 public sealed partial record CompanyResponse
