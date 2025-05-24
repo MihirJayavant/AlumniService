@@ -1,32 +1,30 @@
-namespace Application.Exams;
+namespace Alumni.Student.Exam;
 
-public sealed record GetExamQuery : IRequest<OneOf<PaginatedList<ExamResponse>, ErrorType>>
+public sealed record GetExam
 {
-    public int StudentId { get; }
-
-    public GetExamQuery(int studentId) => StudentId = studentId;
+    public int StudentId { get; init; }
 }
 
-public sealed class GetExamQueryValidator : AbstractValidator<GetExamQuery>
+file sealed class GetExamValidator : AbstractValidator<GetExam>
 {
-    public GetExamQueryValidator()
-        => RuleFor(x => x.StudentId)
-            .GreaterThanOrEqualTo(1)
-            .WithMessage("Id should be at least greater than or equal to 1.");
+
 }
 
-public class GetExamHandler : IRequestHandler<GetExamQuery, OneOf<PaginatedList<ExamResponse>, ErrorType>>
+public class GetExamHandler(IStudentDbContext context) : IHandler<GetExam, PaginatedList<ExamResponse>>
 {
-    private readonly IApplicationDbContext context;
-    private readonly IMapper mapper;
+    public AbstractValidator<GetExam> Validator { get; } = new GetExamValidator();
 
-    public GetExamHandler(IApplicationDbContext context, IMapper mapper)
-                => (this.context, this.mapper) = (context, mapper);
-
-    public async Task<OneOf<PaginatedList<ExamResponse>, ErrorType>> Handle(GetExamQuery request, CancellationToken cancellationToken)
-            => await context.Exams.Where(s => s.StudentId == request.StudentId)
-                             .ProjectTo<ExamResponse>(mapper.ConfigurationProvider)
-                             .PaginatedListAsync(1, 50, cancellationToken);
-
-
+    public async Task<OneOf<PaginatedList<ExamResponse>, ErrorType>> Handle(GetExam request,
+        CancellationToken cancellationToken = default)
+    {
+        var data = await context.Exams.Where(s => s.StudentId == request.StudentId)
+            .Paginate(1, 10, cancellationToken);
+        return new PaginatedList<ExamResponse>()
+        {
+            Items = data.Items.Select(e => e.ToExamResponse()).ToList(),
+            TotalCount = data.TotalCount,
+            PageNumber = data.PageNumber,
+            PageSize = data.PageSize,
+        };
+    }
 }

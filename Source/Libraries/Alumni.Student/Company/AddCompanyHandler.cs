@@ -1,6 +1,6 @@
 namespace Alumni.Student.Company;
 
-[RecordView(typeof(Company), nameof(Company.Id), nameof(Company.Student), nameof(Company.StudentId))]
+[RecordView(typeof(Company), nameof(Company.Id))]
 public sealed partial record AddCompany
 {
     public required Guid StudentId { get; init; }
@@ -32,7 +32,7 @@ public class AddCompanyHandler(IStudentDbContext context) : IHandler<AddCompany,
             };
         }
 
-        var company = new Company()
+        var company = new CompanyEntity()
         {
             Id = 0,
             CompanyId = Guid.CreateVersion7(),

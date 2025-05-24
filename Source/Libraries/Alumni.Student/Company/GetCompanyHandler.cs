@@ -5,7 +5,7 @@ public sealed record GetCompany
     public required int StudentId { get; init; }
 }
 
-public sealed class GetCompanyValidator : AbstractValidator<GetCompany>
+file sealed class GetCompanyValidator : AbstractValidator<GetCompany>
 {
 
 }
