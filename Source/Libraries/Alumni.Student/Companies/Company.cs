@@ -1,4 +1,4 @@
-namespace Students.Companies;
+namespace Alumni.Student.Companies;
 
 public class Company : IEntity
 {

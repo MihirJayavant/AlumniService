@@ -1,4 +1,4 @@
-namespace Students;
+namespace Alumni.Student;
 
 [RecordView(typeof(Student), nameof(Student.Id))]
 public sealed partial record AddStudent

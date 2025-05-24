@@ -4,8 +4,8 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyName>Students</AssemblyName>
-        <RootNamespace>Students</RootNamespace>
+        <AssemblyName>Alumni.Student</AssemblyName>
+        <RootNamespace>Alumni.Student</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

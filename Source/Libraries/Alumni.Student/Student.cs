@@ -1,4 +1,4 @@
-namespace Students;
+namespace Alumni.Student;
 
 public record class Student : IAuditableEntity
 {

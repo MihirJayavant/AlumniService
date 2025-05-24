@@ -1,11 +1,14 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Students;
+namespace Alumni.Student;
 
 public class StudentConfiguration : IEntityTypeConfiguration<Student>
 {
     public void Configure(EntityTypeBuilder<Student> builder)
     {
+        builder.Metadata.SetSchema("Student");
+        builder.ToTable("students");
+
         builder.HasKey(s => s.Id);
 
         builder.Property(s => s.Id).ValueGeneratedOnAdd();
@@ -15,7 +18,7 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
 
         builder.Property(s => s.Email).HasColumnType("varchar(100)")
                                         .IsRequired();
-        builder.HasIndex(s=>s.Email).IsUnique();
+        builder.HasIndex(s => s.Email).IsUnique();
 
         builder.Property(s => s.FirstName).HasColumnType("varchar(100)")
                                         .IsRequired();
