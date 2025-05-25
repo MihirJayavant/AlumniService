@@ -1,5 +1,3 @@
-using Application.FurtherStudies;
-
 namespace AlumniBackendServices.Controllers;
 
 public static class FurtherStudiesController
@@ -7,22 +5,22 @@ public static class FurtherStudiesController
 
     public static void Add(WebApplication app)
     {
-        var api = app.MapGroup("/further-studies");
+        var api = app.MapGroup("/further-studies").WithOpenApi().WithTags(["FurtherStudies"]);
 
-        api.MapGet("/{studentId}", GetAsync).Produces<IEnumerable<FurtherStudyResponse>>();
+        api.MapGet("/{studentId:guid}", GetAsync).Produces<IEnumerable<FurtherStudyResponse>>();
         api.MapPost("/", PostAsync).Produces<FurtherStudyResponse>();
     }
 
-    private static async Task<IResult> GetAsync(int studentId, IMediator mediator)
+    private static async Task<IResult> GetAsync(Guid studentId, IStudentDbContext context, CancellationToken token)
     {
-        var query = new GetFurtherStudyQuery(studentId);
-        var result = await mediator.Send(query);
+        var query = new GetFurtherStudy { StudentId = studentId };
+        var result = await new GetFurtherStudyHandler(context).Execute(query, token);
         return result.ToServerResult();
     }
 
-    private static async Task<IResult> PostAsync([FromBody] AddFurtherStudyCommand study, IMediator mediator)
+    private static async Task<IResult> PostAsync(AddFurtherStudy study, IStudentDbContext context, CancellationToken token)
     {
-        var result = await mediator.Send(study);
+        var result = await new AddFurtherStudyHandler(context).Execute(study, token);
         return result.ToServerResult();
     }
 

@@ -1,8 +1,7 @@
 namespace Alumni.Faculty;
 
-public sealed record GetAllFaculties
+public sealed record GetAllFaculties : PaginationInput
 {
-    public required PaginationInput Pagination { get; init; }
 
 }
 
@@ -10,10 +9,10 @@ public sealed class GetAllFacultyValidator : AbstractValidator<GetAllFaculties>
 {
     public GetAllFacultyValidator()
     {
-        RuleFor(x => x.Pagination.PageNumber)
+        RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(1).WithMessage("PageNumber at least greater than or equal to 1.");
 
-        RuleFor(x => x.Pagination.PageSize)
+        RuleFor(x => x.PageSize)
             .GreaterThanOrEqualTo(1).WithMessage("PageSize at least greater than or equal to 1.");
     }
 }
@@ -27,7 +26,7 @@ public class GetAllFacultiesHandler(IFacultyDbContext context)
         CancellationToken cancellationToken)
     {
         var result = await context.Faculties
-            .Paginate(request.Pagination.PageNumber, request.Pagination.PageSize, cancellationToken);
+            .Paginate(request.PageNumber, request.PageSize, cancellationToken);
         return result.WithItems(f => f.ToFacultyResponse());
     }
 }

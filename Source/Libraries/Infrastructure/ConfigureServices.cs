@@ -1,4 +1,6 @@
 using System.Text;
+using Alumni.Faculty;
+using Alumni.Student;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +20,9 @@ public static class ConfigureServices
 
         services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationContext>();
+
+        services.AddScoped<IStudentDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
+        services.AddScoped<IFacultyDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
 
         services.AddAuthentication(x =>
         {

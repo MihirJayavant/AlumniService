@@ -2,8 +2,6 @@ using AlumniBackendServices.Controllers;
 using AlumniBackendServices.ExtensionService;
 using AlumniBackendServices.Grpc;
 using AlumniBackendServices.Services;
-using Application;
-using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +19,6 @@ builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSingleton<ISettingService>(new SettingService(builder.Configuration));
-builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(new SettingService(builder.Configuration));
 builder.Services.AddAuth();
 builder.Services.AddApplicationSwagger(builder.Configuration);
@@ -35,7 +32,6 @@ app.UseApplicationSwagger(builder.Configuration);
 app.UseAuth();
 
 // Add Controllers
-IdentityController.Add(app);
 StudentController.Add(app);
 CompanyController.Add(app);
 ExamController.Add(app);

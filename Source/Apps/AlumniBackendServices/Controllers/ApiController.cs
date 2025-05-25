@@ -1,5 +1,3 @@
-using Application.Common.Models;
-
 namespace AlumniBackendServices.Controllers;
 
 internal record ErrorResponse(string Error);

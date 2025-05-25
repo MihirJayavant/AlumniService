@@ -1,5 +1,3 @@
-using Application.Students;
-
 namespace AlumniBackendServices.Controllers;
 
 public static class StudentController
@@ -8,28 +6,27 @@ public static class StudentController
     {
         var api = app.MapGroup("/student");
 
-        api.MapGet("/", GetAllAsync).Produces<AllStudentResponse>();
-        api.MapGet("/{email}", GetByEmail).Produces<StudentResponse>();
+        api.MapGet("/", GetAllAsync).Produces<PaginatedList<StudentResponse>>();
+        api.MapGet("/{id:guid}", GetByEmail).Produces<StudentResponse>();
         api.MapPost("/", PostAsync).Produces<StudentResponse>();
     }
 
-    private static async Task<IResult> GetAllAsync(int pageNumber, int pageSize, IMediator mediator)
+    private static async Task<IResult> GetAllAsync(GetAllStudent query, IStudentDbContext context, CancellationToken token)
     {
-        var query = new GetAllStudentQuery(pageNumber, pageSize);
-        var response = await mediator.Send(query);
+        var response = await new GetAllStudentHandler(context).Execute(query, token);
         return response.ToServerResult();
     }
 
-    private static async Task<IResult> GetByEmail(string email, IMediator mediator)
+    private static async Task<IResult> GetByEmail(Guid id, IStudentDbContext context, CancellationToken token)
     {
-        var query = new GetStudentQuery(email);
-        var response = await mediator.Send(query);
+        var query = new GetStudent { Id = id };
+        var response = await new GetStudentHandler(context).Execute(query, token);
         return response.ToServerResult();
     }
 
-    private static async Task<IResult> PostAsync([FromBody] AddStudentCommand student, IMediator mediator)
+    private static async Task<IResult> PostAsync(AddStudent student, IStudentDbContext context, CancellationToken token)
     {
-        var response = await mediator.Send(student);
+        var response = await new AddStudentHandler(context).Execute(student, token);
         return response.ToServerResult();
     }
 
