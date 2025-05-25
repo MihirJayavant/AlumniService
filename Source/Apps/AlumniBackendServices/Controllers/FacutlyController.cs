@@ -13,8 +13,9 @@ public static class FacultyController
         api.MapDelete("/{facultyId:guid}", DeleteAsync);
     }
 
-    private static async Task<IResult> GetAsync(GetAllFaculties query, IFacultyDbContext context, CancellationToken cancellationToken)
+    private static async Task<IResult> GetAsync(int pageNumber, int pageSize, IFacultyDbContext context, CancellationToken cancellationToken)
     {
+        var query = new GetAllFaculties { PageNumber = pageNumber, PageSize = pageSize };
         var result = await new GetAllFacultiesHandler(context).Execute(query, cancellationToken);
         return result.ToServerResult();
     }

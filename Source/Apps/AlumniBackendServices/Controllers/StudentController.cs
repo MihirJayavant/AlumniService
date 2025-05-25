@@ -11,8 +11,9 @@ public static class StudentController
         api.MapPost("/", PostAsync).Produces<StudentResponse>();
     }
 
-    private static async Task<IResult> GetAllAsync(GetAllStudent query, IStudentDbContext context, CancellationToken token)
+    private static async Task<IResult> GetAllAsync(int pageNumber, int pageSize, IStudentDbContext context, CancellationToken token)
     {
+        var query = new GetAllStudent { PageNumber = pageNumber, PageSize = pageSize };
         var response = await new GetAllStudentHandler(context).Execute(query, token);
         return response.ToServerResult();
     }

@@ -5,8 +5,7 @@
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
-      <IsPackable>true</IsPackable>
-      <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <IsRoslynComponent>true</IsRoslynComponent>
     </PropertyGroup>
 
     <ItemGroup>
