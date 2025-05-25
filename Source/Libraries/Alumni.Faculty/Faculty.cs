@@ -1,12 +1,9 @@
-using Core;
-
 namespace Alumni.Faculty;
-
 
 public record Faculty : IAuditableEntity
 {
     public required int Id { get; init; }
-    public required int FacultyId { get; init; }
+    public required Guid FacultyId { get; init; }
     public required string Email { get; init; }
     public required string FirstName { get; init; }
     public required string LastName { get; init; }

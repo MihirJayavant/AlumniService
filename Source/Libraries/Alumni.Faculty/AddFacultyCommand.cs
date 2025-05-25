@@ -1,44 +1,46 @@
-namespace Application.Faculties;
+namespace Alumni.Faculty;
 
-public sealed record AddFacultyCommand : IRequest<OneOf<FacultyResponse, ErrorType>>
+[RecordView(typeof(Faculty), nameof(Faculty.Id), nameof(Faculty.IsDeleted), nameof(Faculty.CreatedAt), nameof(Faculty.UpdatedAt))]
+public sealed partial record AddFaculty
 {
-    public required string Email { get; init; }
-    public required bool Admin { get; init; }
-    public required string Password { get; init; }
-    public required string FirstName { get; init; }
-    public required string LastName { get; init; }
-    public required long MobileNo { get; init; }
-    public required string Extension { get; init; }
+
 }
 
-public sealed class AddFacultyCommandValidator : AbstractValidator<AddFacultyCommand>
+file sealed class AddFacultyValidator : AbstractValidator<AddFaculty>
 {
-    public AddFacultyCommandValidator() => RuleFor(x => x.Email).EmailAddress();
+    public AddFacultyValidator() => RuleFor(x => x.Email).EmailAddress();
 }
 
-public class AddFacultyHandler : IRequestHandler<AddFacultyCommand, OneOf<FacultyResponse, ErrorType>>
+public class AddFacultyHandler(IFacultyDbContext context) : IHandler<AddFaculty, FacultyResponse>
 {
-    private readonly IApplicationDbContext context;
-    private readonly IMapper mapper;
+    public AbstractValidator<AddFaculty> Validator { get; } = new AddFacultyValidator();
 
-    public AddFacultyHandler(IApplicationDbContext context, IMapper mapper)
-                    => (this.context, this.mapper) = (context, mapper);
-
-    public async Task<OneOf<FacultyResponse, ErrorType>> Handle(AddFacultyCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<FacultyResponse, ErrorType>> Handle(AddFaculty request, CancellationToken cancellationToken)
     {
-        var faculty = await context.Faculties
+        var found = await context.Faculties
                     .FirstOrDefaultAsync(s => s.Email == request.Email, cancellationToken);
 
-        if (faculty is not null)
+        if (found is not null)
         {
-            return new ErrorType(ResponseStatus.Conflict, "Email already registered");
+            return new ErrorType
+            {
+                Message = "Faculty with this email already exists", Status = ResponseStatus.Conflict
+            };
         }
 
-        var f = mapper.Map<Faculty>(request);
-        context.Faculties.Add(f);
+        var faculty = new Faculty()
+        {
+            Id = 0,
+            FacultyId = Guid.NewGuid(),
+            Email = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Extension = request.Extension,
+            MobileNo = request.MobileNo
+        };
+        context.Faculties.Add(faculty);
         await context.SaveChangesAsync(cancellationToken);
 
-        var result = mapper.Map<FacultyResponse>(f);
-        return result;
+        return faculty.ToFacultyResponse();
     }
 }

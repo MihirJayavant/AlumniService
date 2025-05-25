@@ -1,14 +1,23 @@
-namespace Application.Faculties;
+namespace Alumni.Faculty;
 
-public sealed record FacultyResponse
+[RecordView(typeof(Faculty), nameof(Faculty.Id), nameof(Faculty.IsDeleted))]
+public sealed partial record FacultyResponse
 {
-    public required int FacultyId { get; init; }
-    public required string Email { get; init; }
-    public required DateTime DateCreated { get; init; }
-    public required bool Admin { get; init; }
-    public required string FirstName { get; init; }
-    public required string LastName { get; init; }
-    public required long MobileNo { get; init; }
-    public required string Extension { get; init; }
+
 }
 
+public static class FacultyResponseMapper
+{
+    public static FacultyResponse ToFacultyResponse(this Faculty faculty) =>
+        new()
+        {
+            FacultyId = faculty.FacultyId,
+            FirstName = faculty.FirstName,
+            LastName = faculty.LastName,
+            MobileNo = faculty.MobileNo,
+            Extension = faculty.Extension,
+            Email = faculty.Email,
+            CreatedAt = faculty.CreatedAt,
+            UpdatedAt = faculty.UpdatedAt,
+        };
+}
