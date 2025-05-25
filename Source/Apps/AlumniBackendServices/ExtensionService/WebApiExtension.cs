@@ -1,5 +1,4 @@
 using AlumniBackendServices.Services;
-using Application;
 
 namespace AlumniBackendServices.ExtensionService;
 

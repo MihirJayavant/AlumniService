@@ -48,7 +48,7 @@ public static class SwaggerExtension
                             Id = "Bearer"
                         }
                     },
-                    Array.Empty<string>()
+                    []
                 }
             });
 
