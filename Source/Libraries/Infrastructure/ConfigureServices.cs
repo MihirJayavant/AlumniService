@@ -1,7 +1,4 @@
 using System.Text;
-using Application;
-using Application.Common.Interfaces;
-using Database;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -16,8 +13,8 @@ public static class ConfigureServices
     {
         var connection = string.Format(setting.DatabaseSetting.Connection, setting.DatabaseSetting.Password);
 
-        services.AddDbContext<IApplicationDbContext, ApplicationContext>(options =>
-           options.UseNpgsql(connection, b => b.MigrationsAssembly("AlumniBackendServices")));
+        services.AddDbContext<IApplicationContext, ApplicationContext>(options =>
+           options.UseNpgsql(connection, b => b.MigrationsAssembly("Infrastructure")));
 
         services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationContext>();
@@ -46,15 +43,10 @@ public static class ConfigureServices
 
         });
 
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy("StudentAccess", policy => policy.RequireRole("Students"));
-            options.AddPolicy("AdminAccess", policy => policy.RequireRole("Admin"));
-            options.AddPolicy("SuperAdminAccess", policy => policy.RequireRole("SuperAdmin"));
-        });
-
-
-        services.AddTransient<IIdentityService, IdentityService>();
+        services.AddAuthorizationBuilder()
+            .AddPolicy("StudentAccess", policy => policy.RequireRole("Students"))
+            .AddPolicy("AdminAccess", policy => policy.RequireRole("Admin"))
+            .AddPolicy("SuperAdminAccess", policy => policy.RequireRole("SuperAdmin"));
 
         return services;
     }

@@ -10,4 +10,9 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Alumni.Faculty\Alumni.Faculty.csproj" />
+    <ProjectReference Include="..\Alumni.Student\Alumni.Student.csproj" />
+    <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
 </Project>
