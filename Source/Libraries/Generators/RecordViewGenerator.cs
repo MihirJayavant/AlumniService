@@ -14,7 +14,7 @@ namespace Generators
     [Generator(LanguageNames.CSharp)]
     public sealed class RecordViewGenerator : IIncrementalGenerator
     {
-        private const string RecordViewAttributeName = "Domain.RecordView";
+        private const string RecordViewAttributeName = "Core.RecordView";
 
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
@@ -71,7 +71,7 @@ namespace Generators
 
             return new RecordTargetModel(
                 targetSymbol.Name,
-                ns,
+                ns ?? "",
                 sourceType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
                 [..members]);
         }
