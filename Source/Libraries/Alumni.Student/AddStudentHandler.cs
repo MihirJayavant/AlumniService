@@ -1,6 +1,6 @@
 namespace Alumni.Student;
 
-[RecordView(typeof(Student), nameof(Student.Id))]
+[RecordView(typeof(Student))]
 public sealed partial record AddStudent
 {
 

@@ -1,8 +1,8 @@
 namespace Alumni.Student;
 
-public record class Student : IAuditableEntity
+public record class Student
 {
-    public int Id { get; init; }
+
     public required Guid StudentId { get; init; }
     public required string FirstName { get; init; }
     public required string LastName { get; init; }
@@ -16,9 +16,7 @@ public record class Student : IAuditableEntity
     public required Address CorrespondenceAddress { get; init; }
     public required int AdmissionYear { get; init; }
     public required int PassingYear { get; init; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public bool IsDeleted { get; set; }
+
 }
 
 public record Address

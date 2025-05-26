@@ -1,6 +1,6 @@
 namespace Alumni.Student;
 
-[RecordView(typeof(Student), nameof(Student.Id), nameof(Student.IsDeleted))]
+[RecordView(typeof(Student))]
 public partial record StudentResponse
 {
 
@@ -8,7 +8,7 @@ public partial record StudentResponse
 
 public static class StudentResponseMapper
 {
-    public static StudentResponse ToStudentResponse(this Student student) =>
+    public static StudentResponse ToStudentResponse(this StudentEntity student) =>
         new()
         {
             StudentId = student.StudentId,
@@ -24,7 +24,5 @@ public static class StudentResponseMapper
             CorrespondenceAddress = student.CorrespondenceAddress,
             AdmissionYear = student.AdmissionYear,
             PassingYear = student.PassingYear,
-            CreatedAt = student.CreatedAt,
-            UpdatedAt = student.UpdatedAt,
         };
 }
