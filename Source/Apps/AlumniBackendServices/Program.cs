@@ -16,19 +16,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-builder.Services.AddSwaggerGen();
-builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSingleton<ISettingService>(new SettingService(builder.Configuration));
 builder.Services.AddInfrastructureServices(new SettingService(builder.Configuration));
 builder.Services.AddAuth();
-builder.Services.AddApplicationSwagger(builder.Configuration);
+builder.Services.AddApplicationOpenApi();
 builder.Services.AddWebApiServices(builder.Configuration);
 builder.Services.AddApplicationLogging(builder.Environment);
 
 var app = builder.Build();
 
+app.UseApplicationOpenApi();
 app.UseApplication();
-app.UseApplicationSwagger(builder.Configuration);
 app.UseAuth();
 
 // Add Controllers
@@ -40,7 +38,5 @@ FacultyController.Add(app);
 
 // app.UseApplicationGraphQL();
 app.MapGrpcService<IdentityGrpc>();
-app.MapControllers();
-
 
 app.Run();
