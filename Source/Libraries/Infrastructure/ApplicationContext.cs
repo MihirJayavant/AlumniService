@@ -21,7 +21,6 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options)
         modelBuilder.ApplyConfiguration(new FacultyConfiguration());
         base.OnModelCreating(modelBuilder);
     }
-
 }
 
 public interface IApplicationContext: IStudentDbContext, IFacultyDbContext;
