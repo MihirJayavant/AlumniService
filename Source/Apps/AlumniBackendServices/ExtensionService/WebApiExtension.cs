@@ -1,4 +1,5 @@
 using AlumniBackendServices.Services;
+using HealthChecks.UI.Client;
 
 namespace AlumniBackendServices.ExtensionService;
 
@@ -12,8 +13,15 @@ public static class WebApiExtension
         services.AddGrpc();
     }
 
-    public static void UseApplication(this WebApplication app) =>
+    public static void UseApplication(this WebApplication app)
+    {
         app.UseCors(builder => builder.AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod());
+        app.MapHealthChecks("/healthz", new()
+        {
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+    }
+
 }

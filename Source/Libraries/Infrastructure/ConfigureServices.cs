@@ -1,6 +1,4 @@
 using System.Text;
-using Alumni.Faculty;
-using Alumni.Student;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -52,6 +50,8 @@ public static class ConfigureServices
             .AddPolicy("StudentAccess", policy => policy.RequireRole("Students"))
             .AddPolicy("AdminAccess", policy => policy.RequireRole("Admin"))
             .AddPolicy("SuperAdminAccess", policy => policy.RequireRole("SuperAdmin"));
+
+        services.AddHealthChecks().AddCheck<DatabaseHealthCheck>("Postgres");
 
         return services;
     }

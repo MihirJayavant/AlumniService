@@ -14,6 +14,7 @@
     <Protobuf Include="Grpc\Protos\Identity.proto" GrpcServices="Server" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />
     <PackageReference Include="HotChocolate.AspNetCore" />
     <PackageReference Include="HotChocolate.AspNetCore.Voyager" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />

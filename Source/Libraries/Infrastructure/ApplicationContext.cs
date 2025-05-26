@@ -1,8 +1,3 @@
-using Alumni.Faculty;
-using Alumni.Student;
-using Alumni.Student.Company;
-using Alumni.Student.Exam;
-using Alumni.Student.FurtherStudy;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
