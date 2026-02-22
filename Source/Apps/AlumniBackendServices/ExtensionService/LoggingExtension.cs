@@ -4,27 +4,30 @@ namespace AlumniBackendServices.ExtensionService;
 
 public static class LoggingExtension
 {
-    public static void AddApplicationLogging(this IServiceCollection services, IWebHostEnvironment env)
+    extension(IServiceCollection services)
     {
-        if (env.IsDevelopment())
+        public void AddApplicationLogging(IWebHostEnvironment env)
         {
+            if (env.IsDevelopment())
+            {
+                services.AddLogging
+                (
+                    service => LoggerFactory.Create(builder => builder.AddConsole())
+                );
+                return;
+            }
+
             services.AddLogging
             (
-                service => LoggerFactory.Create(builder => builder.AddConsole())
+                service => LoggerFactory
+                    .Create(builder => builder
+                        .AddFilter
+                        (
+                            (category, level) =>
+                                category != DbLoggerCategory.Database.Command.Name
+                        )
+                        .AddConsole())
             );
-            return;
         }
-
-        services.AddLogging
-        (
-            service => LoggerFactory
-                .Create(builder => builder
-                    .AddFilter
-                    (
-                        (category, level) =>
-                            category != DbLoggerCategory.Database.Command.Name
-                    )
-                    .AddConsole())
-        );
     }
 }

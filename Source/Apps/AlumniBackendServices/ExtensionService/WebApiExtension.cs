@@ -1,27 +1,29 @@
-using AlumniBackendServices.Services;
-using HealthChecks.UI.Client;
-
 namespace AlumniBackendServices.ExtensionService;
 
 public static class WebApiExtension
 {
-    public static void AddWebApiServices(this IServiceCollection services, IConfiguration configuration)
+    extension(IServiceCollection services)
     {
-        services.AddSingleton(configuration);
-        services.AddCors();
-        services.AddSingleton<ISettingService>(new SettingService(configuration));
-        services.AddGrpc();
-    }
-
-    public static void UseApplication(this WebApplication app)
-    {
-        app.UseCors(builder => builder.AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod());
-        app.MapHealthChecks("/healthz", new()
+        public void AddWebApiServices(IConfiguration configuration)
         {
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
+            services.AddSingleton(configuration);
+            services.AddCors();
+            services.AddSingleton<ISettingService>(new SettingService(configuration));
+            services.AddGrpc();
+        }
     }
 
+    extension(WebApplication app)
+    {
+        public void UseApplication()
+        {
+            app.UseCors(builder => builder.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod());
+            app.MapHealthChecks("/healthz", new()
+            {
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+        }
+    }
 }

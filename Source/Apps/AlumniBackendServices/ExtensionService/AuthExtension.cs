@@ -2,11 +2,17 @@ namespace AlumniBackendServices.ExtensionService;
 
 public static class AuthExtension
 {
-    public static void AddAuth(this IServiceCollection services) { }
-
-    public static void UseAuth(this IApplicationBuilder app)
+    extension(IServiceCollection services)
     {
-        app.UseAuthentication();
-        app.UseAuthorization();
+        public static void AddAuth() { }
+    }
+
+    extension(IApplicationBuilder app)
+    {
+        public void UseAuth()
+        {
+            app.UseAuthentication();
+            app.UseAuthorization();
+        }
     }
 }

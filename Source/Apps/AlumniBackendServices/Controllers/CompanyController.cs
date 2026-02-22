@@ -5,7 +5,7 @@ public static class CompanyController
 
     public static void Add(WebApplication app)
     {
-        var api = app.MapGroup("/company").WithOpenApi().WithTags([ "Company"]);
+        var api = app.MapGroup("/company").WithOpenApi().WithTags(["Company"]);
 
         api.MapGet("/{studentId:guid}", GetByIdAsync).Produces<PaginatedList<CompanyResponse>>();
         api.MapPost("/", PostAsync).Produces<CompanyResponse>();
@@ -14,7 +14,7 @@ public static class CompanyController
     private static async Task<IResult> GetByIdAsync(Guid studentId, IStudentDbContext context, CancellationToken cancellationToken)
     {
         var query = new GetCompany { StudentId = studentId };
-        var response = await  new GetCompanyHandler(context).Execute(query, cancellationToken);
+        var response = await new GetCompanyHandler(context).Execute(query, cancellationToken);
         return response.ToServerResult();
     }
 

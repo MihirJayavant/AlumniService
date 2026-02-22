@@ -1,26 +1,30 @@
-using Scalar.AspNetCore;
-
 namespace AlumniBackendServices.ExtensionService;
 
 public static class OpenApiExtension
 {
-    public static void AddApplicationOpenApi(this IServiceCollection services) => services.AddOpenApi("alumni");
-
-    public static void UseApplicationOpenApi(this WebApplication app)
+    extension(IServiceCollection services)
     {
-        app.MapOpenApi();
+        public void AddApplicationOpenApi() => services.AddOpenApi("alumni");
+    }
 
-        const string title = "Alumni Backend Services";
-        const string path = "/openapi/alumni.json";
-
-        app.MapScalarApiReference(options =>
+    extension(WebApplication app)
+    {
+        public void UseApplicationOpenApi()
         {
-            options.Title = title;
-            options.OpenApiRoutePattern = path;
-        });
+            app.MapOpenApi();
 
-        app.UseSwaggerUI(
-            option => option.SwaggerEndpoint(path, title)
-            );
+            const string title = "Alumni Backend Services";
+            const string path = "/openapi/alumni.json";
+
+            app.MapScalarApiReference(options =>
+            {
+                options.Title = title;
+                options.OpenApiRoutePattern = path;
+            });
+
+            app.UseSwaggerUI(
+                option => option.SwaggerEndpoint(path, title)
+                );
+        }
     }
 }
