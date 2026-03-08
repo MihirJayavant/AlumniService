@@ -9,50 +9,53 @@ namespace Infrastructure;
 
 public static class ConfigureServices
 {
-    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, ISettingService setting)
+    extension(IServiceCollection services)
     {
-        var connection = string.Format(setting.DatabaseSetting.Connection, setting.DatabaseSetting.Password);
-
-        services.AddDbContext<IApplicationContext, ApplicationContext>(options =>
-           options.UseNpgsql(connection, b => b.MigrationsAssembly("AlumniBackendServices")));
-
-        services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationContext>();
-
-        services.AddScoped<IStudentDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
-        services.AddScoped<IFacultyDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
-
-        services.AddAuthentication(x =>
+        public IServiceCollection AddInfrastructureServices(ISettingService setting)
         {
-            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(x =>
-        {
-            x.SaveToken = true;
-            x.TokenValidationParameters = new TokenValidationParameters
+            var connection = string.Format(setting.DatabaseSetting.Connection, setting.DatabaseSetting.Password);
+
+            services.AddDbContext<IApplicationContext, ApplicationContext>(options =>
+               options.UseNpgsql(connection, b => b.MigrationsAssembly("AlumniBackendServices")));
+
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                    .AddEntityFrameworkStores<ApplicationContext>();
+
+            services.AddScoped<IStudentDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
+            services.AddScoped<IFacultyDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
+
+            services.AddAuthentication(x =>
             {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(setting.AuthSetting.Secret)),
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                RequireExpirationTime = true,
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.FromMinutes(1),
-                ValidAudience = setting.AuthSetting.ValidAudience,
-                ValidIssuer = setting.AuthSetting.ValidIssuer
-            };
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(setting.AuthSetting.Secret)),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    RequireExpirationTime = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.FromMinutes(1),
+                    ValidAudience = setting.AuthSetting.ValidAudience,
+                    ValidIssuer = setting.AuthSetting.ValidIssuer
+                };
 
-        });
+            });
 
-        services.AddAuthorizationBuilder()
-            .AddPolicy("StudentAccess", policy => policy.RequireRole("Students"))
-            .AddPolicy("AdminAccess", policy => policy.RequireRole("Admin"))
-            .AddPolicy("SuperAdminAccess", policy => policy.RequireRole("SuperAdmin"));
+            services.AddAuthorizationBuilder()
+                .AddPolicy("StudentAccess", policy => policy.RequireRole("Students"))
+                .AddPolicy("AdminAccess", policy => policy.RequireRole("Admin"))
+                .AddPolicy("SuperAdminAccess", policy => policy.RequireRole("SuperAdmin"));
 
-        services.AddHealthChecks().AddCheck<DatabaseHealthCheck>("Postgres");
+            services.AddHealthChecks().AddCheck<DatabaseHealthCheck>("Postgres");
 
-        return services;
+            return services;
+        }
     }
 }

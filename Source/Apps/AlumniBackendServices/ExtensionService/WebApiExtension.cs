@@ -1,3 +1,6 @@
+using AlumniBackendServices.Services;
+using HealthChecks.UI.Client;
+
 namespace AlumniBackendServices.ExtensionService;
 
 public static class WebApiExtension

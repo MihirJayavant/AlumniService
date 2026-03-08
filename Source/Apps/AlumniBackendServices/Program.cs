@@ -18,7 +18,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddSingleton<ISettingService>(new SettingService(builder.Configuration));
 builder.Services.AddInfrastructureServices(new SettingService(builder.Configuration));
-builder.Services.AddAuth();
+// builder.Services.AddAuth();
 builder.Services.AddApplicationOpenApi();
 builder.Services.AddWebApiServices(builder.Configuration);
 builder.Services.AddApplicationLogging(builder.Environment);
@@ -30,11 +30,7 @@ app.UseApplication();
 app.UseAuth();
 
 // Add Controllers
-StudentController.Add(app);
-CompanyController.Add(app);
-ExamController.Add(app);
-FurtherStudiesController.Add(app);
-FacultyController.Add(app);
+app.AddControllers();
 
 // app.UseApplicationGraphQL();
 app.MapGrpcService<IdentityGrpc>();

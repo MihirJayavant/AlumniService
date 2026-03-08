@@ -1,3 +1,5 @@
+using Scalar.AspNetCore;
+
 namespace AlumniBackendServices.ExtensionService;
 
 public static class OpenApiExtension

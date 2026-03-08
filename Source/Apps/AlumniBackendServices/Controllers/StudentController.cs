@@ -1,8 +1,8 @@
 namespace AlumniBackendServices.Controllers;
 
-public static class StudentController
+public sealed class StudentController : IEndpoint
 {
-    public static void Add(WebApplication app)
+    public void Add(IEndpointRouteBuilder app)
     {
         var api = app.MapGroup("/student");
 

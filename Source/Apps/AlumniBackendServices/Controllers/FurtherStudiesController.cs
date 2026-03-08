@@ -1,9 +1,9 @@
 namespace AlumniBackendServices.Controllers;
 
-public static class FurtherStudiesController
+public sealed class FurtherStudiesController : IEndpoint
 {
 
-    public static void Add(WebApplication app)
+    public void Add(IEndpointRouteBuilder app)
     {
         var api = app.MapGroup("/further-studies").WithOpenApi().WithTags(["FurtherStudies"]);
 

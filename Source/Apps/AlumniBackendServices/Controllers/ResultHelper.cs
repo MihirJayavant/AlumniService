@@ -2,9 +2,11 @@ namespace AlumniBackendServices.Controllers;
 
 internal record ErrorResponse(string Error);
 
-public static class EndpointHelper
+public static class ResultHelper
 {
-    public static IResult ToServerResult<T>(this OneOf<T, ErrorType> response)
+    extension<T>(OneOf<T, ErrorType> response)
+    {
+        public IResult ToServerResult()
         => response.Match(
                 Results.Ok,
                 (e) => e.Status switch
@@ -16,4 +18,5 @@ public static class EndpointHelper
                     _ => Results.BadRequest("Bad request")
                 }
             );
+    }
 }

@@ -1,8 +1,8 @@
 namespace AlumniBackendServices.Controllers;
 
-public static class ExamController
+public sealed class ExamController : IEndpoint
 {
-    public static void Add(WebApplication app)
+    public void Add(IEndpointRouteBuilder app)
     {
         var api = app.MapGroup("/exam").WithOpenApi().WithTags(["Exam"]);
         api.MapGet("/{studentId:guid}", GetAsync).Produces<PaginatedList<ExamResponse>>();

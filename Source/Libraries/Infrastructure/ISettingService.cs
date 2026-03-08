@@ -2,10 +2,10 @@ namespace Infrastructure;
 
 public interface ISettingService
 {
-    string Environment { get; init; }
-    DatabaseSetting DatabaseSetting { get; init; }
-    AuthSetting AuthSetting { get; init; }
-    bool IsDevelopment { get; }
+    public string Environment { get; init; }
+    public DatabaseSetting DatabaseSetting { get; init; }
+    public AuthSetting AuthSetting { get; init; }
+    public bool IsDevelopment { get; }
 }
 
 public record AuthSetting

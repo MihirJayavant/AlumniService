@@ -1,9 +1,9 @@
 namespace AlumniBackendServices.Controllers;
 
-public static class FacultyController
+public sealed class FacultyController : IEndpoint
 {
 
-    public static void Add(WebApplication app)
+    public void Add(IEndpointRouteBuilder app)
     {
         var api = app.MapGroup("/faculty").WithTags(["Faculty"]).WithOpenApi();
 

@@ -1,9 +1,9 @@
 namespace AlumniBackendServices.Controllers;
 
-public static class CompanyController
+public sealed class CompanyController : IEndpoint
 {
 
-    public static void Add(WebApplication app)
+    public void Add(IEndpointRouteBuilder app)
     {
         var api = app.MapGroup("/company").WithOpenApi().WithTags(["Company"]);
 
