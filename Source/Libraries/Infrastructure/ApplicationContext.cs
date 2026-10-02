@@ -6,20 +6,20 @@ namespace Infrastructure;
 public class ApplicationContext(DbContextOptions<ApplicationContext> options)
     : IdentityDbContext<ApplicationUser>(options), IApplicationContext
 {
-    public DbSet<StudentEntity> Students { get; set; }
-    public DbSet<CompanyEntity> Companies { get; set; }
-    public DbSet<ExamEntity> Exams { get; set; }
-    public DbSet<FurtherStudyEntity> FurtherStudies { get; set; }
-    public DbSet<Faculty> Faculties { get; set; }
+    public DbSet<StudentEntity> Students { get; set; } = null!;
+    public DbSet<CompanyEntity> Companies { get; set; } = null!;
+    public DbSet<ExamEntity> Exams { get; set; } = null!;
+    public DbSet<FurtherStudyEntity> FurtherStudies { get; set; } = null!;
+    public DbSet<Faculty> Faculties { get; set; } = null!;
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        modelBuilder.ApplyConfiguration(new StudentConfiguration());
-        modelBuilder.ApplyConfiguration(new ExamConfiguration());
-        modelBuilder.ApplyConfiguration(new CompanyConfiguration());
-        modelBuilder.ApplyConfiguration(new FurtherStudyConfiguration());
-        modelBuilder.ApplyConfiguration(new FacultyConfiguration());
-        base.OnModelCreating(modelBuilder);
+        builder.ApplyConfiguration(new StudentConfiguration());
+        builder.ApplyConfiguration(new ExamConfiguration());
+        builder.ApplyConfiguration(new CompanyConfiguration());
+        builder.ApplyConfiguration(new FurtherStudyConfiguration());
+        builder.ApplyConfiguration(new FacultyConfiguration());
+        base.OnModelCreating(builder);
     }
 }
 

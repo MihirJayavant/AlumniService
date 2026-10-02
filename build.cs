@@ -17,7 +17,7 @@ void RequireDotNet(string arguments)
     var exitCode = RunDotNet(arguments);
     if (exitCode != 0)
     {
-        throw new Exception($"dotnet {arguments} failed with exit code {exitCode}.");
+        throw new InvalidOperationException($"dotnet {arguments} failed with exit code {exitCode}.");
     }
 }
 
@@ -113,11 +113,11 @@ Task("CI")
     });
     if (exitCode != 0)
     {
-        throw new Exception($"CI build failed with exit code {exitCode}.");
+        throw new InvalidOperationException($"CI build failed with exit code {exitCode}.");
     }
 });
 
-var migrationName = Argument("MigrationName", "Migration_" + DateTime.UtcNow.ToString("yyyyMMdd_HHmmss"));
+var migrationName = Argument("MigrationName", "Migration_" + DateTime.UtcNow.ToString("yyyyMMdd_HHmmss", System.Globalization.CultureInfo.InvariantCulture));
 
 Task("Add-Migration")
     .Does(() =>
@@ -137,7 +137,7 @@ Task("Add-Migration")
 
     if (exitCode != 0)
     {
-        throw new Exception($"Migration creation failed with exit code {exitCode}.");
+        throw new InvalidOperationException($"Migration creation failed with exit code {exitCode}.");
     }
 });
 
