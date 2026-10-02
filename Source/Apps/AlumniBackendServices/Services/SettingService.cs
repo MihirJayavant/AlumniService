@@ -1,5 +1,3 @@
-using Application;
-
 namespace AlumniBackendServices.Services;
 
 public sealed class SettingService : ISettingService

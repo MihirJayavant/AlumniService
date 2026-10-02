@@ -1,11 +1,13 @@
+#addin nuget:?package=Cake.EntityFrameworkCore&version=4.0.0
+
 var target = Argument("target", "Build");
 var configuration = Argument("configuration", "Release");
 
-var webapi = "./Source/AlumniBackendServices";
-var core = "./Source/Core";
-var database = "./Source/Database";
-var infrastructure = "./Source/Infrastructure";
-var proxy = "./Source/ProxyApp";
+var webapi = "./Source/Apps/AlumniBackendServices";
+var core = "./Source/Libraries/Core";
+var student = "./Source/Libraries/Alumni.Student";
+var faculty = "./Source/Libraries/Alumni.Faculty";
+var infrastructure = "./Source/Libraries/Infrastructure";
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -17,9 +19,9 @@ var clean = Task("Clean")
                     {
                         CleanDirectory($"{webapi}/bin/{configuration}");
                         CleanDirectory($"{core}/bin/{configuration}");
-                        CleanDirectory($"{database}/bin/{configuration}");
+                        CleanDirectory($"{student}/bin/{configuration}");
+                        CleanDirectory($"{faculty}/bin/{configuration}");
                         CleanDirectory($"{infrastructure}/bin/{configuration}");
-                        CleanDirectory($"{proxy}/bin/{configuration}");
                     });
 
 var build = Task("Build")
@@ -32,6 +34,13 @@ var build = Task("Build")
                     });
                 });
 
+var migrationName = Argument("MigrationName", "Migration_" + DateTime.UtcNow.ToString("yyyyMMdd_HHmmss"));
+
+Task("Add-Migration")
+    .Does(() =>
+{
+    EfCoreMigrationsAdd(migrationName);
+});
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION

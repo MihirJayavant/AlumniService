@@ -1,0 +1,28 @@
+namespace Alumni.Student;
+
+[RecordView(typeof(Student))]
+public partial record StudentResponse
+{
+
+}
+
+public static class StudentResponseMapper
+{
+    public static StudentResponse ToStudentResponse(this StudentEntity student) =>
+        new()
+        {
+            StudentId = student.StudentId,
+            FirstName = student.FirstName,
+            LastName = student.LastName,
+            MobileNo = student.MobileNo,
+            Extension = student.Extension,
+            Gender = student.Gender,
+            DateOfBirth = student.DateOfBirth,
+            Email = student.Email,
+            Branch = student.Branch,
+            CurrentAddress = student.CurrentAddress,
+            CorrespondenceAddress = student.CorrespondenceAddress,
+            AdmissionYear = student.AdmissionYear,
+            PassingYear = student.PassingYear,
+        };
+}

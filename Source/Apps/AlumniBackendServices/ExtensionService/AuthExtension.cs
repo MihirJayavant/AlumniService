@@ -1,15 +1,18 @@
-using AlumniBackendServices.Services;
-using Application.Common.Interfaces;
-
 namespace AlumniBackendServices.ExtensionService;
 
 public static class AuthExtension
 {
-    public static void AddAuth(this IServiceCollection services) => services.AddSingleton<ICurrentUserService, CurrentUserService>();
-
-    public static void UseAuth(this IApplicationBuilder app)
+    extension(IServiceCollection services)
     {
-        app.UseAuthentication();
-        app.UseAuthorization();
+        public static void AddAuth() { }
+    }
+
+    extension(IApplicationBuilder app)
+    {
+        public void UseAuth()
+        {
+            app.UseAuthentication();
+            app.UseAuthorization();
+        }
     }
 }

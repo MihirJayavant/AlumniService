@@ -13,7 +13,7 @@ service Identity {
 // The request message containing the user's name.
 message IdentityRequest {
   string email = 1;
-  string pasword = 2;
+  string password = 2;
 }
 
 // The response message containing the greetings.

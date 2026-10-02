@@ -1,28 +1,26 @@
-using Application.Companies;
-
 namespace AlumniBackendServices.Controllers;
 
-public static class CompanyController
+public sealed class CompanyController : IEndpoint
 {
 
-    public static void Add(WebApplication app)
+    public void Add(IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("/company").RequireAuthorization("StudentAccess");
+        var api = app.MapGroup("/company").WithOpenApi().WithTags(["Company"]);
 
-        api.MapGet("/{studentId}", GetByIdAsync).Produces<IEnumerable<CompanyResponse>>();
+        api.MapGet("/{studentId:guid}", GetByIdAsync).Produces<PaginatedList<CompanyResponse>>();
         api.MapPost("/", PostAsync).Produces<CompanyResponse>();
     }
 
-    private static async Task<IResult> GetByIdAsync(int studentId, IMediator mediator)
+    private static async Task<IResult> GetByIdAsync(Guid studentId, IStudentDbContext context, CancellationToken cancellationToken)
     {
-        var query = new GetCompanyQuery(studentId);
-        var response = await mediator.Send(query);
+        var query = new GetCompany { StudentId = studentId };
+        var response = await new GetCompanyHandler(context).Execute(query, cancellationToken);
         return response.ToServerResult();
     }
 
-    private static async Task<IResult> PostAsync([FromBody] AddCompanyCommand company, IMediator mediator)
+    private static async Task<IResult> PostAsync(AddCompany company, IStudentDbContext context, CancellationToken cancellationToken)
     {
-        var response = await mediator.Send(company);
+        var response = await new AddCompanyHandler(context).Execute(company, cancellationToken);
         return response.ToServerResult();
     }
 
