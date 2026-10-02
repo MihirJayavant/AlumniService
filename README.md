@@ -48,6 +48,10 @@ This restores the solution, verifies whitespace formatting against `.editorconfi
 
 Core tests use xUnit v3 and Microsoft.Testing.Platform, selected in `global.json`. They cover email validation and value behavior, handler validation/results/exceptions/cancellation, pagination calculations, and item mapping. They require no database, Docker, API configuration, or secrets.
 
+The Core `Email` value trims surrounding whitespace and lowercases the whole address using invariant casing before validating and storing it. Equality, conversions, and display use that normalized value. This is the application's case-insensitive email policy; it preserves dots and plus aliases.
+
+Email syntax is limited to unquoted ASCII local parts with nonempty dot-separated segments and a dotted DNS domain. Domain labels allow letters, digits, and internal hyphens, up to 63 characters each. The normalized address allows up to 64 characters before `@` and 254 characters overall. Punycode domains are accepted; quoted local parts, raw Unicode addresses, and IP address literals are outside this policy. Syntax validation does not establish mailbox ownership or deliverability.
+
 Build the solution and run its tests through Cake:
 
 ```sh
