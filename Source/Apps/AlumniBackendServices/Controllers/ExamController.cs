@@ -4,7 +4,7 @@ public sealed class ExamController : IEndpoint
 {
     public void Add(IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("/exam").WithOpenApi().WithTags(["Exam"]);
+        var api = app.MapGroup("/exam").WithTags(["Exam"]);
         api.MapGet("/{studentId:guid}", GetAsync).Produces<PaginatedList<ExamResponse>>();
         api.MapPost("/", PostAsync).Produces<ExamResponse>();
     }

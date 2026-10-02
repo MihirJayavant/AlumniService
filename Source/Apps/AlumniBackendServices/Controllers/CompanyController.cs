@@ -5,7 +5,7 @@ public sealed class CompanyController : IEndpoint
 
     public void Add(IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("/company").WithOpenApi().WithTags(["Company"]);
+        var api = app.MapGroup("/company").WithTags(["Company"]);
 
         api.MapGet("/{studentId:guid}", GetByIdAsync).Produces<PaginatedList<CompanyResponse>>();
         api.MapPost("/", PostAsync).Produces<CompanyResponse>();

@@ -5,7 +5,7 @@ public sealed class FurtherStudiesController : IEndpoint
 
     public void Add(IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("/further-studies").WithOpenApi().WithTags(["FurtherStudies"]);
+        var api = app.MapGroup("/further-studies").WithTags(["FurtherStudies"]);
 
         api.MapGet("/{studentId:guid}", GetAsync).Produces<IEnumerable<FurtherStudyResponse>>();
         api.MapPost("/", PostAsync).Produces<FurtherStudyResponse>();

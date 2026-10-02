@@ -5,7 +5,7 @@ public sealed class FacultyController : IEndpoint
 
     public void Add(IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("/faculty").WithTags(["Faculty"]).WithOpenApi();
+        var api = app.MapGroup("/faculty").WithTags(["Faculty"]);
 
         api.MapGet("/", GetAsync).Produces<PaginatedList<FacultyResponse>>();
         api.MapGet("/{facultyId:guid}", GetByEmailAsync).Produces<FacultyResponse>();
