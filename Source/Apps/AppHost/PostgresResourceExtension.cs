@@ -21,8 +21,8 @@ internal static class PostgresResourceExtension
     }
 
     private static async Task<ExecuteCommandResult> OnRunMigrationCommandAsync(
-        IResourceBuilder<PostgresDatabaseResource> builder,
-        ExecuteCommandContext context)
+        IResourceBuilder<PostgresDatabaseResource> _,
+        ExecuteCommandContext __)
     {
         RunCommand("dotnet", "ef database update");
         return CommandResults.Success();

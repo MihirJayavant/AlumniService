@@ -93,11 +93,7 @@ Task("Check-Format")
 
 Task("Lint")
     .IsDependentOn("Check-Format")
-    .Does(() =>
-{
-    RequireDotNet($"format style {solution} --no-restore --verify-no-changes --severity warn");
-    RequireDotNet($"format analyzers {solution} --no-restore --verify-no-changes --severity warn");
-});
+    .Does(() => RequireDotNet($"format {solution} --no-restore --verify-no-changes --severity warn"));
 
 Task("CI")
     .IsDependentOn("Lint")
