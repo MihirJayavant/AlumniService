@@ -2,7 +2,7 @@
 
 ## Project Structure & Modules
 
-This is a .NET solution organized under `Source/`. `Source/Apps/AlumniBackendServices` contains the HTTP, GraphQL, and gRPC API, controllers, and EF Core migrations. `Source/Apps/ProxyApp` hosts the YARP proxy, while `Source/Apps/AppHost` configures the .NET Aspire development environment. Reusable code is in `Source/Libraries/`: domain slices such as `Alumni.Student` and `Alumni.Faculty`, plus `Core`, `Infrastructure`, and `Generators`. Keep features grouped by domain and their use cases rather than adding unrelated shared code to the API project. The repository currently has no dedicated test project.
+This is a .NET solution organized under `Source/`. `Source/Apps/AlumniBackendServices` contains the HTTP, GraphQL, and gRPC API, controllers, and EF Core migrations. `Source/Apps/ProxyApp` hosts the YARP proxy, while `Source/Apps/AppHost` configures the .NET Aspire development environment. Reusable code is in `Source/Libraries/`: domain slices such as `Alumni.Student` and `Alumni.Faculty`, plus `Core`, `Infrastructure`, and `Generators`. Keep features grouped by domain and their use cases rather than adding unrelated shared code to the API project. Core unit tests live in `Tests/Core.UnitTests`.
 
 ## Build & Run
 
@@ -21,7 +21,7 @@ Follow the existing C# conventions: four-space indentation, braces on separate l
 
 ## Testing
 
-No test suite or test project is currently present. Agent/workflow setup alone excludes test cases and test execution wiring. For explicitly requested test work, use `.agents/skills/alumni-testing/SKILL.md` and the `test-worker` role when delegation helps. Validate code changes with `dotnet build.cs`; once tests exist, also run the configured test runner. Use relevant manual runtime checks when dependencies are available. Report checks performed and any blocked checks accurately.
+Core unit tests use xUnit v3 with Microsoft.Testing.Platform. Agent/workflow setup alone excludes test cases and test execution wiring. For test work, use `.agents/skills/alumni-testing/SKILL.md` and the `test-worker` role when delegation helps. Validate changes with `dotnet build.cs -- --target=Test` to build the solution and run tests. `dotnet build.cs -- --target=CI` also checks format and lint before building and testing. Serialize restore/build/test commands in shared checkouts. Keep database-dependent checks separate from unit tests; use relevant manual runtime checks when dependencies are available. Report checks performed and any blocked checks accurately.
 
 ## Commits & Pull Requests
 

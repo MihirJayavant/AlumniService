@@ -17,4 +17,7 @@
     <Project Path="Source/Libraries/Alumni.Faculty/Alumni.Faculty.csproj" />
     <Project Path="Source/Libraries/Generators/Generators.csproj" />
   </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/Core.UnitTests/Core.UnitTests.csproj" />
+  </Folder>
 </Solution>
