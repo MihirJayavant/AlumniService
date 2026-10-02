@@ -89,11 +89,21 @@ Task("Restore")
 
 Task("Check-Format")
     .IsDependentOn("Restore")
-    .Does(() => RequireDotNet($"format whitespace {solution} --no-restore --verify-no-changes"));
+    .Does(() =>
+{
+    Information("Checking whitespace formatting against .editorconfig...");
+    RequireDotNet($"format whitespace {solution} --no-restore --verify-no-changes");
+    Information("Formatting check passed.");
+});
 
 Task("Lint")
     .IsDependentOn("Check-Format")
-    .Does(() => RequireDotNet($"format {solution} --no-restore --verify-no-changes --severity warn"));
+    .Does(() =>
+{
+    Information("Checking formatting, code style, and analyzer diagnostics at warning severity or higher...");
+    RequireDotNet($"format {solution} --no-restore --verify-no-changes --severity warn");
+    Information("Lint check passed.");
+});
 
 Task("CI")
     .IsDependentOn("Lint")

@@ -16,7 +16,7 @@ public sealed class SettingService : ISettingService
 
         if (string.IsNullOrWhiteSpace(connection))
         {
-            connection = string.Format(configuration["Database:Connection"] ?? "", pass ?? "");
+            connection = string.Format(System.Globalization.CultureInfo.InvariantCulture, configuration["Database:Connection"] ?? "", pass ?? "");
         }
 
         DatabaseSetting = new()

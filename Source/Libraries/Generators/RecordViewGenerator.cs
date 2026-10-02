@@ -1,9 +1,6 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
-using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
@@ -14,7 +11,7 @@ namespace Generators
     [Generator(LanguageNames.CSharp)]
     public sealed class RecordViewGenerator : IIncrementalGenerator
     {
-        private const string RecordViewAttributeName = "Core.RecordView";
+        private const string RecordViewAttributeName = "Core.RecordViewAttribute";
 
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
@@ -136,7 +133,7 @@ namespace Generators
         }
     }
 
-    internal class RecordMember
+    internal sealed class RecordMember
     {
         public string Name { get; }
         public string TypeName { get; }
@@ -147,7 +144,7 @@ namespace Generators
         }
     }
 
-    internal class RecordTargetModel
+    internal sealed class RecordTargetModel
     {
         public string Name { get; }
         public string Namespace { get; }

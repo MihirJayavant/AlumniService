@@ -1,6 +1,6 @@
 namespace AlumniBackendServices.Controllers;
 
-internal record ErrorResponse(string Error);
+internal sealed record ErrorResponse(string Error);
 
 public static class ResultHelper
 {
