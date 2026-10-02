@@ -41,7 +41,7 @@ GitHub Actions runs the same single command locally available for CI:
 dotnet build.cs -- --target=CI
 ```
 
-This restores the solution, verifies whitespace formatting against `.editorconfig`, checks code style and analyzer diagnostics at warning severity or higher, and builds in Release with warnings treated as errors. Checks fail without changing source files. Pass `--configuration=Debug` to use Debug. The workflow runs on pushes, pull requests, and manual dispatches.
+This restores the solution, verifies whitespace formatting against `.editorconfig`, checks code style and analyzer diagnostics at warning severity or higher, and builds in Release with warnings treated as errors. Checks fail without changing source files. Pass `--configuration=Debug` to use Debug. The workflow runs on pull requests, pushes to `main` (including merged pull requests), and manual dispatches.
 
 ## Run with Aspire
 
