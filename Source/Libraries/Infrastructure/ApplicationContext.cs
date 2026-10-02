@@ -7,10 +7,10 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options)
     : IdentityDbContext<ApplicationUser>(options), IApplicationContext
 {
     public DbSet<StudentEntity> Students { get; set; }
-    public DbSet<CompanyEntity> Companies { get; set;}
-    public DbSet<ExamEntity> Exams { get; set;}
-    public DbSet<FurtherStudyEntity> FurtherStudies { get; set;}
-    public DbSet<Faculty> Faculties { get; set;}
+    public DbSet<CompanyEntity> Companies { get; set; }
+    public DbSet<ExamEntity> Exams { get; set; }
+    public DbSet<FurtherStudyEntity> FurtherStudies { get; set; }
+    public DbSet<Faculty> Faculties { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,4 +23,4 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options)
     }
 }
 
-public interface IApplicationContext: IStudentDbContext, IFacultyDbContext;
+public interface IApplicationContext : IStudentDbContext, IFacultyDbContext;

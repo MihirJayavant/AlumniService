@@ -84,6 +84,43 @@ var build = Task("Build")
                 Configuration = configuration,
             }));
 
+Task("Restore")
+    .Does(() => RequireDotNet($"restore {solution}"));
+
+Task("Check-Format")
+    .IsDependentOn("Restore")
+    .Does(() => RequireDotNet($"format whitespace {solution} --no-restore --verify-no-changes"));
+
+Task("Lint")
+    .IsDependentOn("Check-Format")
+    .Does(() =>
+{
+    RequireDotNet($"format style {solution} --no-restore --verify-no-changes --severity warn");
+    RequireDotNet($"format analyzers {solution} --no-restore --verify-no-changes --severity warn");
+});
+
+Task("CI")
+    .IsDependentOn("Lint")
+    .Does(() =>
+{
+    var arguments = new ProcessArgumentBuilder()
+        .Append("build")
+        .AppendQuoted(solution)
+        .Append("--configuration")
+        .AppendQuoted(configuration)
+        .Append("--no-restore --warnaserror -p:ContinuousIntegrationBuild=true");
+
+    var exitCode = StartProcess("dotnet", new ProcessSettings
+    {
+        Arguments = arguments,
+        WorkingDirectory = MakeAbsolute(Directory(".")),
+    });
+    if (exitCode != 0)
+    {
+        throw new Exception($"CI build failed with exit code {exitCode}.");
+    }
+});
+
 var migrationName = Argument("MigrationName", "Migration_" + DateTime.UtcNow.ToString("yyyyMMdd_HHmmss"));
 
 Task("Add-Migration")

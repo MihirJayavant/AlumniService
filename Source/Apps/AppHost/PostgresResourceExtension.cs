@@ -28,7 +28,7 @@ internal static class PostgresResourceExtension
         return CommandResults.Success();
     }
 
-    static void RunCommand(string fileName, string arguments)
+    private static void RunCommand(string fileName, string arguments)
     {
         var processInfo = new ProcessStartInfo
         {

@@ -4,5 +4,5 @@ public interface IFacultyDbContext
 {
     public DbSet<Faculty> Faculties { get; }
 
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }
