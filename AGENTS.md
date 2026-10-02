@@ -21,7 +21,7 @@ Follow the existing C# conventions: four-space indentation, braces on separate l
 
 ## Testing
 
-No test suite or test project is currently present. Current agent-readiness work excludes CI and test cases. Validate code changes with `dotnet build.cs`; use relevant manual runtime checks when dependencies are available. Report checks performed and any blocked checks accurately.
+No test suite or test project is currently present. Agent/workflow setup alone excludes test cases and test execution wiring. For explicitly requested test work, use `.agents/skills/alumni-testing/SKILL.md` and the `test-worker` role when delegation helps. Validate code changes with `dotnet build.cs`; once tests exist, also run the configured test runner. Use relevant manual runtime checks when dependencies are available. Report checks performed and any blocked checks accurately.
 
 ## Commits & Pull Requests
 
@@ -42,7 +42,7 @@ Read `README.md` for setup and the scoped `AGENTS.md` for the area being changed
 - GraphQL implementation files exist, but GraphQL wiring is currently disabled in `Program.cs`. ProxyApp runs separately from AppHost.
 - Preserve unrelated local changes. Keep package versions in `Directory.Packages.props`.
 
-Repository skills in `.agents/skills` cover feature changes, migrations, and local debugging. Use the relevant skill for those workflows, without loading unrelated skills.
+Repository skills in `.agents/skills` cover feature changes, migrations, local debugging, and testing. Use the relevant skill for those workflows, without loading unrelated skills.
 
 ## Subagent Coordination
 

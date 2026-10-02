@@ -4,7 +4,7 @@ namespace Core;
 
 public readonly partial record struct Email
 {
-    public string Value { get; } // Encapsulated email value
+    public string Value { get; }
 
     public Email(string value)
     {

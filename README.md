@@ -86,6 +86,8 @@ dotnet build.cs -- --target=Add-Migration --MigrationName=AddStudentField
 
 Source-generator debugger launch is disabled by default. Set `ALUMNI_GENERATOR_DEBUG=1` only when intentionally debugging the generator in a Debug build. There is no dedicated test project; use CI checks and relevant manual runtime checks.
 
+For unit-test planning and implementation, use the `alumni-testing` skill in `.agents/skills/alumni-testing/SKILL.md`. The `test-worker` agent in `.codex/agents/test-worker.toml` handles assigned test files; the parent agent owns contract decisions, shared project/build configuration, integration, and final verification. Use independent workers only for disjoint test files and serialize all builds and test runs in a shared checkout. The workflow prefers xUnit v3 with Microsoft.Testing.Platform for a new suite, places pure Core tests in `Tests/Core.UnitTests`, and separates EF query execution into integration tests. This setup defines the workflow; it does not install test packages or create test cases.
+
 ## Database migrations
 
 Migrations live in the API project. Configure its database connection before running EF commands. For the Aspire database, use the connection string shown in the dashboard so the allocated port matches.
