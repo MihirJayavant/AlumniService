@@ -12,9 +12,16 @@ public sealed class SettingService : ISettingService
     {
         Environment = configuration[nameof(Environment)] ?? "Development";
         var pass = IsDevelopment ? configuration["Database:Password"] : System.Environment.GetEnvironmentVariable("DATABASE_PASSWORD");
+        var connection = configuration.GetConnectionString("alumni-db");
+
+        if (string.IsNullOrWhiteSpace(connection))
+        {
+            connection = string.Format(configuration["Database:Connection"] ?? "", pass ?? "");
+        }
+
         DatabaseSetting = new()
         {
-            Connection = configuration["Database:Connection"] ?? "",
+            Connection = connection,
             Password = pass ?? ""
         };
 
