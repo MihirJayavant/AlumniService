@@ -71,7 +71,8 @@ namespace Generators
                         new RecordMember(
                             p.Name,
                             p.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat
-                            )));
+                                .WithMiscellaneousOptions(SymbolDisplayFormat.FullyQualifiedFormat.MiscellaneousOptions
+                                    | SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier))));
                 }
             }
 
@@ -109,6 +110,7 @@ namespace Generators
             }
 
             var sb = new StringBuilder();
+            sb.AppendLine("#nullable enable");
             sb.AppendLine("using System;");
             sb.AppendLine();
 

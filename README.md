@@ -9,6 +9,7 @@ An ASP.NET Core alumni API targeting .NET 10, organized into vertical slices for
 - `Source/Apps/ProxyApp`: standalone YARP proxy; not started by AppHost.
 - `Source/Libraries`: domain features, shared types, infrastructure, and the record-view source generator.
 - `Tests/Core.UnitTests`: isolated tests for shared Core behavior.
+- `Tests/Generators.UnitTests`: compilation-based tests for the record-view source generator.
 - `Directory.Packages.props`: centrally managed NuGet versions.
 
 ## Prerequisites
@@ -48,6 +49,8 @@ This restores the solution, verifies whitespace formatting against `.editorconfi
 
 Core tests use xUnit v3 and Microsoft.Testing.Platform, selected in `global.json`. They cover email validation and value behavior, handler validation/results/exceptions/cancellation, pagination calculations, and item mapping. They require no database, Docker, API configuration, or secrets.
 
+Generator tests use the same test framework and run Roslyn against small C# inputs, verifying generated properties and compilation diagnostics. They cover required init properties, exclusions, member selection, nullable and generic types, namespaces, missing attributes, and multiple views. They require no database or API startup.
+
 The Core `Email` value trims surrounding whitespace and lowercases the whole address using invariant casing before validating and storing it. Equality, conversions, and display use that normalized value. This is the application's case-insensitive email policy; it preserves dots and plus aliases.
 
 Email syntax is limited to unquoted ASCII local parts with nonempty dot-separated segments and a dotted DNS domain. Domain labels allow letters, digits, and internal hyphens, up to 63 characters each. The normalized address allows up to 64 characters before `@` and 254 characters overall. Punycode domains are accepted; quoted local parts, raw Unicode addresses, and IP address literals are outside this policy. Syntax validation does not establish mailbox ownership or deliverability.
@@ -62,6 +65,13 @@ Run only the Core suite directly (builds and restores as needed):
 
 ```sh
 dotnet test --project Tests/Core.UnitTests/Core.UnitTests.csproj --configuration Release
+```
+
+Build and run only the generator suite without build servers:
+
+```sh
+dotnet build Tests/Generators.UnitTests/Generators.UnitTests.csproj --configuration Release --disable-build-servers -m:1
+dotnet Tests/Generators.UnitTests/bin/Release/net10.0/Generators.UnitTests.dll
 ```
 
 After a Release build, run all solution tests without rebuilding:
