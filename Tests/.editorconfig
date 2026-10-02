@@ -1,0 +1,3 @@
+# Scenario-based test names use Method_WhenCondition_ExpectedOutcome.
+[*.cs]
+dotnet_diagnostic.CA1707.severity = none

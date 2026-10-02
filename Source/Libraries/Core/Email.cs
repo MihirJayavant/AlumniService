@@ -4,7 +4,7 @@ namespace Core;
 
 public readonly partial record struct Email
 {
-    public string Value { get; } // Encapsulated email value
+    public string Value { get; }
 
     public Email(string value)
     {
@@ -13,12 +13,16 @@ public readonly partial record struct Email
             throw new ArgumentException("Email cannot be null or empty.", nameof(value));
         }
 
-        if (!EmailRegex().IsMatch(value))
+        var normalizedValue = value.Trim().ToLowerInvariant();
+
+        if (normalizedValue.Length > 254
+            || normalizedValue.IndexOf('@') > 64
+            || !EmailRegex().IsMatch(normalizedValue))
         {
             throw new ArgumentException($"Invalid email format: {value}", nameof(value));
         }
 
-        Value = value;
+        Value = normalizedValue;
     }
 
     public static implicit operator Email(string email) => new(email);
@@ -28,6 +32,8 @@ public readonly partial record struct Email
     // Overriding ToString for meaningful display
     public override string ToString() => Value;
 
-    [GeneratedRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")]
+    // Unquoted ASCII dot-atom local part and a dotted DNS domain.
+    // Domain labels contain 1-63 characters and cannot start or end with a hyphen.
+    [GeneratedRegex(@"\A[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+\z")]
     private static partial Regex EmailRegex();
 }

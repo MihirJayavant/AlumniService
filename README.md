@@ -8,6 +8,8 @@ An ASP.NET Core alumni API targeting .NET 10, organized into vertical slices for
 - `Source/Apps/AppHost`: Aspire orchestration for PostgreSQL, pgAdmin, and the API.
 - `Source/Apps/ProxyApp`: standalone YARP proxy; not started by AppHost.
 - `Source/Libraries`: domain features, shared types, infrastructure, and the record-view source generator.
+- `Tests/Core.UnitTests`: isolated tests for shared Core behavior.
+- `Tests/Generators.UnitTests`: compilation-based tests for the record-view source generator.
 - `Directory.Packages.props`: centrally managed NuGet versions.
 
 ## Prerequisites
@@ -41,7 +43,44 @@ GitHub Actions runs the same single command locally available for CI:
 dotnet build.cs -- --target=CI
 ```
 
-This restores the solution, verifies whitespace formatting against `.editorconfig`, checks code style and analyzer diagnostics at warning severity or higher, and builds in Release with warnings treated as errors. Checks fail without changing source files. Pass `--configuration=Debug` to use Debug. The workflow runs on pull requests, pushes to `main` (including merged pull requests), and manual dispatches.
+This restores the solution, verifies whitespace formatting against `.editorconfig`, checks code style and analyzer diagnostics at warning severity or higher, builds in Release with warnings treated as errors, and runs the tests. Checks fail without changing source files. Pass `--configuration=Debug` to use Debug. The workflow runs on pull requests, pushes to `main` (including merged pull requests), and manual dispatches.
+
+## Unit tests
+
+Core tests use xUnit v3 and Microsoft.Testing.Platform, selected in `global.json`. They cover email validation and value behavior, handler validation/results/exceptions/cancellation, pagination calculations, and item mapping. They require no database, Docker, API configuration, or secrets.
+
+Generator tests use the same test framework and run Roslyn against small C# inputs, verifying generated properties and compilation diagnostics. They cover required init properties, exclusions, member selection, nullable and generic types, namespaces, missing attributes, and multiple views. They require no database or API startup.
+
+The Core `Email` value trims surrounding whitespace and lowercases the whole address using invariant casing before validating and storing it. Equality, conversions, and display use that normalized value. This is the application's case-insensitive email policy; it preserves dots and plus aliases.
+
+Email syntax is limited to unquoted ASCII local parts with nonempty dot-separated segments and a dotted DNS domain. Domain labels allow letters, digits, and internal hyphens, up to 63 characters each. The normalized address allows up to 64 characters before `@` and 254 characters overall. Punycode domains are accepted; quoted local parts, raw Unicode addresses, and IP address literals are outside this policy. Syntax validation does not establish mailbox ownership or deliverability.
+
+Build the solution and run its tests through Cake:
+
+```sh
+dotnet build.cs -- --target=Test
+```
+
+Run only the Core suite directly (builds and restores as needed):
+
+```sh
+dotnet test --project Tests/Core.UnitTests/Core.UnitTests.csproj --configuration Release
+```
+
+Build and run only the generator suite without build servers:
+
+```sh
+dotnet build Tests/Generators.UnitTests/Generators.UnitTests.csproj --configuration Release --disable-build-servers -m:1
+dotnet Tests/Generators.UnitTests/bin/Release/net10.0/Generators.UnitTests.dll
+```
+
+After a Release build, run all solution tests without rebuilding:
+
+```sh
+dotnet test --solution AlumniService.slnx --configuration Release --no-build --no-restore
+```
+
+`HandlerExtensions.Execute` returns `BadRequest` for validation failures, preserves handler-returned errors, propagates cancellation, and converts other exceptions to `InternalError`. EF-backed `PaginationQuery.Paginate` needs separate PostgreSQL integration tests; those are deferred. Invalid pagination input rules are also outside this suite's current scope.
 
 ## Run with Aspire
 
@@ -84,7 +123,9 @@ dotnet build.cs -- --target=Add-Migration --MigrationName=AddStudentField
 
 `Doctor` fails for SDK/tool errors, warns about runtime prerequisites, and lists configuration requirements without reading secret values. If the EF tool is missing, run `Bootstrap` first. `Build` defaults to Release; pass `--configuration=Debug` for Debug builds. Migration generation requires API configuration and does not apply migrations.
 
-Source-generator debugger launch is disabled by default. Set `ALUMNI_GENERATOR_DEBUG=1` only when intentionally debugging the generator in a Debug build. There is no dedicated test project; use CI checks and relevant manual runtime checks.
+Source-generator debugger launch is disabled by default. Set `ALUMNI_GENERATOR_DEBUG=1` only when intentionally debugging the generator in a Debug build. Use the Core unit tests, CI checks, and relevant manual runtime checks for verification.
+
+For unit-test planning and implementation, use the `alumni-testing` skill in `.agents/skills/alumni-testing/SKILL.md`. The `test-worker` agent in `.codex/agents/test-worker.toml` handles assigned test files; the parent agent owns contract decisions, shared project/build configuration, integration, and final verification. Use independent workers only for disjoint test files and serialize all builds and test runs in a shared checkout. Pure Core tests live in `Tests/Core.UnitTests`; keep EF query execution in separate integration tests.
 
 ## Database migrations
 

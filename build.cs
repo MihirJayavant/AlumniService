@@ -21,6 +21,8 @@ void RequireDotNet(string arguments)
     }
 }
 
+void RunTests() => RequireDotNet($"test --solution {solution} --configuration {configuration} --no-build --no-restore");
+
 //////////////////////////////////////////////////////////////////////
 // TASKS
 //////////////////////////////////////////////////////////////////////
@@ -87,6 +89,10 @@ var build = Task("Build")
 Task("Restore")
     .Does(() => RequireDotNet($"restore {solution}"));
 
+Task("Test")
+    .IsDependentOn("Build")
+    .Does(RunTests);
+
 Task("Check-Format")
     .IsDependentOn("Restore")
     .Does(() =>
@@ -125,6 +131,8 @@ Task("CI")
     {
         throw new InvalidOperationException($"CI build failed with exit code {exitCode}.");
     }
+
+    RunTests();
 });
 
 var migrationName = Argument("MigrationName", "Migration_" + DateTime.UtcNow.ToString("yyyyMMdd_HHmmss", System.Globalization.CultureInfo.InvariantCulture));

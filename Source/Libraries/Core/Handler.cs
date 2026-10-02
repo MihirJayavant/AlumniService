@@ -24,13 +24,14 @@ public static class HandlerExtensions
                 return new ErrorType
                 {
                     Message = validationResult.Errors.First().ErrorMessage,
+                    Status = ResponseStatus.BadRequest,
                 };
             }
 
             return await handler.Handle(request, cancellationToken);
 
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             return new ErrorType { Message = ex.Message };
         }
