@@ -27,6 +27,6 @@ public sealed class GetAllStudentHandler(IStudentDbContext context)
     {
         var result = await context.Students.Paginate(request.PageNumber, request.PageSize, cancellationToken);
 
-        return result.WithItems(s=> s.ToStudentResponse());
+        return result.WithItems(s => s.ToStudentResponse());
     }
 }

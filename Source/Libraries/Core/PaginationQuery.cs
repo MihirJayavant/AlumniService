@@ -13,7 +13,10 @@ public static class PaginationQuery
 
         return new PaginatedList<T>
         {
-            Items = items, TotalCount = count, PageNumber = pageNumber, PageSize = pageSize,
+            Items = items,
+            TotalCount = count,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
         };
     }
 

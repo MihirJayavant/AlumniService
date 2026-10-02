@@ -3,5 +3,17 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisLevel>10.0-recommended</AnalysisLevel>
+        <AnalysisLevelSecurity>10.0-all</AnalysisLevelSecurity>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+        <NuGetAudit>true</NuGetAudit>
+        <NuGetAuditMode>all</NuGetAuditMode>
+        <NuGetAuditLevel>low</NuGetAuditLevel>
+        <WarningsAsErrors>$(WarningsAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsAsErrors>
     </PropertyGroup>
 </Project>

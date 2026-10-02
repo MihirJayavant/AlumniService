@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -21,10 +21,7 @@ namespace AlumniBackendServices.Migrations
                     NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetRoles", x => x.Id);
-                });
+                constraints: table => table.PrimaryKey("PK_AspNetRoles", x => x.Id));
 
             migrationBuilder.CreateTable(
                 name: "AspNetUsers",
@@ -46,10 +43,7 @@ namespace AlumniBackendServices.Migrations
                     LockoutEnabled = table.Column<bool>(type: "boolean", nullable: false),
                     AccessFailedCount = table.Column<int>(type: "integer", nullable: false)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
+                constraints: table => table.PrimaryKey("PK_AspNetUsers", x => x.Id));
 
             migrationBuilder.CreateTable(
                 name: "faculties",
@@ -67,10 +61,7 @@ namespace AlumniBackendServices.Migrations
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_faculties", x => x.Id);
-                });
+                constraints: table => table.PrimaryKey("PK_faculties", x => x.Id));
 
             migrationBuilder.CreateTable(
                 name: "students",
@@ -103,10 +94,7 @@ namespace AlumniBackendServices.Migrations
                     AdmissionYear = table.Column<short>(type: "SMALLINT", nullable: false),
                     PassingYear = table.Column<short>(type: "SMALLINT", nullable: false)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_students", x => x.Id);
-                });
+                constraints: table => table.PrimaryKey("PK_students", x => x.Id));
 
             migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",

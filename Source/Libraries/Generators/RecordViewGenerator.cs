@@ -1,12 +1,9 @@
+using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
 
 namespace Generators
 {
@@ -14,7 +11,7 @@ namespace Generators
     [Generator(LanguageNames.CSharp)]
     public sealed class RecordViewGenerator : IIncrementalGenerator
     {
-        private const string RecordViewAttributeName = "Core.RecordView";
+        private const string RecordViewAttributeName = "Core.RecordViewAttribute";
 
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
@@ -37,15 +34,22 @@ namespace Generators
         {
             token.ThrowIfCancellationRequested();
             if (context.TargetSymbol is not INamedTypeSymbol targetSymbol)
+            {
                 return null;
+            }
+
             if (context.Attributes.Length == 0)
+            {
                 return null;
+            }
 
             var attribute = context.Attributes[0];
             token.ThrowIfCancellationRequested();
 
             if (attribute.ConstructorArguments[0].Value is not INamedTypeSymbol sourceType)
+            {
                 return null;
+            }
 
             var excluded = new HashSet<string>(
                 attribute.ConstructorArguments.ElementAtOrDefault(1).Values
@@ -57,7 +61,9 @@ namespace Generators
             {
                 token.ThrowIfCancellationRequested();
                 if (excluded.Contains(m.Name))
+                {
                     continue;
+                }
 
                 if (m is IPropertySymbol { DeclaredAccessibility: Accessibility.Public } p)
                 {
@@ -98,7 +104,10 @@ namespace Generators
             }
 #endif
             if (model is null)
+            {
                 return "";
+            }
+
             var sb = new StringBuilder();
             sb.AppendLine("using System;");
             sb.AppendLine();
@@ -124,7 +133,7 @@ namespace Generators
         }
     }
 
-    internal class RecordMember
+    internal sealed class RecordMember
     {
         public string Name { get; }
         public string TypeName { get; }
@@ -135,7 +144,7 @@ namespace Generators
         }
     }
 
-    internal class RecordTargetModel
+    internal sealed class RecordTargetModel
     {
         public string Name { get; }
         public string Namespace { get; }

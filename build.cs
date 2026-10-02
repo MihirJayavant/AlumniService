@@ -17,7 +17,7 @@ void RequireDotNet(string arguments)
     var exitCode = RunDotNet(arguments);
     if (exitCode != 0)
     {
-        throw new Exception($"dotnet {arguments} failed with exit code {exitCode}.");
+        throw new InvalidOperationException($"dotnet {arguments} failed with exit code {exitCode}.");
     }
 }
 
@@ -84,7 +84,50 @@ var build = Task("Build")
                 Configuration = configuration,
             }));
 
-var migrationName = Argument("MigrationName", "Migration_" + DateTime.UtcNow.ToString("yyyyMMdd_HHmmss"));
+Task("Restore")
+    .Does(() => RequireDotNet($"restore {solution}"));
+
+Task("Check-Format")
+    .IsDependentOn("Restore")
+    .Does(() =>
+{
+    Information("Checking whitespace formatting against .editorconfig...");
+    RequireDotNet($"format whitespace {solution} --no-restore --verify-no-changes");
+    Information("Formatting check passed.");
+});
+
+Task("Lint")
+    .IsDependentOn("Check-Format")
+    .Does(() =>
+{
+    Information("Checking formatting, code style, and analyzer diagnostics at warning severity or higher...");
+    RequireDotNet($"format {solution} --no-restore --verify-no-changes --severity warn");
+    Information("Lint check passed.");
+});
+
+Task("CI")
+    .IsDependentOn("Lint")
+    .Does(() =>
+{
+    var arguments = new ProcessArgumentBuilder()
+        .Append("build")
+        .AppendQuoted(solution)
+        .Append("--configuration")
+        .AppendQuoted(configuration)
+        .Append("--no-restore --warnaserror -p:ContinuousIntegrationBuild=true");
+
+    var exitCode = StartProcess("dotnet", new ProcessSettings
+    {
+        Arguments = arguments,
+        WorkingDirectory = MakeAbsolute(Directory(".")),
+    });
+    if (exitCode != 0)
+    {
+        throw new InvalidOperationException($"CI build failed with exit code {exitCode}.");
+    }
+});
+
+var migrationName = Argument("MigrationName", "Migration_" + DateTime.UtcNow.ToString("yyyyMMdd_HHmmss", System.Globalization.CultureInfo.InvariantCulture));
 
 Task("Add-Migration")
     .Does(() =>
@@ -104,7 +147,7 @@ Task("Add-Migration")
 
     if (exitCode != 0)
     {
-        throw new Exception($"Migration creation failed with exit code {exitCode}.");
+        throw new InvalidOperationException($"Migration creation failed with exit code {exitCode}.");
     }
 });
 

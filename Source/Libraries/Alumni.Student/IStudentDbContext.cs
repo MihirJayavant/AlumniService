@@ -10,5 +10,5 @@ public interface IStudentDbContext
     public DbSet<CompanyEntity> Companies { get; }
     public DbSet<ExamEntity> Exams { get; }
     public DbSet<FurtherStudyEntity> FurtherStudies { get; }
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

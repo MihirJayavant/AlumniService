@@ -35,6 +35,14 @@ dotnet build.cs -- --configuration=Debug --rebuild
 
 `--rebuild` cleans the whole solution before building. Compiler warnings are reported using the SDK defaults.
 
+GitHub Actions runs the same single command locally available for CI:
+
+```sh
+dotnet build.cs -- --target=CI
+```
+
+This restores the solution, verifies whitespace formatting against `.editorconfig`, checks code style and analyzer diagnostics at warning severity or higher, and builds in Release with warnings treated as errors. Checks fail without changing source files. Pass `--configuration=Debug` to use Debug. The workflow runs on pull requests, pushes to `main` (including merged pull requests), and manual dispatches.
+
 ## Run with Aspire
 
 Configure local PostgreSQL credentials through the AppHost's user secrets:
@@ -76,7 +84,7 @@ dotnet build.cs -- --target=Add-Migration --MigrationName=AddStudentField
 
 `Doctor` fails for SDK/tool errors, warns about runtime prerequisites, and lists configuration requirements without reading secret values. If the EF tool is missing, run `Bootstrap` first. `Build` defaults to Release; pass `--configuration=Debug` for Debug builds. Migration generation requires API configuration and does not apply migrations.
 
-Source-generator debugger launch is disabled by default. Set `ALUMNI_GENERATOR_DEBUG=1` only when intentionally debugging the generator in a Debug build. CI and test cases are outside the current agent setup; use builds and relevant manual runtime checks.
+Source-generator debugger launch is disabled by default. Set `ALUMNI_GENERATOR_DEBUG=1` only when intentionally debugging the generator in a Debug build. There is no dedicated test project; use CI checks and relevant manual runtime checks.
 
 ## Database migrations
 

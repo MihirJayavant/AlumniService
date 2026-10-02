@@ -3,6 +3,8 @@ using HealthChecks.UI.Client;
 
 namespace AlumniBackendServices.ExtensionService;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1708:Identifiers should differ by more than case",
+    Justification = "False positive for multiple C# extension blocks: https://github.com/dotnet/sdk/issues/51716")]
 public static class WebApiExtension
 {
     extension(IServiceCollection services)

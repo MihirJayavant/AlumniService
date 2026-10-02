@@ -24,7 +24,8 @@ public class AddFacultyHandler(IFacultyDbContext context) : IHandler<AddFaculty,
         {
             return new ErrorType
             {
-                Message = "Faculty with this email already exists", Status = ResponseStatus.Conflict
+                Message = "Faculty with this email already exists",
+                Status = ResponseStatus.Conflict
             };
         }
 
