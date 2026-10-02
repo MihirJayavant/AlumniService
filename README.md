@@ -59,6 +59,25 @@ Configure `Authentication:Secret`, `Authentication:ValidAudience`, and `Authenti
 dotnet run --project Source/Apps/AlumniBackendServices
 ```
 
+## Codex agent workflow
+
+Repository guidance lives in `AGENTS.md` and scoped files beneath `Source/`. Reusable workflows are in `.agents/skills`; project subagent roles are in `.codex/agents`. Keep independent workers within assigned file ownership and let the parent agent perform the final build.
+
+Run the reusable Cake targets from the repository root:
+
+```sh
+dotnet build.cs -- --target=Doctor
+dotnet build.cs -- --target=Bootstrap
+dotnet build.cs
+dotnet build.cs -- --configuration=Debug
+dotnet build.cs -- --target=Run-Local
+dotnet build.cs -- --target=Add-Migration --MigrationName=AddStudentField
+```
+
+`Doctor` fails for SDK/tool errors, warns about runtime prerequisites, and lists configuration requirements without reading secret values. If the EF tool is missing, run `Bootstrap` first. `Build` defaults to Release; pass `--configuration=Debug` for Debug builds. Migration generation requires API configuration and does not apply migrations.
+
+Source-generator debugger launch is disabled by default. Set `ALUMNI_GENERATOR_DEBUG=1` only when intentionally debugging the generator in a Debug build. CI and test cases are outside the current agent setup; use builds and relevant manual runtime checks.
+
 ## Database migrations
 
 Migrations live in the API project. Configure its database connection before running EF commands. For the Aspire database, use the connection string shown in the dashboard so the allocated port matches.

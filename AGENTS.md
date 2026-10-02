@@ -21,7 +21,7 @@ Follow the existing C# conventions: four-space indentation, braces on separate l
 
 ## Testing
 
-No test suite or test project is currently present. For changes, run `dotnet build AlumniService.slnx`; add focused automated tests in a dedicated test project when introducing testable behavior, and use the standard `*Tests.cs` naming pattern.
+No test suite or test project is currently present. Current agent-readiness work excludes CI and test cases. Validate code changes with `dotnet build.cs`; use relevant manual runtime checks when dependencies are available. Report checks performed and any blocked checks accurately.
 
 ## Commits & Pull Requests
 
@@ -30,3 +30,24 @@ Recent history uses concise imperative summaries, sometimes with issue numbers (
 ## Configuration & Secrets
 
 Use `appsettings.Development.json` or local secret storage for development-only settings. Never commit passwords, tokens, or production connection strings; review configuration changes for accidental secrets before opening a pull request.
+
+## Agent Workflow
+
+Read `README.md` for setup and the scoped `AGENTS.md` for the area being changed. When starting from the repository root, explicitly read the applicable scoped files before editing; do not assume they were automatically loaded.
+
+- `build.cs` provides Build, Bootstrap, Doctor, Run-Local, and Add-Migration targets. Run commands from the repository root.
+- Domain behavior belongs in `Source/Libraries/Alumni.Student` or `Alumni.Faculty`; transport wiring belongs in `Source/Apps/AlumniBackendServices`.
+- Trace a feature from its endpoint through `IHandler.Execute`, validation, mapping, persistence, and HTTP result conversion before changing it.
+- `[RecordView]` produces properties at compile time. Edit the source model or generator rather than generated files in `obj/`.
+- GraphQL implementation files exist, but GraphQL wiring is currently disabled in `Program.cs`. ProxyApp runs separately from AppHost.
+- Preserve unrelated local changes. Keep package versions in `Directory.Packages.props`.
+
+Repository skills in `.agents/skills` cover feature changes, migrations, and local debugging. Use the relevant skill for those workflows, without loading unrelated skills.
+
+## Subagent Coordination
+
+Use subagents for independent exploration, review, or implementation with disjoint ownership when the task benefits from delegation. Keep small or dependent tasks in the parent agent. Project role definitions are in `.codex/agents`.
+
+Give each worker a goal, owned files/directories, acceptance criteria, and required evidence. The parent owns integration and final verification. Assign a single owner to shared files such as `Program.cs`, `ApplicationContext.cs`, solution/package files, and migrations/model snapshots. Workers must coordinate before editing outside their scope.
+
+Avoid concurrent builds or EF commands in the same checkout because they share `bin/` and `obj/`. Use separate worktrees for overlapping implementations; do not let agents independently generate competing migrations. Summaries should name changed files, behavior, validation results, and remaining limitations.

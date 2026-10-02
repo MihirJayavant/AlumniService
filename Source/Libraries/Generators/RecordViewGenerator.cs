@@ -36,13 +36,16 @@ namespace Generators
             CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
-            if (context.TargetSymbol is not INamedTypeSymbol targetSymbol) return null;
-            if (context.Attributes.Length == 0) return null;
+            if (context.TargetSymbol is not INamedTypeSymbol targetSymbol)
+                return null;
+            if (context.Attributes.Length == 0)
+                return null;
 
             var attribute = context.Attributes[0];
             token.ThrowIfCancellationRequested();
 
-            if (attribute.ConstructorArguments[0].Value is not INamedTypeSymbol sourceType) return null;
+            if (attribute.ConstructorArguments[0].Value is not INamedTypeSymbol sourceType)
+                return null;
 
             var excluded = new HashSet<string>(
                 attribute.ConstructorArguments.ElementAtOrDefault(1).Values
@@ -53,7 +56,8 @@ namespace Generators
             foreach (var m in sourceType.GetMembers())
             {
                 token.ThrowIfCancellationRequested();
-                if (excluded.Contains(m.Name)) continue;
+                if (excluded.Contains(m.Name))
+                    continue;
 
                 if (m is IPropertySymbol { DeclaredAccessibility: Accessibility.Public } p)
                 {
@@ -73,7 +77,7 @@ namespace Generators
                 targetSymbol.Name,
                 ns ?? "",
                 sourceType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-                [..members]);
+                [.. members]);
         }
 
         private static T GetNamedArg<T>(
@@ -93,7 +97,8 @@ namespace Generators
                 Debugger.Launch();
             }
 #endif
-            if (model is null) return "";
+            if (model is null)
+                return "";
             var sb = new StringBuilder();
             sb.AppendLine("using System;");
             sb.AppendLine();

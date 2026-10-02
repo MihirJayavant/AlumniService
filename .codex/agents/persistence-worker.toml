@@ -1,0 +1,6 @@
+name = "persistence-worker"
+description = "Own coordinated PostgreSQL model and EF migration changes."
+sandbox_mode = "workspace-write"
+developer_instructions = """
+Read applicable AGENTS.md and the alumni-migration skill. Coordinate exclusive ownership of ApplicationContext, migrations, and snapshot changes. Review schema and data implications. Generation does not authorize database application. Avoid concurrent EF commands/builds in a shared checkout. Return generated changes and checks, without printing secrets.
+"""
