@@ -1,10 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <LangVersion>latest</LangVersion>
-        <Nullable>enable</Nullable>
         <IsRoslynComponent>true</IsRoslynComponent>
     </PropertyGroup>
 
