@@ -5,7 +5,7 @@ An ASP.NET Core alumni API targeting .NET 10, organized into vertical slices for
 ## Repository layout
 
 - `Source/Apps/AlumniBackendServices`: API endpoints, configuration, and EF Core migrations.
-- `Source/Apps/AppHost`: Aspire orchestration for PostgreSQL, pgAdmin, and the API.
+- `apphost.cs`: file-based Aspire orchestration for PostgreSQL, pgAdmin, and the API.
 - `Source/Apps/ProxyApp`: standalone YARP proxy; not started by AppHost.
 - `Source/Libraries`: domain features, shared types, infrastructure, and the record-view source generator.
 - `Tests/Core.UnitTests`: isolated tests for shared Core behavior.
@@ -99,12 +99,12 @@ dotnet test --solution AlumniService.slnx --configuration Release --no-build --n
 
 ## Run with Aspire
 
-Configure local PostgreSQL credentials through the AppHost's user secrets:
+Configure local PostgreSQL credentials through the file-based AppHost's user secrets:
 
 ```sh
-dotnet user-secrets set "Parameters:pg-user" "alumni-service" --project Source/Apps/AppHost
-dotnet user-secrets set "Parameters:pg-password" "<local-password>" --project Source/Apps/AppHost
-dotnet run --project Source/Apps/AppHost
+dotnet user-secrets set "Parameters:pg-user" "alumni-service" --file apphost.cs
+dotnet user-secrets set "Parameters:pg-password" "<local-password>" --file apphost.cs
+dotnet run --file apphost.cs
 ```
 
 Open the dashboard URL printed by AppHost to find the API and pgAdmin endpoints. PostgreSQL uses a persistent data volume; changing credentials does not reset an existing database volume.
@@ -132,7 +132,7 @@ dotnet build.cs -- --target=Doctor
 dotnet build.cs -- --target=Bootstrap
 dotnet build.cs
 dotnet build.cs -- --configuration=Debug
-dotnet build.cs -- --target=Run-Local
+dotnet run --file apphost.cs
 dotnet build.cs -- --target=Add-Migration --MigrationName=AddStudentField
 ```
 

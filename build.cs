@@ -75,9 +75,6 @@ Task("Doctor")
     Information("Secret values are not inspected. See README.md for setup.");
 });
 
-Task("Run-Local")
-    .Does(() => DotNetRun("Source/Apps/AppHost"));
-
 var clean = Task("Clean")
                 .WithCriteria(c => HasArgument("rebuild"))
                 .Does(() => DotNetClean(solution, new DotNetCleanSettings
