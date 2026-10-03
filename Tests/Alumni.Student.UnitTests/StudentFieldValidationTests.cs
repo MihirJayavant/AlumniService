@@ -153,7 +153,7 @@ public sealed class StudentFieldValidationTests
     {
         foreach (var current in new[] { true, false })
         {
-            var maximum = current || field == nameof(Address.UserAddress) ? 100 : 30;
+            const int maximum = 100;
             var request = SetAddressText(StudentTestData.ValidAddStudent(), current, field, $" \t{new string('é', maximum)} \n");
 
             AssertValid(request);

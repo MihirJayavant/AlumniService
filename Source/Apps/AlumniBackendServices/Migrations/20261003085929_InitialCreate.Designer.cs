@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AlumniBackendServices.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250526164319_InitialCreate")]
+    [Migration("20261003085929_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace AlumniBackendServices.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.5")
+                .HasAnnotation("ProductVersion", "10.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -194,7 +194,7 @@ namespace AlumniBackendServices.Migrations
 
                     b.ToTable("further_studies", (string)null);
 
-                    b.HasDiscriminator().HasValue("FurtherStudy");
+                    b.HasDiscriminator<string>("Discriminator").HasValue("FurtherStudy");
 
                     b.UseTphMappingStrategy();
                 });
@@ -506,11 +506,11 @@ namespace AlumniBackendServices.Migrations
 
                             b1.Property<string>("City")
                                 .IsRequired()
-                                .HasColumnType("varchar(30)");
+                                .HasColumnType("varchar(100)");
 
                             b1.Property<string>("Country")
                                 .IsRequired()
-                                .HasColumnType("varchar(30)");
+                                .HasColumnType("varchar(100)");
 
                             b1.Property<string>("PinCode")
                                 .IsRequired()
@@ -518,7 +518,7 @@ namespace AlumniBackendServices.Migrations
 
                             b1.Property<string>("State")
                                 .IsRequired()
-                                .HasColumnType("varchar(30)");
+                                .HasColumnType("varchar(100)");
 
                             b1.Property<string>("UserAddress")
                                 .IsRequired()
@@ -565,9 +565,11 @@ namespace AlumniBackendServices.Migrations
                                 .HasForeignKey("StudentEntityId");
                         });
 
-                    b.Navigation("CorrespondenceAddress");
+                    b.Navigation("CorrespondenceAddress")
+                        .IsRequired();
 
-                    b.Navigation("CurrentAddress");
+                    b.Navigation("CurrentAddress")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

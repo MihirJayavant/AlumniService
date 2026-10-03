@@ -85,13 +85,13 @@ public class StudentConfiguration : IEntityTypeConfiguration<StudentEntity>
             addressBuilder =>
             {
                 addressBuilder.Property(a => a.Country)
-                                .HasColumnType("varchar(30)")
+                                .HasColumnType("varchar(100)")
                                 .IsRequired();
                 addressBuilder.Property(a => a.State)
-                                .HasColumnType("varchar(30)")
+                                .HasColumnType("varchar(100)")
                                 .IsRequired();
                 addressBuilder.Property(a => a.City)
-                                .HasColumnType("varchar(30)")
+                                .HasColumnType("varchar(100)")
                                 .IsRequired();
                 addressBuilder.Property(a => a.UserAddress)
                                 .HasColumnType("varchar(100)")
