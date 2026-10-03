@@ -10,6 +10,7 @@ An ASP.NET Core alumni API targeting .NET 10, organized into vertical slices for
 - `Source/Libraries`: domain features, shared types, infrastructure, and the record-view source generator.
 - `Tests/Core.UnitTests`: isolated tests for shared Core behavior.
 - `Tests/Generators.UnitTests`: compilation-based tests for the record-view source generator.
+- `Tests/Alumni.Faculty.UnitTests`: isolated tests for faculty validation and response mapping.
 - `Directory.Packages.props`: centrally managed NuGet versions.
 
 ## Prerequisites
@@ -50,6 +51,8 @@ This restores the solution, verifies whitespace formatting against `.editorconfi
 Core tests use xUnit v3 and Microsoft.Testing.Platform, selected in `global.json`. They cover email validation and value behavior, handler validation/results/exceptions/cancellation, pagination calculations, and item mapping. They require no database, Docker, API configuration, or secrets.
 
 Generator tests use the same test framework and run Roslyn against small C# inputs, verifying generated properties and compilation diagnostics. They cover required init properties, exclusions, member selection, nullable and generic types, namespaces, missing attributes, and multiple views. They require no database or API startup.
+
+Faculty tests cover required fields, email syntax and normalized length limits, name and extension boundaries, positive mobile numbers, nonempty identifiers, pagination limits and offset overflow, and response mapping. Invalid requests are also executed through the real handlers to verify `BadRequest` without database access. These tests require no database, Docker, API configuration, or secrets. Persistence normalization, duplicate detection, successful CRUD, and actual page contents require separate PostgreSQL integration tests.
 
 The Core `Email` value trims surrounding whitespace and lowercases the whole address using invariant casing before validating and storing it. Equality, conversions, and display use that normalized value. This is the application's case-insensitive email policy; it preserves dots and plus aliases.
 
