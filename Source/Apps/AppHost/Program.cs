@@ -4,6 +4,7 @@ var username = builder.AddParameter("pg-user", secret: true);
 var password = builder.AddParameter("pg-password", secret: true);
 
 var postgres = builder.AddPostgres("postgres", username, password, port: 5432)
+    .WithEnvironment("POSTGRES_DB", "alumni-db")
     .WithPgAdmin()
     .WithDataVolume()
     .AddDatabase("alumni-db");
