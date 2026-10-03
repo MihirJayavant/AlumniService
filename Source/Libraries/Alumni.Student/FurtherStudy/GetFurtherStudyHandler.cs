@@ -7,7 +7,7 @@ public record GetFurtherStudy
 
 file sealed class GetFurtherStudyValidator : AbstractValidator<GetFurtherStudy>
 {
-
+    public GetFurtherStudyValidator() => RuleFor(x => x.StudentId).ValidGuid();
 }
 
 public class GetFurtherStudyHandler(IStudentDbContext context)

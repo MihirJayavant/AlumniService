@@ -7,7 +7,7 @@ public sealed record GetExam
 
 file sealed class GetExamValidator : AbstractValidator<GetExam>
 {
-
+    public GetExamValidator() => RuleFor(x => x.StudentId).ValidGuid();
 }
 
 public class GetExamHandler(IStudentDbContext context) : IHandler<GetExam, PaginatedList<ExamResponse>>

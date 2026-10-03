@@ -8,7 +8,7 @@ public sealed partial record AddStudent
 
 file sealed class AddStudentValidator : AbstractValidator<AddStudent>
 {
-    public AddStudentValidator() => RuleFor(x => x.Email).EmailAddress();
+    public AddStudentValidator() => RuleFor(x => x.Email).ValidEmail(maximumLength: 100);
 }
 
 
@@ -18,8 +18,9 @@ public class AddStudentHandler(IStudentDbContext context) : IHandler<AddStudent,
 
     public async Task<OneOf<StudentResponse, ErrorType>> Handle(AddStudent request, CancellationToken cancellationToken)
     {
+        var email = new Email(request.Email).Value;
         var account = await context.Students
-                    .FirstOrDefaultAsync(s => s.Email == request.Email, cancellationToken);
+                    .FirstOrDefaultAsync(s => s.Email == email, cancellationToken);
 
         if (account is not null)
         {
@@ -52,7 +53,7 @@ public static class AddStudentMapper
             Extension = student.Extension,
             Gender = student.Gender,
             DateOfBirth = student.DateOfBirth,
-            Email = student.Email,
+            Email = new Email(student.Email).Value,
             Branch = student.Branch,
             CurrentAddress = student.CurrentAddress,
             CorrespondenceAddress = student.CorrespondenceAddress,

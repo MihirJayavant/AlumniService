@@ -7,7 +7,7 @@ public sealed record GetCompany
 
 file sealed class GetCompanyValidator : AbstractValidator<GetCompany>
 {
-
+    public GetCompanyValidator() => RuleFor(x => x.StudentId).ValidGuid();
 }
 
 public sealed class GetCompanyHandler(IStudentDbContext context) : IHandler<GetCompany, PaginatedList<CompanyResponse>>
