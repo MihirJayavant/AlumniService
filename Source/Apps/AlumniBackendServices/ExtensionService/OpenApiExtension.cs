@@ -22,7 +22,8 @@ public static class OpenApiExtension
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-                app.MapScalarApiReference();
+                app.MapScalarApiReference(options =>
+                    options.WithOpenApiRoutePattern("/swagger/{documentName}/swagger.json"));
             }
         }
     }
