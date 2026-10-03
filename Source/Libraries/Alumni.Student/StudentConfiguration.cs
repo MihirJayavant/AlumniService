@@ -6,8 +6,7 @@ public class StudentConfiguration : IEntityTypeConfiguration<StudentEntity>
 {
     public void Configure(EntityTypeBuilder<StudentEntity> builder)
     {
-        builder.Metadata.SetSchema("Student");
-        builder.ToTable("students");
+        builder.ToTable("students", "Student");
 
         builder.HasKey(s => s.Id);
         builder.Property(s => s.Id).ValueGeneratedOnAdd();

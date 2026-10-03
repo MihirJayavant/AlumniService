@@ -69,7 +69,7 @@ namespace AlumniBackendServices.Migrations
                     b.HasIndex("FacultyId")
                         .IsUnique();
 
-                    b.ToTable("faculties", (string)null);
+                    b.ToTable("faculties", "Faculty");
                 });
 
             modelBuilder.Entity("Alumni.Student.Company.CompanyEntity", b =>
@@ -107,7 +107,7 @@ namespace AlumniBackendServices.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("companies", (string)null);
+                    b.ToTable("companies", "Student");
                 });
 
             modelBuilder.Entity("Alumni.Student.Exam.ExamEntity", b =>
@@ -143,7 +143,7 @@ namespace AlumniBackendServices.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("exams", (string)null);
+                    b.ToTable("exams", "Student");
                 });
 
             modelBuilder.Entity("Alumni.Student.FurtherStudy.FurtherStudy", b =>
@@ -189,7 +189,7 @@ namespace AlumniBackendServices.Migrations
                     b.HasIndex("FurtherStudyId")
                         .IsUnique();
 
-                    b.ToTable("further_studies", (string)null);
+                    b.ToTable("further_studies", "Student");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("FurtherStudy");
 
@@ -261,7 +261,7 @@ namespace AlumniBackendServices.Migrations
                     b.HasIndex("StudentId")
                         .IsUnique();
 
-                    b.ToTable("students", (string)null);
+                    b.ToTable("students", "Student");
                 });
 
             modelBuilder.Entity("Infrastructure.Identity.ApplicationUser", b =>
@@ -523,7 +523,7 @@ namespace AlumniBackendServices.Migrations
 
                             b1.HasKey("StudentEntityId");
 
-                            b1.ToTable("students");
+                            b1.ToTable("students", "Student");
 
                             b1.WithOwner()
                                 .HasForeignKey("StudentEntityId");
@@ -556,7 +556,7 @@ namespace AlumniBackendServices.Migrations
 
                             b1.HasKey("StudentEntityId");
 
-                            b1.ToTable("students");
+                            b1.ToTable("students", "Student");
 
                             b1.WithOwner()
                                 .HasForeignKey("StudentEntityId");

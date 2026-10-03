@@ -6,8 +6,7 @@ public class FurtherStudyConfiguration : IEntityTypeConfiguration<FurtherStudy>
 {
     public void Configure(EntityTypeBuilder<FurtherStudy> builder)
     {
-        builder.Metadata.SetSchema("Student");
-        builder.ToTable("further_studies");
+        builder.ToTable("further_studies", "Student");
 
         builder.HasKey(f => f.Id);
         builder.Property(f => f.Id).ValueGeneratedOnAdd();

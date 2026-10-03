@@ -6,8 +6,7 @@ public class ExamConfiguration : IEntityTypeConfiguration<ExamEntity>
 {
     public void Configure(EntityTypeBuilder<ExamEntity> builder)
     {
-        builder.Metadata.SetSchema("Student");
-        builder.ToTable("exams");
+        builder.ToTable("exams", "Student");
 
         builder.HasKey(e => e.Id);
 
