@@ -1,3 +1,8 @@
+#:sdk Aspire.AppHost.Sdk@13.6.0
+#:package Aspire.Hosting.PostgreSQL
+#:package Aspire.Hosting.Dotnet
+#:property AspireUseCliBundle=true
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 var username = builder.AddParameter("pg-user", secret: true);
@@ -9,7 +14,7 @@ var postgres = builder.AddPostgres("postgres", username, password, port: 5432)
     .WithDataVolume()
     .AddDatabase("alumni-db");
 
-builder.AddProject<Projects.AlumniBackendServices>("alumni-service")
+builder.AddDotnetProject("alumni-service", "Source/Apps/AlumniBackendServices/AlumniBackendServices.csproj")
     .WithReference(postgres)
     .WaitFor(postgres);
 

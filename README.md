@@ -5,7 +5,7 @@ An ASP.NET Core alumni API targeting .NET 10, organized into vertical slices for
 ## Repository layout
 
 - `Source/Apps/AlumniBackendServices`: API endpoints, configuration, and EF Core migrations.
-- `Source/Apps/AppHost`: Aspire orchestration for PostgreSQL, pgAdmin, and the API.
+- `apphost.cs`: file-based Aspire orchestration for PostgreSQL, pgAdmin, and the API.
 - `Source/Apps/ProxyApp`: standalone YARP proxy; not started by AppHost.
 - `Source/Libraries`: domain features, shared types, infrastructure, and the record-view source generator.
 - `Tests/Core.UnitTests`: isolated tests for shared Core behavior.
@@ -45,7 +45,7 @@ GitHub Actions runs the same single command locally available for CI:
 dotnet build.cs -- --target=CI
 ```
 
-This restores the solution, builds the record-view generator in Debug for the formatter's default workspace, verifies whitespace formatting against `.editorconfig`, checks code style and analyzer diagnostics at warning severity or higher, builds in Release with warnings treated as errors, and runs the tests. Checks fail without changing source files. Pass `--configuration=Debug` to use Debug. The workflow runs on pull requests, pushes to `main` (including merged pull requests), and manual dispatches.
+This restores the solution, builds the record-view generator in Debug for the formatter's default workspace, runs the `Format` target to verify whitespace formatting against `.editorconfig` and check code style and analyzer diagnostics at warning severity or higher, builds in Release with warnings treated as errors, and runs the tests. Checks fail without changing source files. Pass `--configuration=Debug` to use Debug. The workflow runs on pull requests, pushes to `main` (including merged pull requests), and manual dispatches.
 
 ## Unit tests
 
@@ -99,15 +99,15 @@ dotnet test --solution AlumniService.slnx --configuration Release --no-build --n
 
 ## Run with Aspire
 
-Configure local PostgreSQL credentials through the AppHost's user secrets:
+Configure local PostgreSQL credentials through the file-based AppHost's user secrets:
 
 ```sh
-dotnet user-secrets set "Parameters:pg-user" "alumni-service" --project Source/Apps/AppHost
-dotnet user-secrets set "Parameters:pg-password" "<local-password>" --project Source/Apps/AppHost
-dotnet run --project Source/Apps/AppHost
+dotnet user-secrets set "Parameters:pg-user" "alumni-service" --file apphost.cs
+dotnet user-secrets set "Parameters:pg-password" "<local-password>" --file apphost.cs
+dotnet run --file apphost.cs
 ```
 
-Open the dashboard URL printed by AppHost to find the API and pgAdmin endpoints. PostgreSQL uses a persistent data volume; changing credentials does not reset an existing database volume.
+The dashboard uses the fixed address `https://localhost:18888`, configured in `apphost.run.json`. Open the login URL printed by AppHost to find the API and pgAdmin endpoints. Telemetry and the AppHost resource service use separate HTTPS ports `18889` and `18891`; these ports must be available. PostgreSQL uses a persistent data volume; changing credentials does not reset an existing database volume.
 
 PostgreSQL uses the fixed host port `5432`; this port must be available when starting AppHost. Aspire supplies `ConnectionStrings:alumni-db` to the API, including the host port and credentials. The API prefers this complete connection string and passes it directly to EF Core.
 
@@ -132,7 +132,7 @@ dotnet build.cs -- --target=Doctor
 dotnet build.cs -- --target=Bootstrap
 dotnet build.cs
 dotnet build.cs -- --configuration=Debug
-dotnet build.cs -- --target=Run-Local
+dotnet run --file apphost.cs
 dotnet build.cs -- --target=Add-Migration --MigrationName=AddStudentField
 ```
 
