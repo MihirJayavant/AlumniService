@@ -21,7 +21,13 @@ void RequireDotNet(string arguments)
     }
 }
 
-void RunTests() => RequireDotNet($"test --solution {solution} --configuration {configuration} --no-build --no-restore");
+void RunTests() => DotNetTest(solution, new DotNetTestSettings
+{
+    PathType = DotNetTestPathType.Solution,
+    Configuration = configuration,
+    NoBuild = true,
+    NoRestore = true,
+});
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -30,8 +36,8 @@ void RunTests() => RequireDotNet($"test --solution {solution} --configuration {c
 Task("Bootstrap")
     .Does(() =>
 {
-    RequireDotNet("tool restore");
-    RequireDotNet("restore AlumniService.slnx");
+    DotNetToolRestore();
+    DotNetRestore(solution);
 });
 
 Task("Doctor")
@@ -70,7 +76,7 @@ Task("Doctor")
 });
 
 Task("Run-Local")
-    .Does(() => RequireDotNet("run --project Source/Apps/AppHost"));
+    .Does(() => DotNetRun("Source/Apps/AppHost"));
 
 var clean = Task("Clean")
                 .WithCriteria(c => HasArgument("rebuild"))
@@ -87,57 +93,45 @@ var build = Task("Build")
             }));
 
 Task("Restore")
-    .Does(() => RequireDotNet($"restore {solution}"));
+    .Does(() => DotNetRestore(solution));
 
 Task("Build-Format-Generator")
     .IsDependentOn("Restore")
     .Does(() =>
     // dotnet format loads the default Debug workspace and needs the analyzer DLL.
-    RequireDotNet("build Source/Libraries/Generators/Generators.csproj --configuration Debug --no-restore"));
+    DotNetBuild("Source/Libraries/Generators/Generators.csproj", new DotNetBuildSettings
+    {
+        Configuration = "Debug",
+        NoRestore = true,
+    }));
 
 Task("Test")
     .IsDependentOn("Build")
     .Does(RunTests);
 
-Task("Check-Format")
+Task("Format")
     .IsDependentOn("Build-Format-Generator")
     .Does(() =>
 {
-    Information("Checking whitespace formatting against .editorconfig...");
-    RequireDotNet($"format whitespace {solution} --no-restore --verify-no-changes");
-    Information("Formatting check passed.");
-});
-
-Task("Lint")
-    .IsDependentOn("Check-Format")
-    .Does(() =>
-{
     Information("Checking formatting, code style, and analyzer diagnostics at warning severity or higher...");
-    RequireDotNet($"format {solution} --no-restore --verify-no-changes --severity warn");
-    Information("Lint check passed.");
+    DotNetFormat(solution, new DotNetFormatSettings
+    {
+        NoRestore = true,
+        VerifyNoChanges = true,
+        Severity = DotNetFormatSeverity.Warning,
+    });
+    Information("Format check passed.");
 });
 
 Task("CI-Build")
-    .IsDependentOn("Lint")
-    .Does(() =>
-{
-    var arguments = new ProcessArgumentBuilder()
-        .Append("build")
-        .AppendQuoted(solution)
-        .Append("--configuration")
-        .AppendQuoted(configuration)
-        .Append("--no-restore --warnaserror -p:ContinuousIntegrationBuild=true");
-
-    var exitCode = StartProcess("dotnet", new ProcessSettings
+    .IsDependentOn("Format")
+    .Does(() => DotNetBuild(solution, new DotNetBuildSettings
     {
-        Arguments = arguments,
-        WorkingDirectory = MakeAbsolute(Directory(".")),
-    });
-    if (exitCode != 0)
-    {
-        throw new InvalidOperationException($"CI build failed with exit code {exitCode}.");
-    }
-});
+        Configuration = configuration,
+        NoRestore = true,
+        ArgumentCustomization = arguments => arguments
+            .Append("--warnaserror -p:ContinuousIntegrationBuild=true"),
+    }));
 
 Task("CI-Test")
     .IsDependentOn("CI-Build")
@@ -149,26 +143,13 @@ Task("CI")
 var migrationName = Argument("MigrationName", "Migration_" + DateTime.UtcNow.ToString("yyyyMMdd_HHmmss", System.Globalization.CultureInfo.InvariantCulture));
 
 Task("Add-Migration")
-    .Does(() =>
-{
-    var arguments = new ProcessArgumentBuilder()
+    .Does(() => RequireDotNet(new ProcessArgumentBuilder()
         .Append("ef migrations add")
         .AppendQuoted(migrationName)
         .Append("--project Source/Apps/AlumniBackendServices")
         .Append("--startup-project Source/Apps/AlumniBackendServices")
-        .Append("-- --environment Development");
-
-    var exitCode = StartProcess("dotnet", new ProcessSettings
-    {
-        Arguments = arguments,
-        WorkingDirectory = MakeAbsolute(Directory(".")),
-    });
-
-    if (exitCode != 0)
-    {
-        throw new InvalidOperationException($"Migration creation failed with exit code {exitCode}.");
-    }
-});
+        .Append("-- --environment Development")
+        .Render()));
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION

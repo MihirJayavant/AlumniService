@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   check:
-    name: Format, lint, build, and test
+    name: Format, build, and test
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -28,5 +28,5 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Check format, lint, build, and test
+      - name: Check format, build, and test
         run: dotnet build.cs -- --target=CI
