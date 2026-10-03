@@ -5,11 +5,11 @@ namespace Alumni.Student.UnitTests;
 public sealed class StudentNormalizationTests
 {
     [Theory]
-    [InlineData(" male ", " it ", "Male", "IT")]
-    [InlineData(" FEMALE\t", "cS", "Female", "CS")]
-    [InlineData("mAlE", " exTc ", "Male", "EXTC")]
-    [InlineData(" female ", "eLeX", "Female", "ELEX")]
-    public void ToStudent_WhenChoicesHaveDifferentCasing_TrimsAndCanonicalizesWithoutMutatingInput(
+    [InlineData(" male ", " it ", "Male", "it")]
+    [InlineData(" FEMALE\t", "cS", "Female", "cS")]
+    [InlineData("mAlE", " exTc ", "Male", "exTc")]
+    [InlineData(" female ", "eLeX", "Female", "eLeX")]
+    public void ToStudent_WhenChoicesHaveDifferentCasing_CanonicalizesGenderAndTrimsBranchWithoutMutatingInput(
         string gender, string branch, string expectedGender, string expectedBranch)
     {
         var request = StudentTestData.ValidAddStudent() with { Gender = gender, Branch = branch };

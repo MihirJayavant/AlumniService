@@ -13,7 +13,7 @@ public class AddCompanyValidator : AbstractValidator<AddCompany>
         RuleFor(x => x.StudentId).ValidGuid();
         RuleFor(c => c.CompanyName).RequiredText(50);
         RuleFor(c => c.Designation).RequiredText(30);
-        RuleFor(c => c.YearOfJoining).InclusiveBetween(1, 9999);
+        RuleFor(c => c.YearOfJoining).ValidYear();
         RuleFor(c => c.AnnualSalary).GreaterThanOrEqualTo(0);
     }
 }

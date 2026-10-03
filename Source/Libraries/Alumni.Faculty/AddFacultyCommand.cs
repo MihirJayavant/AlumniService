@@ -12,23 +12,9 @@ file sealed class AddFacultyValidator : AbstractValidator<AddFaculty>
     {
         RuleFor(x => x.Email).ValidEmail(maximumLength: 100);
 
-        RuleFor(x => x.FirstName)
-            .Cascade(CascadeMode.Stop)
-            .NotEmpty()
-            .Must(value => value.Trim().Length <= 100)
-            .WithMessage("FirstName must be at most 100 characters.");
-
-        RuleFor(x => x.LastName)
-            .Cascade(CascadeMode.Stop)
-            .NotEmpty()
-            .Must(value => value.Trim().Length <= 100)
-            .WithMessage("LastName must be at most 100 characters.");
-
-        RuleFor(x => x.Extension)
-            .Cascade(CascadeMode.Stop)
-            .NotEmpty()
-            .Must(value => value.Trim().Length <= 10)
-            .WithMessage("Extension must be at most 10 characters.");
+        RuleFor(x => x.FirstName).RequiredText(100).WithMessage("FirstName must be at most 100 characters.");
+        RuleFor(x => x.LastName).RequiredText(100).WithMessage("LastName must be at most 100 characters.");
+        RuleFor(x => x.Extension).RequiredText(10);
 
         RuleFor(x => x.MobileNo).GreaterThan(0);
     }

@@ -13,7 +13,7 @@ file sealed class AddExamValidator : AbstractValidator<AddExam>
         RuleFor(x => x.StudentId).ValidGuid();
         RuleFor(x => x.ExamName).RequiredText(100);
         RuleFor(x => x.Score).InclusiveBetween(0, short.MaxValue);
-        RuleFor(x => x.Year).InclusiveBetween(1, 9999);
+        RuleFor(x => x.Year).ValidYear();
     }
 }
 

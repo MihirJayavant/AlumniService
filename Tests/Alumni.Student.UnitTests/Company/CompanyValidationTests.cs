@@ -138,13 +138,14 @@ public sealed class CompanyValidationTests
 
     [Theory]
     [InlineData(0)]
+    [InlineData(1899)]
     [InlineData(10000)]
     public async Task Execute_WhenYearOfJoiningIsOutOfRange_ReturnsBadRequestWithoutDatabaseAccess(int value)
         => await AssertRejected(ValidAddCompany() with { YearOfJoining = value }, nameof(AddCompany.YearOfJoining));
 
     [Theory]
-    [InlineData(1)]
-    [InlineData(9999)]
+    [InlineData(1900)]
+    [InlineData(2020)]
     public void Validate_WhenYearOfJoiningIsAtBoundary_Accepts(int value)
     {
         var request = ValidAddCompany() with { YearOfJoining = value };
@@ -168,6 +169,17 @@ public sealed class CompanyValidationTests
         var result = new AddCompanyHandler(new RejectingStudentDbContext()).Validator.Validate(request);
 
         Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public async Task Validate_WhenYearIsCurrentOrFuture_EnforcesCurrentYearLimit()
+    {
+        var year = DateTime.UtcNow.Year;
+        var request = ValidAddCompany() with { YearOfJoining = year };
+        var result = new AddCompanyHandler(new RejectingStudentDbContext()).Validator.Validate(request);
+
+        Assert.True(result.IsValid);
+        await AssertRejected(request with { YearOfJoining = year + 1 }, nameof(AddCompany.YearOfJoining));
     }
 
     private static AddCompany ValidAddCompany() => new()

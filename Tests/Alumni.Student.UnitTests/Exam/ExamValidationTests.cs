@@ -133,13 +133,14 @@ public sealed class ExamValidationTests
 
     [Theory]
     [InlineData(0)]
+    [InlineData(1899)]
     [InlineData(10000)]
     public async Task Execute_WhenYearIsOutOfRange_ReturnsBadRequestWithoutDatabaseAccess(int value)
         => await AssertRejected(ValidAddExam() with { Year = value }, nameof(AddExam.Year));
 
     [Theory]
-    [InlineData(1)]
-    [InlineData(9999)]
+    [InlineData(1900)]
+    [InlineData(2020)]
     public void Validate_WhenYearIsAtBoundary_Accepts(int value)
     {
         var request = ValidAddExam() with { Year = value };
@@ -147,6 +148,17 @@ public sealed class ExamValidationTests
         var result = new AddExamHandler(new RejectingStudentDbContext()).Validator.Validate(request);
 
         Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public async Task Validate_WhenYearIsCurrentOrFuture_EnforcesCurrentYearLimit()
+    {
+        var year = DateTime.UtcNow.Year;
+        var request = ValidAddExam() with { Year = year };
+        var result = new AddExamHandler(new RejectingStudentDbContext()).Validator.Validate(request);
+
+        Assert.True(result.IsValid);
+        await AssertRejected(request with { Year = year + 1 }, nameof(AddExam.Year));
     }
 
     private static AddExam ValidAddExam() => new()

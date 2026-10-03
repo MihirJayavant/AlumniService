@@ -24,6 +24,7 @@ public sealed class StudentFieldValidationTests
     [InlineData(nameof(AddStudent.FirstName), 100)]
     [InlineData(nameof(AddStudent.LastName), 100)]
     [InlineData(nameof(AddStudent.Extension), 10)]
+    [InlineData(nameof(AddStudent.Branch), 30)]
     public async Task Validate_WhenTextLengthIsAtBoundary_UsesTrimmedLength(string field, int maximum)
     {
         var value = $" \t{new string('é', maximum)} \r\n";
@@ -63,24 +64,19 @@ public sealed class StudentFieldValidationTests
     [Theory]
     [InlineData(nameof(AddStudent.Gender), "Unknown")]
     [InlineData(nameof(AddStudent.Gender), "F")]
-    [InlineData(nameof(AddStudent.Branch), "Mechanical")]
-    [InlineData(nameof(AddStudent.Branch), "C S")]
     public async Task Execute_WhenChoiceIsUnsupported_ReturnsBadRequestWithoutDatabaseAccess(string field, string value)
         => await AssertRejected(SetText(StudentTestData.ValidAddStudent(), field, value), field);
 
     [Fact]
-    public async Task Validate_WhenBirthDateIsAtBoundary_RejectsMissingAndFutureDates()
+    public async Task Validate_WhenBirthDateIsAtBoundary_EnforcesAgeLimits()
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
-        var request = StudentTestData.ValidAddStudent() with
-        {
-            DateOfBirth = today,
-            AdmissionYear = today.Year,
-            PassingYear = today.Year
-        };
+        var request = StudentTestData.ValidAddStudent() with { DateOfBirth = today.AddYears(-100) };
 
         AssertValid(request);
-        AssertValid(request with { DateOfBirth = DateOnly.MinValue.AddDays(1), AdmissionYear = 1, PassingYear = 1 });
+        AssertValid(request with { DateOfBirth = today.AddYears(-10).AddDays(-1) });
+        await AssertRejected(request with { DateOfBirth = today.AddYears(-100).AddDays(-1) }, nameof(AddStudent.DateOfBirth));
+        await AssertRejected(request with { DateOfBirth = today.AddYears(-10) }, nameof(AddStudent.DateOfBirth));
         await AssertRejected(request with { DateOfBirth = DateOnly.MinValue }, nameof(AddStudent.DateOfBirth));
         await AssertRejected(request with { DateOfBirth = today.AddDays(1) }, nameof(AddStudent.DateOfBirth));
     }
@@ -97,9 +93,27 @@ public sealed class StudentFieldValidationTests
 
     [Theory]
     [InlineData(1998, 1998)]
-    [InlineData(9999, 9999)]
     public void Validate_WhenYearsMeetBoundsAndChronology_Accepts(int admission, int passing)
         => AssertValid(StudentTestData.ValidAddStudent() with { AdmissionYear = admission, PassingYear = passing });
+
+    [Fact]
+    public async Task Validate_WhenYearIsCurrentOrFuture_EnforcesCurrentYearLimit()
+    {
+        var year = DateTime.UtcNow.Year;
+        var request = StudentTestData.ValidAddStudent() with { AdmissionYear = year, PassingYear = year };
+
+        AssertValid(request);
+        await AssertRejected(request with { AdmissionYear = year + 1, PassingYear = year + 1 }, nameof(AddStudent.AdmissionYear));
+        await AssertRejected(request with { PassingYear = year + 1 }, nameof(AddStudent.PassingYear));
+        await AssertRejected(request with { AdmissionYear = 1899 }, nameof(AddStudent.AdmissionYear));
+    }
+
+    [Theory]
+    [InlineData("Mechanical")]
+    [InlineData("Civil Engineering")]
+    [InlineData(" C S ")]
+    public void Validate_WhenBranchIsOutsideListedConstants_AcceptsNonemptyDomainText(string branch)
+        => AssertValid(StudentTestData.ValidAddStudent() with { Branch = branch });
 
     [Theory]
     [InlineData(true)]
@@ -201,6 +215,7 @@ public sealed class StudentFieldValidationTests
         nameof(AddStudent.FirstName) => request.FirstName,
         nameof(AddStudent.LastName) => request.LastName,
         nameof(AddStudent.Extension) => request.Extension,
+        nameof(AddStudent.Branch) => request.Branch,
         _ => throw new ArgumentOutOfRangeException(nameof(field))
     };
 

@@ -136,16 +136,17 @@ public sealed class FurtherStudyValidationTests
 
     [Theory]
     [InlineData(0)]
+    [InlineData(1899)]
     [InlineData(10000)]
     public async Task Execute_WhenAdmissionYearIsOutOfRange_ReturnsBadRequestWithoutDatabaseAccess(int value)
         => await AssertRejected(ValidAddFurtherStudy() with { AdmissionYear = value }, nameof(AddFurtherStudy.AdmissionYear));
 
     [Theory]
-    [InlineData(1)]
-    [InlineData(9999)]
+    [InlineData(1900)]
+    [InlineData(2020)]
     public void Validate_WhenAdmissionYearIsAtBoundary_Accepts(int value)
     {
-        var request = ValidAddFurtherStudy() with { AdmissionYear = value, PassingYear = 9999 };
+        var request = ValidAddFurtherStudy() with { AdmissionYear = value, PassingYear = DateTime.UtcNow.Year };
 
         var result = new AddFurtherStudyHandler(new RejectingStudentDbContext()).Validator.Validate(request);
 
@@ -154,16 +155,17 @@ public sealed class FurtherStudyValidationTests
 
     [Theory]
     [InlineData(0)]
+    [InlineData(1899)]
     [InlineData(10000)]
     public async Task Execute_WhenPassingYearIsOutOfRange_ReturnsBadRequestWithoutDatabaseAccess(int value)
         => await AssertRejected(ValidAddFurtherStudy() with { PassingYear = value }, nameof(AddFurtherStudy.PassingYear));
 
     [Theory]
-    [InlineData(1)]
-    [InlineData(9999)]
+    [InlineData(1900)]
+    [InlineData(2020)]
     public void Validate_WhenPassingYearIsAtBoundary_Accepts(int value)
     {
-        var request = ValidAddFurtherStudy() with { PassingYear = value, AdmissionYear = 1 };
+        var request = ValidAddFurtherStudy() with { PassingYear = value, AdmissionYear = 1900 };
 
         var result = new AddFurtherStudyHandler(new RejectingStudentDbContext()).Validator.Validate(request);
 
@@ -182,6 +184,17 @@ public sealed class FurtherStudyValidationTests
         var result = new AddFurtherStudyHandler(new RejectingStudentDbContext()).Validator.Validate(request);
 
         Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public async Task Validate_WhenYearIsCurrentOrFuture_EnforcesCurrentYearLimit()
+    {
+        var year = DateTime.UtcNow.Year;
+        var request = ValidAddFurtherStudy() with { PassingYear = year };
+        var result = new AddFurtherStudyHandler(new RejectingStudentDbContext()).Validator.Validate(request);
+
+        Assert.True(result.IsValid);
+        await AssertRejected(request with { PassingYear = year + 1 }, nameof(AddFurtherStudy.PassingYear));
     }
 
     private static AddFurtherStudy ValidAddFurtherStudy() => new()

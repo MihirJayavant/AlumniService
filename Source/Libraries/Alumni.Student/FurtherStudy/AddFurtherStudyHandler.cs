@@ -15,8 +15,8 @@ public sealed class AddFurtherStudyValidator : AbstractValidator<AddFurtherStudy
         RuleFor(x => x.Degree).RequiredText(50);
         RuleFor(x => x.Country).RequiredText(30);
         RuleFor(x => x.City).RequiredText(30);
-        RuleFor(x => x.AdmissionYear).InclusiveBetween(1, 9999);
-        RuleFor(x => x.PassingYear).Cascade(CascadeMode.Stop).InclusiveBetween(1, 9999)
+        RuleFor(x => x.AdmissionYear).ValidYear();
+        RuleFor(x => x.PassingYear).ValidYear()
             .GreaterThanOrEqualTo(x => x.AdmissionYear);
     }
 }
