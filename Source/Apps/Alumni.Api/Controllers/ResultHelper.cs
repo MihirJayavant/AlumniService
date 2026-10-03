@@ -14,8 +14,11 @@ public static class ResultHelper
                     ResponseStatus.BadRequest => Results.BadRequest(new ErrorResponse(e.Message)),
                     ResponseStatus.NotFound => Results.NotFound(new ErrorResponse(e.Message)),
                     ResponseStatus.Conflict => Results.Conflict(new ErrorResponse(e.Message)),
+                    ResponseStatus.Unauthorized => Results.Unauthorized(),
                     ResponseStatus.InternalError => Results.Problem(detail: e.Message, statusCode: 500),
-                    _ => Results.BadRequest("Bad request")
+                    _ when (int)e.Status is >= 400 and <= 599 =>
+                        Results.Json(new ErrorResponse(e.Message), statusCode: (int)e.Status),
+                    _ => Results.Problem(detail: e.Message, statusCode: 500)
                 }
             );
     }
