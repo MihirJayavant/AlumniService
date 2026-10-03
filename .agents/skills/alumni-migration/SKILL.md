@@ -7,7 +7,7 @@ description: Generate and review EF Core migrations for AlumniService PostgreSQL
 
 Read Infrastructure and API scoped AGENTS.md files. Paths below are relative to the repository root.
 
-Trace the model through its domain EF configuration and `Source/Libraries/Infrastructure/ApplicationContext.cs`. Verify context-interface and configuration registration changes. Migrations are owned by `Source/Apps/AlumniBackendServices`, not Infrastructure.
+Trace the model through its domain EF configuration and `Source/Libraries/Infrastructure/ApplicationContext.cs`. Verify context-interface and configuration registration changes. Migrations are owned by `Source/Apps/Alumni.Api`, not Infrastructure.
 
 Coordinate a single migration owner. Run `dotnet build.cs -- --target=Add-Migration --MigrationName=<DescriptiveName>` using API development configuration from README.md. The local dotnet-ef version is pinned in `.config/dotnet-tools.json`; restore with `dotnet build.cs -- --target=Bootstrap` if needed.
 

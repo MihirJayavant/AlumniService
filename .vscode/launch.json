@@ -1,33 +1,40 @@
 {
-  // Use IntelliSense to find out which attributes exist for C# debugging
-  // Use hover for the description of the existing attributes
-  // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
   "version": "0.2.0",
   "configurations": [
     {
-      "name": ".NET Core Launch (web)",
+      "name": "Alumni.Api",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      // If you have changed target frameworks, make sure to update the program path.
-      "program": "${workspaceFolder}/Source/AlumniBackendServices/bin/Debug/net7.0/AlumniBackendServices.dll",
-      "args": [],
-      "cwd": "${workspaceFolder}/Source/AlumniBackendServices",
+      "program": "${workspaceFolder}/Source/Apps/Alumni.Api/bin/Debug/net10.0/Alumni.Api.dll",
+      "cwd": "${workspaceFolder}/Source/Apps/Alumni.Api",
+      "launchSettingsProfile": "Alumni.Api",
+      "console": "internalConsole",
       "stopAtEntry": false,
-      // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
       "serverReadyAction": {
         "action": "openExternally",
-        "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
-      },
-      "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "sourceFileMap": {
-        "/Views": "${workspaceFolder}/Views"
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+        "uriFormat": "%s/swagger"
       }
     },
     {
-      "name": ".NET Core Attach",
+      "name": "ProxyApp",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/Source/Apps/ProxyApp/bin/Debug/net10.0/ProxyApp.dll",
+      "cwd": "${workspaceFolder}/Source/Apps/ProxyApp",
+      "launchSettingsProfile": "ProxyApp",
+      "console": "internalConsole",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+        "uriFormat": "%s"
+      }
+    },
+    {
+      "name": "Attach to .NET process",
       "type": "coreclr",
       "request": "attach",
       "processId": "${command:pickProcess}"

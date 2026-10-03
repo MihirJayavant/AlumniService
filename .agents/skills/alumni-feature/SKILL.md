@@ -5,7 +5,7 @@ description: Implement or modify AlumniService domain features across handlers, 
 
 # alumni-feature
 
-Trace the requested behavior from `Source/Apps/AlumniBackendServices/Controllers` into its owning domain. Read the root and applicable scoped AGENTS.md files.
+Trace the requested behavior from `Source/Apps/Alumni.Api/Controllers` into its owning domain. Read the root and applicable scoped AGENTS.md files.
 
 Use `Source/Libraries/Alumni.Student/Company` as a slice reference, `Alumni.Student/AddStudentHandler.cs` for handler shape, `Core/Handler.cs` for execution semantics, and API `Controllers/ResultHelper.cs` for HTTP mapping. These paths are relative to the repository root, not this skill directory.
 

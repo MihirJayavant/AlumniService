@@ -14,7 +14,7 @@ public static class ConfigureServices
         public IServiceCollection AddInfrastructureServices(ISettingService setting)
         {
             services.AddDbContext<IApplicationContext, ApplicationContext>(options =>
-               options.UseNpgsql(setting.DatabaseSetting.Connection, b => b.MigrationsAssembly("AlumniBackendServices")));
+               options.UseNpgsql(setting.DatabaseSetting.Connection, b => b.MigrationsAssembly("Alumni.Api")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                     .AddEntityFrameworkStores<ApplicationContext>();
