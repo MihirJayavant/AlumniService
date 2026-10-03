@@ -4,7 +4,7 @@ An ASP.NET Core alumni API targeting .NET 10, organized into vertical slices for
 
 ## Repository layout
 
-- `Source/Apps/AlumniBackendServices`: API endpoints, configuration, and EF Core migrations.
+- `Source/Apps/Alumni.Apioints, configuration, and EF Core migrations.
 - `apphost.cs`: file-based Aspire orchestration for PostgreSQL, pgAdmin, and the API.
 - `Source/Apps/ProxyApp`: standalone YARP proxy; not started by AppHost.
 - `Source/Libraries`: domain features, shared types, infrastructure, and the record-view source generator.
@@ -118,7 +118,7 @@ Start an existing PostgreSQL database and configure a complete connection string
 Configure `Authentication:Secret`, `Authentication:ValidAudience`, and `Authentication:ValidIssuer` using local configuration or their double-underscore environment variable equivalents. Keep credentials and JWT secrets out of committed files.
 
 ```sh
-dotnet run --project Source/Apps/AlumniBackendServices
+dotnet run --project Source/Apps/Alumni.Api
 ```
 
 ## Codex agent workflow
@@ -147,8 +147,8 @@ For unit-test planning and implementation, use the `alumni-testing` skill in `.a
 Migrations live in the API project. Configure its database connection before running EF commands. For the Aspire database, use the connection string shown in the dashboard; PostgreSQL listens on host port `5432`.
 
 ```sh
-dotnet ef migrations add <MigrationName> --project Source/Apps/AlumniBackendServices --startup-project Source/Apps/AlumniBackendServices -- --environment Development
-dotnet ef database update --project Source/Apps/AlumniBackendServices --startup-project Source/Apps/AlumniBackendServices -- --environment Development
+dotnet ef migrations add <MigrationName> --project Source/Apps/Alumni.Apiproject Source/Apps/Alumni.Api Alumni.Apilopment
+dotnet ef database update --project Source/Apps/Alumni.Apiproject Source/Apps/Alumni.Api Alumni.Apilopment
 ```
 
 Apply migrations manually from the repository root before using endpoints that require database tables; AppHost does not apply them automatically.

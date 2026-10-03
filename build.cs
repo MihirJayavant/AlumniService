@@ -143,8 +143,8 @@ Task("Add-Migration")
     .Does(() => RequireDotNet(new ProcessArgumentBuilder()
         .Append("ef migrations add")
         .AppendQuoted(migrationName)
-        .Append("--project Source/Apps/AlumniBackendServices")
-        .Append("--startup-project Source/Apps/AlumniBackendServices")
+        .Append("--project Source/Apps/Alumni.Api")
+        .Append("--startup-project Source/Apps/Alumni.Api")
         .Append("-- --environment Development")
         .Render()));
 

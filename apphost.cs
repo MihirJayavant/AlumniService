@@ -14,7 +14,7 @@ var postgres = builder.AddPostgres("postgres", username, password, port: 5432)
     .WithDataVolume()
     .AddDatabase("alumni-db");
 
-builder.AddDotnetProject("alumni-service", "Source/Apps/AlumniBackendServices/AlumniBackendServices.csproj")
+builder.AddDotnetProject("alumni-service", "Source/Apps/Alumni.Api/Alumni.Api.csproj")
     .WithReference(postgres)
     .WaitFor(postgres);
 
