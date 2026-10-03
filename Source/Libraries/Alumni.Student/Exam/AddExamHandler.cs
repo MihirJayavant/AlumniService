@@ -8,7 +8,13 @@ public sealed partial record AddExam
 
 file sealed class AddExamValidator : AbstractValidator<AddExam>
 {
-    public AddExamValidator() => RuleFor(x => x.StudentId).ValidGuid();
+    public AddExamValidator()
+    {
+        RuleFor(x => x.StudentId).ValidGuid();
+        RuleFor(x => x.ExamName).RequiredText(100);
+        RuleFor(x => x.Score).InclusiveBetween(0, short.MaxValue);
+        RuleFor(x => x.Year).InclusiveBetween(1, 9999);
+    }
 }
 
 public class AddExamHandler(IStudentDbContext context) : IHandler<AddExam, ExamResponse>
@@ -25,17 +31,23 @@ public class AddExamHandler(IStudentDbContext context) : IHandler<AddExam, ExamR
             return new ErrorType { Message = "Student not found", Status = ResponseStatus.NotFound };
         }
 
-        var exam = new ExamEntity()
-        {
-            Id = 0,
-            ExamId = Guid.CreateVersion7(),
-            ExamName = request.ExamName,
-            Score = request.Score,
-            Year = request.Year,
-        };
+        var exam = request.ToExam();
         student.Exams.Add(exam);
         await context.SaveChangesAsync(cancellationToken);
 
         return exam.ToExamResponse();
     }
+}
+
+public static class AddExamMapper
+{
+    public static ExamEntity ToExam(this AddExam request)
+        => new ExamEntity
+        {
+            Id = 0,
+            ExamId = Guid.CreateVersion7(),
+            ExamName = request.ExamName.Trim(),
+            Score = request.Score,
+            Year = request.Year,
+        };
 }

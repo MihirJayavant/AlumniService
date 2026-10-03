@@ -11,6 +11,7 @@ An ASP.NET Core alumni API targeting .NET 10, organized into vertical slices for
 - `Tests/Core.UnitTests`: isolated tests for shared Core behavior.
 - `Tests/Generators.UnitTests`: compilation-based tests for the record-view source generator.
 - `Tests/Alumni.Faculty.UnitTests`: isolated tests for faculty validation and response mapping.
+- `Tests/Alumni.Student.UnitTests`: isolated tests for student and related-record validation and mapping.
 - `Directory.Packages.props`: centrally managed NuGet versions.
 
 ## Prerequisites
@@ -54,6 +55,10 @@ Generator tests use the same test framework and run Roslyn against small C# inpu
 
 Faculty tests cover required fields, email syntax and normalized length limits, name and extension boundaries, positive mobile numbers, nonempty identifiers, pagination limits and offset overflow, and response mapping. Invalid requests are also executed through the real handlers to verify `BadRequest` without database access. These tests require no database, Docker, API configuration, or secrets. Persistence normalization, duplicate detection, successful CRUD, and actual page contents require separate PostgreSQL integration tests.
 
+Student tests cover required fields and trimmed database length limits, email and mobile-number validation, supported branch and gender values, birth dates and year chronology, nested addresses, lookup identifiers, pagination limits and offset overflow, and Company, Exam, and FurtherStudy validation. Invalid requests execute through real handlers to verify `BadRequest` without database access. Mapping tests cover creation identity, Student audit timestamps, text trimming, email normalization, canonical branch/gender values, and every response mapper. These tests require no database, Docker, API configuration, or secrets. Successful persistence, duplicate detection, relationships, and actual page contents need separate PostgreSQL integration tests.
+
+Text fields are trimmed before persistence; names, addresses and other free text retain casing, Unicode, punctuation and internal spaces. Branch and gender accept case-insensitive input and persist canonical values. Mobile numbers contain 1–15 ASCII digits and cannot be all zeros; extensions remain required text of at most 10 characters. Birth dates use the current UTC date. Years range from 1 to 9999; passing years cannot precede admission years, and Student admission cannot precede the birth year. Salaries are nonnegative; exam scores range from 0 to 32767, matching the database SMALLINT. Postal codes remain required free text. These rules apply to new records; existing rows are not rewritten.
+
 The Core `Email` value trims surrounding whitespace and lowercases the whole address using invariant casing before validating and storing it. Equality, conversions, and display use that normalized value. This is the application's case-insensitive email policy; it preserves dots and plus aliases.
 
 Email syntax is limited to unquoted ASCII local parts with nonempty dot-separated segments and a dotted DNS domain. Domain labels allow letters, digits, and internal hyphens, up to 63 characters each. The normalized address allows up to 64 characters before `@` and 254 characters overall. Punycode domains are accepted; quoted local parts, raw Unicode addresses, and IP address literals are outside this policy. Syntax validation does not establish mailbox ownership or deliverability.
@@ -75,6 +80,13 @@ Build and run only the generator suite without build servers:
 ```sh
 dotnet build Tests/Generators.UnitTests/Generators.UnitTests.csproj --configuration Release --disable-build-servers -m:1
 dotnet Tests/Generators.UnitTests/bin/Release/net10.0/Generators.UnitTests.dll
+```
+
+Build and run only the Student suite without build servers:
+
+```sh
+dotnet build Tests/Alumni.Student.UnitTests/Alumni.Student.UnitTests.csproj --configuration Release --disable-build-servers -m:1
+dotnet Tests/Alumni.Student.UnitTests/bin/Release/net10.0/Alumni.Student.UnitTests.dll
 ```
 
 After a Release build, run all solution tests without rebuilding:
