@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Scalar.AspNetCore;
 
 namespace AlumniBackendServices.ExtensionService;
@@ -10,8 +11,8 @@ public static class OpenApiExtension
     {
         public void AddApplicationOpenApi(WebApplicationBuilder builder)
         {
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.ConfigureHttpJsonOptions(options => options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict);
+            builder.Services.AddOpenApi();
         }
     }
     extension(WebApplication app)
@@ -20,10 +21,10 @@ public static class OpenApiExtension
         {
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-                app.MapScalarApiReference(options =>
-                    options.WithOpenApiRoutePattern("/swagger/{documentName}/swagger.json"));
+                app.MapOpenApi();
+                app.UseSwaggerUI(options =>
+                    options.SwaggerEndpoint("/openapi/v1.json", "Alumni Backend Services"));
+                app.MapScalarApiReference();
             }
         }
     }
