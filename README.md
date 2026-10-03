@@ -12,6 +12,7 @@ An ASP.NET Core alumni API targeting .NET 10, organized into vertical slices for
 - `Tests/Generators.UnitTests`: compilation-based tests for the record-view source generator.
 - `Tests/Alumni.Faculty.UnitTests`: isolated tests for faculty validation and response mapping.
 - `Tests/Alumni.Student.UnitTests`: isolated tests for student and related-record validation and mapping.
+- `Tests/Alumni.Api.UnitTests`: isolated tests for HTTP result conversion, endpoint registration, settings, and JSON options.
 - `Directory.Packages.props`: centrally managed NuGet versions.
 
 ## Prerequisites
@@ -48,6 +49,8 @@ dotnet build.cs -- --target=CI
 This restores the solution, builds the record-view generator in Debug for the formatter's default workspace, runs the `Format` target to verify whitespace formatting against `.editorconfig` and check code style and analyzer diagnostics at warning severity or higher, builds in Release with warnings treated as errors, and runs the tests. Checks fail without changing source files. Pass `--configuration=Debug` to use Debug. The workflow runs on pull requests, pushes to `main` (including merged pull requests), and manual dispatches.
 
 ## Unit tests
+
+API tests cover successful and error HTTP result conversion, all 13 minimal API route registrations, the paginated FurtherStudy response metadata, strict JSON number handling, and configuration precedence/defaults. They inspect routes without starting a server and require no database, Docker, or secrets. Environment-password cases restore process environment values and run without parallel execution. Request binding, actual HTTP serialization, middleware, and persistence need separate integration tests.
 
 Core tests use xUnit v3 and Microsoft.Testing.Platform, selected in `global.json`. They cover email validation and value behavior, handler validation/results/exceptions/cancellation, pagination calculations, and item mapping. They require no database, Docker, API configuration, or secrets.
 
