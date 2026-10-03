@@ -1,5 +1,7 @@
 namespace AlumniBackendServices.Controllers;
 
+using Microsoft.AspNetCore.OpenApi;
+
 public sealed class StudentController : IEndpoint
 {
     public void Add(IEndpointRouteBuilder app)

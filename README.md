@@ -107,7 +107,7 @@ dotnet user-secrets set "Parameters:pg-password" "<local-password>" --file appho
 dotnet run --file apphost.cs
 ```
 
-Open the dashboard URL printed by AppHost to find the API and pgAdmin endpoints. PostgreSQL uses a persistent data volume; changing credentials does not reset an existing database volume.
+The dashboard uses the fixed address `https://localhost:18888`, configured in `apphost.run.json`. Open the login URL printed by AppHost to find the API and pgAdmin endpoints. Telemetry and the AppHost resource service use separate HTTPS ports `18889` and `18891`; these ports must be available. PostgreSQL uses a persistent data volume; changing credentials does not reset an existing database volume.
 
 PostgreSQL uses the fixed host port `5432`; this port must be available when starting AppHost. Aspire supplies `ConnectionStrings:alumni-db` to the API, including the host port and credentials. The API prefers this complete connection string and passes it directly to EF Core.
 

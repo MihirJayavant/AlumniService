@@ -8,27 +8,22 @@ public static class OpenApiExtension
 {
     extension(IServiceCollection services)
     {
-        public void AddApplicationOpenApi() => services.AddOpenApi("alumni");
+        public void AddApplicationOpenApi(WebApplicationBuilder builder)
+        {
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+        }
     }
-
     extension(WebApplication app)
     {
         public void UseApplicationOpenApi()
         {
-            app.MapOpenApi();
-
-            const string title = "Alumni Backend Services";
-            const string path = "/openapi/alumni.json";
-
-            app.MapScalarApiReference(options =>
+            if (app.Environment.IsDevelopment())
             {
-                options.Title = title;
-                options.OpenApiRoutePattern = path;
-            });
-
-            app.UseSwaggerUI(
-                option => option.SwaggerEndpoint(path, title)
-                );
+                app.UseSwagger();
+                app.UseSwaggerUI();
+                app.MapScalarApiReference();
+            }
         }
     }
 }
