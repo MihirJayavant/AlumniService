@@ -109,7 +109,7 @@ dotnet run --project Source/Apps/AppHost
 
 Open the dashboard URL printed by AppHost to find the API and pgAdmin endpoints. PostgreSQL uses a persistent data volume; changing credentials does not reset an existing database volume.
 
-Aspire supplies `ConnectionStrings:alumni-db` to the API, including its allocated host port and credentials. The API prefers this complete connection string and passes it directly to EF Core.
+PostgreSQL uses the fixed host port `5432`; this port must be available when starting AppHost. Aspire supplies `ConnectionStrings:alumni-db` to the API, including the host port and credentials. The API prefers this complete connection string and passes it directly to EF Core.
 
 ## Run the API directly
 
@@ -144,14 +144,14 @@ For unit-test planning and implementation, use the `alumni-testing` skill in `.a
 
 ## Database migrations
 
-Migrations live in the API project. Configure its database connection before running EF commands. For the Aspire database, use the connection string shown in the dashboard so the allocated port matches.
+Migrations live in the API project. Configure its database connection before running EF commands. For the Aspire database, use the connection string shown in the dashboard; PostgreSQL listens on host port `5432`.
 
 ```sh
 dotnet ef migrations add <MigrationName> --project Source/Apps/AlumniBackendServices --startup-project Source/Apps/AlumniBackendServices -- --environment Development
 dotnet ef database update --project Source/Apps/AlumniBackendServices --startup-project Source/Apps/AlumniBackendServices -- --environment Development
 ```
 
-Apply migrations before using endpoints that require database tables; AppHost does not apply them automatically.
+Apply migrations manually from the repository root before using endpoints that require database tables; AppHost does not apply them automatically.
 
 Cake also supports creating a migration through the restored `dotnet-ef` tool:
 

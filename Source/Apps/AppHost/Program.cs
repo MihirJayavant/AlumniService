@@ -3,7 +3,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 var username = builder.AddParameter("pg-user", secret: true);
 var password = builder.AddParameter("pg-password", secret: true);
 
-var postgres = builder.AddPostgres("postgres", username, password)
+var postgres = builder.AddPostgres("postgres", username, password, port: 5432)
     .WithPgAdmin()
     .WithDataVolume()
     .AddDatabase("alumni-db");
