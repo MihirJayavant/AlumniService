@@ -6,8 +6,7 @@ public class CompanyConfiguration : IEntityTypeConfiguration<CompanyEntity>
 {
     public void Configure(EntityTypeBuilder<CompanyEntity> builder)
     {
-        builder.Metadata.SetSchema("Student");
-        builder.ToTable("companies");
+        builder.ToTable("companies", "Student");
 
         builder.HasKey(c => c.Id);
 

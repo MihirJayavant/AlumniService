@@ -12,6 +12,12 @@ namespace AlumniBackendServices.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "Student");
+
+            migrationBuilder.EnsureSchema(
+                name: "Faculty");
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -47,6 +53,7 @@ namespace AlumniBackendServices.Migrations
 
             migrationBuilder.CreateTable(
                 name: "faculties",
+                schema: "Faculty",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -65,6 +72,7 @@ namespace AlumniBackendServices.Migrations
 
             migrationBuilder.CreateTable(
                 name: "students",
+                schema: "Student",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -81,16 +89,16 @@ namespace AlumniBackendServices.Migrations
                     DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
                     Email = table.Column<string>(type: "varchar(100)", nullable: false),
                     Branch = table.Column<string>(type: "varchar(30)", nullable: false),
-                    CurrentAddress_PinCode = table.Column<string>(type: "text", nullable: true),
-                    CurrentAddress_Country = table.Column<string>(type: "varchar(100)", nullable: true),
-                    CurrentAddress_State = table.Column<string>(type: "varchar(100)", nullable: true),
-                    CurrentAddress_City = table.Column<string>(type: "varchar(100)", nullable: true),
-                    CurrentAddress_UserAddress = table.Column<string>(type: "varchar(100)", nullable: true),
-                    CorrespondenceAddress_PinCode = table.Column<string>(type: "text", nullable: true),
-                    CorrespondenceAddress_Country = table.Column<string>(type: "varchar(30)", nullable: true),
-                    CorrespondenceAddress_State = table.Column<string>(type: "varchar(30)", nullable: true),
-                    CorrespondenceAddress_City = table.Column<string>(type: "varchar(30)", nullable: true),
-                    CorrespondenceAddress_UserAddress = table.Column<string>(type: "varchar(100)", nullable: true),
+                    CurrentAddress_PinCode = table.Column<string>(type: "text", nullable: false),
+                    CurrentAddress_Country = table.Column<string>(type: "varchar(100)", nullable: false),
+                    CurrentAddress_State = table.Column<string>(type: "varchar(100)", nullable: false),
+                    CurrentAddress_City = table.Column<string>(type: "varchar(100)", nullable: false),
+                    CurrentAddress_UserAddress = table.Column<string>(type: "varchar(100)", nullable: false),
+                    CorrespondenceAddress_PinCode = table.Column<string>(type: "text", nullable: false),
+                    CorrespondenceAddress_Country = table.Column<string>(type: "varchar(100)", nullable: false),
+                    CorrespondenceAddress_State = table.Column<string>(type: "varchar(100)", nullable: false),
+                    CorrespondenceAddress_City = table.Column<string>(type: "varchar(100)", nullable: false),
+                    CorrespondenceAddress_UserAddress = table.Column<string>(type: "varchar(100)", nullable: false),
                     AdmissionYear = table.Column<short>(type: "SMALLINT", nullable: false),
                     PassingYear = table.Column<short>(type: "SMALLINT", nullable: false)
                 },
@@ -204,6 +212,7 @@ namespace AlumniBackendServices.Migrations
 
             migrationBuilder.CreateTable(
                 name: "companies",
+                schema: "Student",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -221,6 +230,7 @@ namespace AlumniBackendServices.Migrations
                     table.ForeignKey(
                         name: "FK_companies_students_StudentId",
                         column: x => x.StudentId,
+                        principalSchema: "Student",
                         principalTable: "students",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -228,6 +238,7 @@ namespace AlumniBackendServices.Migrations
 
             migrationBuilder.CreateTable(
                 name: "exams",
+                schema: "Student",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -244,6 +255,7 @@ namespace AlumniBackendServices.Migrations
                     table.ForeignKey(
                         name: "FK_exams_students_StudentId",
                         column: x => x.StudentId,
+                        principalSchema: "Student",
                         principalTable: "students",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -251,6 +263,7 @@ namespace AlumniBackendServices.Migrations
 
             migrationBuilder.CreateTable(
                 name: "further_studies",
+                schema: "Student",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -271,6 +284,7 @@ namespace AlumniBackendServices.Migrations
                     table.ForeignKey(
                         name: "FK_further_studies_students_StudentId",
                         column: x => x.StudentId,
+                        principalSchema: "Student",
                         principalTable: "students",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -315,62 +329,73 @@ namespace AlumniBackendServices.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_companies_CompanyId",
+                schema: "Student",
                 table: "companies",
                 column: "CompanyId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_companies_StudentId",
+                schema: "Student",
                 table: "companies",
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_exams_ExamId",
+                schema: "Student",
                 table: "exams",
                 column: "ExamId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_exams_ExamName",
+                schema: "Student",
                 table: "exams",
                 column: "ExamName");
 
             migrationBuilder.CreateIndex(
                 name: "IX_exams_StudentId",
+                schema: "Student",
                 table: "exams",
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_faculties_Email",
+                schema: "Faculty",
                 table: "faculties",
                 column: "Email",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_faculties_FacultyId",
+                schema: "Faculty",
                 table: "faculties",
                 column: "FacultyId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_further_studies_FurtherStudyId",
+                schema: "Student",
                 table: "further_studies",
                 column: "FurtherStudyId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_further_studies_StudentId",
+                schema: "Student",
                 table: "further_studies",
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_students_Email",
+                schema: "Student",
                 table: "students",
                 column: "Email",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_students_StudentId",
+                schema: "Student",
                 table: "students",
                 column: "StudentId",
                 unique: true);
@@ -395,16 +420,20 @@ namespace AlumniBackendServices.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "companies");
+                name: "companies",
+                schema: "Student");
 
             migrationBuilder.DropTable(
-                name: "exams");
+                name: "exams",
+                schema: "Student");
 
             migrationBuilder.DropTable(
-                name: "faculties");
+                name: "faculties",
+                schema: "Faculty");
 
             migrationBuilder.DropTable(
-                name: "further_studies");
+                name: "further_studies",
+                schema: "Student");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -413,7 +442,8 @@ namespace AlumniBackendServices.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "students");
+                name: "students",
+                schema: "Student");
         }
     }
 }

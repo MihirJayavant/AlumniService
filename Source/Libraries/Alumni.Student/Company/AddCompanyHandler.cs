@@ -11,8 +11,10 @@ public class AddCompanyValidator : AbstractValidator<AddCompany>
     public AddCompanyValidator()
     {
         RuleFor(x => x.StudentId).ValidGuid();
-        RuleFor(c => c.CompanyName).NotEmpty();
-        RuleFor(c => c.Designation).NotEmpty();
+        RuleFor(c => c.CompanyName).RequiredText(50);
+        RuleFor(c => c.Designation).RequiredText(30);
+        RuleFor(c => c.YearOfJoining).ValidYear();
+        RuleFor(c => c.AnnualSalary).GreaterThanOrEqualTo(0);
     }
 }
 
@@ -33,21 +35,27 @@ public class AddCompanyHandler(IStudentDbContext context) : IHandler<AddCompany,
             };
         }
 
-        var company = new CompanyEntity()
-        {
-            Id = 0,
-            CompanyId = Guid.CreateVersion7(),
-            CompanyName = request.CompanyName,
-            Designation = request.Designation,
-            YearOfJoining = request.YearOfJoining,
-            AnnualSalary = request.AnnualSalary,
-            StudentId = student.Id,
-            Student = student,
-        };
+        var company = request.ToCompany(student);
         context.Companies.Add(company);
         await context.SaveChangesAsync(cancellationToken);
         var result = company.ToCompanyResponse();
 
         return result;
     }
+}
+
+public static class AddCompanyMapper
+{
+    public static CompanyEntity ToCompany(this AddCompany request, StudentEntity student)
+        => new CompanyEntity
+        {
+            Id = 0,
+            CompanyId = Guid.CreateVersion7(),
+            CompanyName = request.CompanyName.Trim(),
+            Designation = request.Designation.Trim(),
+            YearOfJoining = request.YearOfJoining,
+            AnnualSalary = request.AnnualSalary,
+            StudentId = student.Id,
+            Student = student,
+        };
 }

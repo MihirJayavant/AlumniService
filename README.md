@@ -11,6 +11,7 @@ An ASP.NET Core alumni API targeting .NET 10, organized into vertical slices for
 - `Tests/Core.UnitTests`: isolated tests for shared Core behavior.
 - `Tests/Generators.UnitTests`: compilation-based tests for the record-view source generator.
 - `Tests/Alumni.Faculty.UnitTests`: isolated tests for faculty validation and response mapping.
+- `Tests/Alumni.Student.UnitTests`: isolated tests for student and related-record validation and mapping.
 - `Directory.Packages.props`: centrally managed NuGet versions.
 
 ## Prerequisites
@@ -44,7 +45,7 @@ GitHub Actions runs the same single command locally available for CI:
 dotnet build.cs -- --target=CI
 ```
 
-This restores the solution, verifies whitespace formatting against `.editorconfig`, checks code style and analyzer diagnostics at warning severity or higher, builds in Release with warnings treated as errors, and runs the tests. Checks fail without changing source files. Pass `--configuration=Debug` to use Debug. The workflow runs on pull requests, pushes to `main` (including merged pull requests), and manual dispatches.
+This restores the solution, builds the record-view generator in Debug for the formatter's default workspace, verifies whitespace formatting against `.editorconfig`, checks code style and analyzer diagnostics at warning severity or higher, builds in Release with warnings treated as errors, and runs the tests. Checks fail without changing source files. Pass `--configuration=Debug` to use Debug. The workflow runs on pull requests, pushes to `main` (including merged pull requests), and manual dispatches.
 
 ## Unit tests
 
@@ -53,6 +54,10 @@ Core tests use xUnit v3 and Microsoft.Testing.Platform, selected in `global.json
 Generator tests use the same test framework and run Roslyn against small C# inputs, verifying generated properties and compilation diagnostics. They cover required init properties, exclusions, member selection, nullable and generic types, namespaces, missing attributes, and multiple views. They require no database or API startup.
 
 Faculty tests cover required fields, email syntax and normalized length limits, name and extension boundaries, positive mobile numbers, nonempty identifiers, pagination limits and offset overflow, and response mapping. Invalid requests are also executed through the real handlers to verify `BadRequest` without database access. These tests require no database, Docker, API configuration, or secrets. Persistence normalization, duplicate detection, successful CRUD, and actual page contents require separate PostgreSQL integration tests.
+
+Student tests cover required fields and trimmed database length limits, email and mobile-number validation, branch lengths and supported gender values, birth dates and year chronology, nested addresses, lookup identifiers, pagination limits and offset overflow, and Company, Exam, and FurtherStudy validation. Invalid requests execute through real handlers to verify `BadRequest` without database access. Mapping tests cover creation identity, Student audit timestamps, text trimming, email normalization, canonical gender values, and every response mapper. These tests require no database, Docker, API configuration, or secrets. Successful persistence, duplicate detection, relationships, and actual page contents need separate PostgreSQL integration tests.
+
+Text fields are trimmed before persistence; names, addresses and other free text retain casing, Unicode, punctuation and internal spaces. Branch is required text of at most 30 trimmed characters, with no fixed list; it preserves casing. Gender accepts case-insensitive Male/Female input and persists canonical values. Mobile numbers contain 1–15 ASCII digits and cannot be all zeros; extensions remain required text of at most 10 characters. Reusable mobile, gender, birth-date, year and required-text rules live in Core. Birth dates must represent an age greater than 10 and no older than 100 relative to the current UTC date. Years range from 1900 through the current UTC year; passing years cannot precede admission years, and Student admission cannot precede the birth year. Salaries are nonnegative; exam scores range from 0 to 32767, matching the database SMALLINT. Postal codes remain required free text. These rules apply to new records; existing rows are not rewritten.
 
 The Core `Email` value trims surrounding whitespace and lowercases the whole address using invariant casing before validating and storing it. Equality, conversions, and display use that normalized value. This is the application's case-insensitive email policy; it preserves dots and plus aliases.
 
@@ -77,6 +82,13 @@ dotnet build Tests/Generators.UnitTests/Generators.UnitTests.csproj --configurat
 dotnet Tests/Generators.UnitTests/bin/Release/net10.0/Generators.UnitTests.dll
 ```
 
+Build and run only the Student suite without build servers:
+
+```sh
+dotnet build Tests/Alumni.Student.UnitTests/Alumni.Student.UnitTests.csproj --configuration Release --disable-build-servers -m:1
+dotnet Tests/Alumni.Student.UnitTests/bin/Release/net10.0/Alumni.Student.UnitTests.dll
+```
+
 After a Release build, run all solution tests without rebuilding:
 
 ```sh
@@ -97,7 +109,7 @@ dotnet run --project Source/Apps/AppHost
 
 Open the dashboard URL printed by AppHost to find the API and pgAdmin endpoints. PostgreSQL uses a persistent data volume; changing credentials does not reset an existing database volume.
 
-Aspire supplies `ConnectionStrings:alumni-db` to the API, including its allocated host port and credentials. The API prefers this complete connection string and passes it directly to EF Core.
+PostgreSQL uses the fixed host port `5432`; this port must be available when starting AppHost. Aspire supplies `ConnectionStrings:alumni-db` to the API, including the host port and credentials. The API prefers this complete connection string and passes it directly to EF Core.
 
 ## Run the API directly
 
@@ -126,20 +138,20 @@ dotnet build.cs -- --target=Add-Migration --MigrationName=AddStudentField
 
 `Doctor` fails for SDK/tool errors, warns about runtime prerequisites, and lists configuration requirements without reading secret values. If the EF tool is missing, run `Bootstrap` first. `Build` defaults to Release; pass `--configuration=Debug` for Debug builds. Migration generation requires API configuration and does not apply migrations.
 
-Source-generator debugger launch is disabled by default. Set `ALUMNI_GENERATOR_DEBUG=1` only when intentionally debugging the generator in a Debug build. Use the Core unit tests, CI checks, and relevant manual runtime checks for verification.
+The source generator does not launch a debugger automatically. Use the Core unit tests, CI checks, and relevant manual runtime checks for verification.
 
 For unit-test planning and implementation, use the `alumni-testing` skill in `.agents/skills/alumni-testing/SKILL.md`. The `test-worker` agent in `.codex/agents/test-worker.toml` handles assigned test files; the parent agent owns contract decisions, shared project/build configuration, integration, and final verification. Use independent workers only for disjoint test files and serialize all builds and test runs in a shared checkout. Pure Core tests live in `Tests/Core.UnitTests`; keep EF query execution in separate integration tests.
 
 ## Database migrations
 
-Migrations live in the API project. Configure its database connection before running EF commands. For the Aspire database, use the connection string shown in the dashboard so the allocated port matches.
+Migrations live in the API project. Configure its database connection before running EF commands. For the Aspire database, use the connection string shown in the dashboard; PostgreSQL listens on host port `5432`.
 
 ```sh
 dotnet ef migrations add <MigrationName> --project Source/Apps/AlumniBackendServices --startup-project Source/Apps/AlumniBackendServices -- --environment Development
 dotnet ef database update --project Source/Apps/AlumniBackendServices --startup-project Source/Apps/AlumniBackendServices -- --environment Development
 ```
 
-Apply migrations before using endpoints that require database tables; AppHost does not apply them automatically.
+Apply migrations manually from the repository root before using endpoints that require database tables; AppHost does not apply them automatically.
 
 Cake also supports creating a migration through the restored `dotnet-ef` tool:
 

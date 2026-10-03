@@ -6,8 +6,7 @@ public class StudentConfiguration : IEntityTypeConfiguration<StudentEntity>
 {
     public void Configure(EntityTypeBuilder<StudentEntity> builder)
     {
-        builder.Metadata.SetSchema("Student");
-        builder.ToTable("students");
+        builder.ToTable("students", "Student");
 
         builder.HasKey(s => s.Id);
         builder.Property(s => s.Id).ValueGeneratedOnAdd();
@@ -85,13 +84,13 @@ public class StudentConfiguration : IEntityTypeConfiguration<StudentEntity>
             addressBuilder =>
             {
                 addressBuilder.Property(a => a.Country)
-                                .HasColumnType("varchar(30)")
+                                .HasColumnType("varchar(100)")
                                 .IsRequired();
                 addressBuilder.Property(a => a.State)
-                                .HasColumnType("varchar(30)")
+                                .HasColumnType("varchar(100)")
                                 .IsRequired();
                 addressBuilder.Property(a => a.City)
-                                .HasColumnType("varchar(30)")
+                                .HasColumnType("varchar(100)")
                                 .IsRequired();
                 addressBuilder.Property(a => a.UserAddress)
                                 .HasColumnType("varchar(100)")

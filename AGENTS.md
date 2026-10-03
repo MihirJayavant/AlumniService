@@ -35,6 +35,12 @@ Use `appsettings.Development.json` or local secret storage for development-only 
 
 Read `README.md` for setup and the scoped `AGENTS.md` for the area being changed. When starting from the repository root, explicitly read the applicable scoped files before editing; do not assume they were automatically loaded.
 
+### Sandbox and manual actions
+
+Perform repository work within the configured sandbox. Do not request elevated access or use another tool to bypass sandbox restrictions.
+
+If a required command or file change needs access outside the sandbox, the user will perform it manually. Provide the exact, human-readable command or replacement text, the working directory or file path, and clear instructions explaining its purpose and which output to share. Wait for the user's output before continuing work that depends on that action; continue independent sandbox work when possible. Do not ask the user to share secrets.
+
 - `build.cs` provides Build, Bootstrap, Doctor, Run-Local, and Add-Migration targets. Run commands from the repository root.
 - Domain behavior belongs in `Source/Libraries/Alumni.Student` or `Alumni.Faculty`; transport wiring belongs in `Source/Apps/AlumniBackendServices`.
 - Trace a feature from its endpoint through `IHandler.Execute`, validation, mapping, persistence, and HTTP result conversion before changing it.

@@ -89,12 +89,18 @@ var build = Task("Build")
 Task("Restore")
     .Does(() => RequireDotNet($"restore {solution}"));
 
+Task("Build-Format-Generator")
+    .IsDependentOn("Restore")
+    .Does(() =>
+    // dotnet format loads the default Debug workspace and needs the analyzer DLL.
+    RequireDotNet("build Source/Libraries/Generators/Generators.csproj --configuration Debug --no-restore"));
+
 Task("Test")
     .IsDependentOn("Build")
     .Does(RunTests);
 
 Task("Check-Format")
-    .IsDependentOn("Restore")
+    .IsDependentOn("Build-Format-Generator")
     .Does(() =>
 {
     Information("Checking whitespace formatting against .editorconfig...");
@@ -111,7 +117,7 @@ Task("Lint")
     Information("Lint check passed.");
 });
 
-Task("CI")
+Task("CI-Build")
     .IsDependentOn("Lint")
     .Does(() =>
 {
@@ -131,9 +137,14 @@ Task("CI")
     {
         throw new InvalidOperationException($"CI build failed with exit code {exitCode}.");
     }
-
-    RunTests();
 });
+
+Task("CI-Test")
+    .IsDependentOn("CI-Build")
+    .Does(RunTests);
+
+Task("CI")
+    .IsDependentOn("CI-Test");
 
 var migrationName = Argument("MigrationName", "Migration_" + DateTime.UtcNow.ToString("yyyyMMdd_HHmmss", System.Globalization.CultureInfo.InvariantCulture));
 

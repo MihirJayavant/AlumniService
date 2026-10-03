@@ -6,8 +6,7 @@ public class FacultyConfiguration : IEntityTypeConfiguration<Faculty>
 {
     public void Configure(EntityTypeBuilder<Faculty> builder)
     {
-        builder.Metadata.SetSchema("Faculty");
-        builder.ToTable("faculties");
+        builder.ToTable("faculties", "Faculty");
 
         builder.HasKey(s => s.Id);
 

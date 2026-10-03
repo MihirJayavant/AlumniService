@@ -8,7 +8,17 @@ public sealed partial record AddFurtherStudy
 
 public sealed class AddFurtherStudyValidator : AbstractValidator<AddFurtherStudy>
 {
-    public AddFurtherStudyValidator() => RuleFor(x => x.StudentId).ValidGuid();
+    public AddFurtherStudyValidator()
+    {
+        RuleFor(x => x.StudentId).ValidGuid();
+        RuleFor(x => x.InstituteName).RequiredText(50);
+        RuleFor(x => x.Degree).RequiredText(50);
+        RuleFor(x => x.Country).RequiredText(30);
+        RuleFor(x => x.City).RequiredText(30);
+        RuleFor(x => x.AdmissionYear).ValidYear();
+        RuleFor(x => x.PassingYear).ValidYear()
+            .GreaterThanOrEqualTo(x => x.AdmissionYear);
+    }
 }
 
 public class AddFurtherStudyHandler(IStudentDbContext context)
@@ -26,20 +36,26 @@ public class AddFurtherStudyHandler(IStudentDbContext context)
             return new ErrorType() { Status = ResponseStatus.NotFound, Message = "Student not found" };
         }
 
-        var furtherStudy = new FurtherStudyEntity()
-        {
-            Id = 0,
-            FurtherStudyId = Guid.CreateVersion7(),
-            InstituteName = request.InstituteName,
-            Degree = request.Degree,
-            AdmissionYear = request.AdmissionYear,
-            PassingYear = request.PassingYear,
-            Country = request.Country,
-            City = request.City,
-        };
+        var furtherStudy = request.ToFurtherStudy();
         student.FurtherStudies.Add(furtherStudy);
         await context.SaveChangesAsync(cancellationToken);
 
         return furtherStudy.ToFurtherStudyResponse();
     }
+}
+
+public static class AddFurtherStudyMapper
+{
+    public static FurtherStudyEntity ToFurtherStudy(this AddFurtherStudy request)
+        => new FurtherStudyEntity
+        {
+            Id = 0,
+            FurtherStudyId = Guid.CreateVersion7(),
+            InstituteName = request.InstituteName.Trim(),
+            Degree = request.Degree.Trim(),
+            AdmissionYear = request.AdmissionYear,
+            PassingYear = request.PassingYear,
+            Country = request.Country.Trim(),
+            City = request.City.Trim(),
+        };
 }

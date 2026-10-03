@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AlumniBackendServices.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250526164319_InitialCreate")]
+    [Migration("20261003093524_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace AlumniBackendServices.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.5")
+                .HasAnnotation("ProductVersion", "10.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -72,7 +72,7 @@ namespace AlumniBackendServices.Migrations
                     b.HasIndex("FacultyId")
                         .IsUnique();
 
-                    b.ToTable("faculties", (string)null);
+                    b.ToTable("faculties", "Faculty");
                 });
 
             modelBuilder.Entity("Alumni.Student.Company.CompanyEntity", b =>
@@ -110,7 +110,7 @@ namespace AlumniBackendServices.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("companies", (string)null);
+                    b.ToTable("companies", "Student");
                 });
 
             modelBuilder.Entity("Alumni.Student.Exam.ExamEntity", b =>
@@ -146,7 +146,7 @@ namespace AlumniBackendServices.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("exams", (string)null);
+                    b.ToTable("exams", "Student");
                 });
 
             modelBuilder.Entity("Alumni.Student.FurtherStudy.FurtherStudy", b =>
@@ -192,9 +192,9 @@ namespace AlumniBackendServices.Migrations
                     b.HasIndex("FurtherStudyId")
                         .IsUnique();
 
-                    b.ToTable("further_studies", (string)null);
+                    b.ToTable("further_studies", "Student");
 
-                    b.HasDiscriminator().HasValue("FurtherStudy");
+                    b.HasDiscriminator<string>("Discriminator").HasValue("FurtherStudy");
 
                     b.UseTphMappingStrategy();
                 });
@@ -264,7 +264,7 @@ namespace AlumniBackendServices.Migrations
                     b.HasIndex("StudentId")
                         .IsUnique();
 
-                    b.ToTable("students", (string)null);
+                    b.ToTable("students", "Student");
                 });
 
             modelBuilder.Entity("Infrastructure.Identity.ApplicationUser", b =>
@@ -506,11 +506,11 @@ namespace AlumniBackendServices.Migrations
 
                             b1.Property<string>("City")
                                 .IsRequired()
-                                .HasColumnType("varchar(30)");
+                                .HasColumnType("varchar(100)");
 
                             b1.Property<string>("Country")
                                 .IsRequired()
-                                .HasColumnType("varchar(30)");
+                                .HasColumnType("varchar(100)");
 
                             b1.Property<string>("PinCode")
                                 .IsRequired()
@@ -518,7 +518,7 @@ namespace AlumniBackendServices.Migrations
 
                             b1.Property<string>("State")
                                 .IsRequired()
-                                .HasColumnType("varchar(30)");
+                                .HasColumnType("varchar(100)");
 
                             b1.Property<string>("UserAddress")
                                 .IsRequired()
@@ -526,7 +526,7 @@ namespace AlumniBackendServices.Migrations
 
                             b1.HasKey("StudentEntityId");
 
-                            b1.ToTable("students");
+                            b1.ToTable("students", "Student");
 
                             b1.WithOwner()
                                 .HasForeignKey("StudentEntityId");
@@ -559,15 +559,17 @@ namespace AlumniBackendServices.Migrations
 
                             b1.HasKey("StudentEntityId");
 
-                            b1.ToTable("students");
+                            b1.ToTable("students", "Student");
 
                             b1.WithOwner()
                                 .HasForeignKey("StudentEntityId");
                         });
 
-                    b.Navigation("CorrespondenceAddress");
+                    b.Navigation("CorrespondenceAddress")
+                        .IsRequired();
 
-                    b.Navigation("CurrentAddress");
+                    b.Navigation("CurrentAddress")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
