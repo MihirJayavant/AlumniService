@@ -8,7 +8,7 @@ public sealed partial record AddFurtherStudy
 
 public sealed class AddFurtherStudyValidator : AbstractValidator<AddFurtherStudy>
 {
-
+    public AddFurtherStudyValidator() => RuleFor(x => x.StudentId).ValidGuid();
 }
 
 public class AddFurtherStudyHandler(IStudentDbContext context)

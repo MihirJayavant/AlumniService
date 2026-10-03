@@ -7,7 +7,7 @@ public sealed record DeleteFaculty
 
 file sealed class DeleteFacultyValidator : AbstractValidator<DeleteFaculty>
 {
-
+    public DeleteFacultyValidator() => RuleFor(x => x.FacultyId).ValidGuid();
 }
 
 public class DeleteFacultyHandler(IFacultyDbContext context)

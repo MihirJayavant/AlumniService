@@ -7,14 +7,7 @@ public sealed record GetAllFaculties : PaginationInput
 
 public sealed class GetAllFacultyValidator : AbstractValidator<GetAllFaculties>
 {
-    public GetAllFacultyValidator()
-    {
-        RuleFor(x => x.PageNumber)
-            .GreaterThanOrEqualTo(1).WithMessage("PageNumber at least greater than or equal to 1.");
-
-        RuleFor(x => x.PageSize)
-            .GreaterThanOrEqualTo(1).WithMessage("PageSize at least greater than or equal to 1.");
-    }
+    public GetAllFacultyValidator() => this.ApplyPaginationRules();
 }
 
 public class GetAllFacultiesHandler(IFacultyDbContext context)
@@ -26,6 +19,7 @@ public class GetAllFacultiesHandler(IFacultyDbContext context)
         CancellationToken cancellationToken)
     {
         var result = await context.Faculties
+            .OrderBy(f => f.Id)
             .Paginate(request.PageNumber, request.PageSize, cancellationToken);
         return result.WithItems(f => f.ToFacultyResponse());
     }

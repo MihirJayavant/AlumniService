@@ -1,6 +1,6 @@
 namespace Alumni.Faculty;
 
-[RecordView(typeof(Faculty), nameof(Faculty.Id), nameof(Faculty.IsDeleted), nameof(Faculty.CreatedAt), nameof(Faculty.UpdatedAt))]
+[RecordView(typeof(Faculty), nameof(Faculty.Id), nameof(Faculty.FacultyId), nameof(Faculty.IsDeleted), nameof(Faculty.CreatedAt), nameof(Faculty.UpdatedAt))]
 public sealed partial record AddFaculty
 {
 
@@ -8,7 +8,30 @@ public sealed partial record AddFaculty
 
 file sealed class AddFacultyValidator : AbstractValidator<AddFaculty>
 {
-    public AddFacultyValidator() => RuleFor(x => x.Email).EmailAddress();
+    public AddFacultyValidator()
+    {
+        RuleFor(x => x.Email).ValidEmail(maximumLength: 100);
+
+        RuleFor(x => x.FirstName)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .Must(value => value.Trim().Length <= 100)
+            .WithMessage("FirstName must be at most 100 characters.");
+
+        RuleFor(x => x.LastName)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .Must(value => value.Trim().Length <= 100)
+            .WithMessage("LastName must be at most 100 characters.");
+
+        RuleFor(x => x.Extension)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .Must(value => value.Trim().Length <= 10)
+            .WithMessage("Extension must be at most 10 characters.");
+
+        RuleFor(x => x.MobileNo).GreaterThan(0);
+    }
 }
 
 public class AddFacultyHandler(IFacultyDbContext context) : IHandler<AddFaculty, FacultyResponse>
@@ -17,8 +40,9 @@ public class AddFacultyHandler(IFacultyDbContext context) : IHandler<AddFaculty,
 
     public async Task<OneOf<FacultyResponse, ErrorType>> Handle(AddFaculty request, CancellationToken cancellationToken)
     {
+        var email = new Email(request.Email).Value;
         var found = await context.Faculties
-                    .FirstOrDefaultAsync(s => s.Email == request.Email, cancellationToken);
+                    .FirstOrDefaultAsync(s => s.Email == email, cancellationToken);
 
         if (found is not null)
         {
@@ -29,17 +53,21 @@ public class AddFacultyHandler(IFacultyDbContext context) : IHandler<AddFaculty,
             };
         }
 
+        var createdAt = DateTime.UtcNow;
         var faculty = new Faculty()
         {
             Id = 0,
             FacultyId = Guid.NewGuid(),
-            Email = request.Email,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Extension = request.Extension,
-            MobileNo = request.MobileNo
+            Email = email,
+            FirstName = request.FirstName.Trim(),
+            LastName = request.LastName.Trim(),
+            Extension = request.Extension.Trim(),
+            MobileNo = request.MobileNo,
+            CreatedAt = createdAt,
+            UpdatedAt = createdAt
         };
         context.Faculties.Add(faculty);
+
         await context.SaveChangesAsync(cancellationToken);
 
         return faculty.ToFacultyResponse();

@@ -7,7 +7,7 @@ public sealed record GetStudent
 
 file sealed class GetStudentValidator : AbstractValidator<GetStudent>
 {
-
+    public GetStudentValidator() => RuleFor(x => x.Id).ValidGuid();
 }
 
 public class GetStudentHandler(IStudentDbContext context) : IHandler<GetStudent, StudentResponse>

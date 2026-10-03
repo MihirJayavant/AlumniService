@@ -7,7 +7,7 @@ public sealed record GetFaculty
 
 file sealed class GetFacultyValidator : AbstractValidator<GetFaculty>
 {
-
+    public GetFacultyValidator() => RuleFor(x => x.FacultyId).ValidGuid();
 }
 
 public class GetFacultyHandler(IFacultyDbContext context) : IHandler<GetFaculty, FacultyResponse>

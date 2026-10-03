@@ -8,7 +8,7 @@ public sealed partial record AddExam
 
 file sealed class AddExamValidator : AbstractValidator<AddExam>
 {
-
+    public AddExamValidator() => RuleFor(x => x.StudentId).ValidGuid();
 }
 
 public class AddExamHandler(IStudentDbContext context) : IHandler<AddExam, ExamResponse>

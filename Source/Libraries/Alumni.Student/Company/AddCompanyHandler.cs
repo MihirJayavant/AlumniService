@@ -10,6 +10,7 @@ public class AddCompanyValidator : AbstractValidator<AddCompany>
 {
     public AddCompanyValidator()
     {
+        RuleFor(x => x.StudentId).ValidGuid();
         RuleFor(c => c.CompanyName).NotEmpty();
         RuleFor(c => c.Designation).NotEmpty();
     }
