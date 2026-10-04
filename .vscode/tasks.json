@@ -67,22 +67,6 @@
       "problemMatcher": []
     },
     {
-      "label": "run: ProxyApp",
-      "type": "process",
-      "command": "dotnet",
-      "args": [
-        "run",
-        "--project",
-        "${workspaceFolder}/Source/Apps/ProxyApp/ProxyApp.csproj",
-        "--launch-profile",
-        "ProxyApp"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": []
-    },
-    {
       "label": "test",
       "type": "process",
       "command": "dotnet",

@@ -22,7 +22,7 @@ flowchart LR
     Infrastructure --> DB[(PostgreSQL)]
 ```
 
-The API hosts all three transports. Aspire starts the API, PostgreSQL and pgAdmin for local development; the optional YARP proxy runs separately. The record-view generator produces contract properties at compile time.
+The API hosts all three transports. Aspire starts the API, PostgreSQL and pgAdmin for local development. The record-view generator produces contract properties at compile time.
 
 ## Technology at a glance
 
@@ -33,7 +33,7 @@ The API hosts all three transports. Aspire starts the API, PostgreSQL and pgAdmi
 | Domain flow | FluentValidation / OneOf | Request validation and explicit success/error results |
 | Persistence | EF Core / Npgsql / PostgreSQL | Feature mappings, queries and migrations |
 | Identity | ASP.NET Core Identity / JWT | Identity storage, token validation and role policies |
-| Local environment | .NET Aspire / YARP | Service orchestration and a standalone reverse proxy |
+| Local environment | .NET Aspire | Service orchestration |
 | Build and tests | Cake.Sdk / xUnit v3 / Microsoft.Testing.Platform | Repeatable build, formatting and tests |
 | Code generation | Roslyn incremental generator | `[RecordView]` partial records |
 
@@ -66,7 +66,7 @@ Open the dashboard login URL printed by Aspire (`https://localhost:18888`). Find
 
 **Apply migrations before using database-backed endpoints.** Aspire does not apply them automatically. Follow [Persistence and Migrations](docs/Persistence-and-Migrations.md) to configure the API's connection and update the local database from a second terminal.
 
-For direct API startup, proxy configuration and troubleshooting, see [Local Development](docs/Local-Development.md).
+For direct API startup and troubleshooting, see [Local Development](docs/Local-Development.md).
 
 ## Try an API
 
@@ -98,7 +98,6 @@ The [API guide](docs/API-Transports.md) covers route parity, client types, pagin
 Source/
   Apps/
     Alumni.Api/       HTTP, GraphQL, gRPC and EF migrations
-    ProxyApp/         Standalone YARP proxy
   Libraries/
     Alumni.Student/   Student, Company, Exam and FurtherStudy slices
     Alumni.Faculty/   Faculty slice

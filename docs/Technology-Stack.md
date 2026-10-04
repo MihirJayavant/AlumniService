@@ -35,7 +35,6 @@ Authentication registration and role policies do not imply that every endpoint r
 | ASP.NET Core OpenAPI | Builds the HTTP OpenAPI document | [OpenAPI registration](../Source/Apps/Alumni.Api/ExtensionService/OpenApiExtension.cs) |
 | Swagger UI and Scalar | Interactive HTTP API documentation in Development | [OpenAPI registration](../Source/Apps/Alumni.Api/ExtensionService/OpenApiExtension.cs) |
 | Aspire 13.6 | File-based local orchestration for PostgreSQL, pgAdmin and API | [apphost.cs](../apphost.cs) |
-| YARP 2.3 | Separate reverse proxy using the `ReverseProxy` configuration section | [Proxy startup](../Source/Apps/ProxyApp/Program.cs) |
 | Roslyn incremental generator | Generates record-view properties at compile time; generator targets `netstandard2.0` | [Generator](../Source/Libraries/Generators/RecordViewGenerator.cs) |
 | Cake.Sdk 6.3 | File-based build, local diagnostics, migration and CI targets | [build.cs](../build.cs) |
 | xUnit v3 / Microsoft.Testing.Platform | Unit tests and generator compilation tests | [Testing and CI](Testing-and-CI.md) |

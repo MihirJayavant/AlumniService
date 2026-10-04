@@ -7,7 +7,6 @@
   <Folder Name="/Source/" />
   <Folder Name="/Source/Apps/">
     <Project Path="Source/Apps/Alumni.Api/Alumni.Api.csproj" />
-    <Project Path="Source/Apps/ProxyApp/ProxyApp.csproj" />
   </Folder>
   <Folder Name="/Source/Libraries/">
     <Project Path="Source/Libraries/Core/Core.csproj" />
