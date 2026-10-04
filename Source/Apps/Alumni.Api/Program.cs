@@ -12,6 +12,7 @@ builder.Services.AddInfrastructureServices(new SettingService(builder.Configurat
 builder.Services.AddApplicationOpenApi(builder);
 builder.Services.AddWebApiServices(builder.Configuration);
 builder.Services.AddApplicationGrpc();
+builder.Services.AddApplicationGraphQL();
 builder.Services.AddApplicationLogging(builder.Environment);
 
 var app = builder.Build();
@@ -23,7 +24,7 @@ app.UseAuth();
 // Add Controllers
 app.AddControllers();
 
-// app.UseApplicationGraphQL();
+app.MapApplicationGraphQL();
 app.MapApplicationGrpc();
 
 app.Run();

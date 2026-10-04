@@ -1,20 +1,38 @@
-// using Alumni.Api.GraphQL;
-// using HotChocolate.AspNetCore;
-// using HotChocolate.AspNetCore.Voyager;
+using Alumni.Api.GraphQL;
 
-// namespace Alumni.Api.ExtensionService;
+namespace Alumni.Api.ExtensionService;
 
-// public static class GraphQLExtension
-// {
-//     public static void AddApplicationGraphQL(this IServiceCollection services) => services.AddGraphQLServer()
-//                 .AddDefaultTransactionScopeHandler()
-//                 .AddQueryType<QueryType>()
-//                 .AddMutationType<MutationType>()
-//                 .BindRuntimeType<Guid, IdType>()
-//                 .BindRuntimeType<string, StringType>();
+public static class GraphQLExtension
+{
+    public static IServiceCollection AddApplicationGraphQL(this IServiceCollection services)
+    {
+        services.AddGraphQLServer()
+            .AddQueryType(descriptor => descriptor.Name("Query"))
+            .AddMutationType(descriptor => descriptor.Name("Mutation"))
+            .AddTypeExtension<StudentQuery>()
+            .AddTypeExtension<FacultyQuery>()
+            .AddTypeExtension<CompanyQuery>()
+            .AddTypeExtension<ExamQuery>()
+            .AddTypeExtension<FurtherStudyQuery>()
+            .AddTypeExtension<StudentMutation>()
+            .AddTypeExtension<FacultyMutation>()
+            .AddTypeExtension<CompanyMutation>()
+            .AddTypeExtension<ExamMutation>()
+            .AddTypeExtension<FurtherStudyMutation>()
+            .BindRuntimeType<Guid, UuidType>()
+            .BindRuntimeType<DateOnly, LocalDateType>()
+            .BindRuntimeType<long, LongType>()
+            .ModifyOptions(options =>
+            {
+                // Queries may run in parallel; failed mutations must not share tracked changes.
+                options.DefaultQueryDependencyInjectionScope = DependencyInjectionScope.Resolver;
+                options.DefaultMutationDependencyInjectionScope = DependencyInjectionScope.Resolver;
+            })
+            .ModifyRequestOptions(options => options.IncludeExceptionDetails = false);
 
-//     public static void UseApplicationGraphQL(this IApplicationBuilder app)
-//         => app.UseEndpoints(endpoints => endpoints.MapGraphQL("/graphql"))
-//         //.UsePlayground("/graphql", "/ui/playground")
-//         .UseVoyager("/graphql", "/ui/voyager");
-// }
+        return services;
+    }
+
+    public static IEndpointConventionBuilder MapApplicationGraphQL(this IEndpointRouteBuilder app)
+        => app.MapGraphQL("/graphql");
+}

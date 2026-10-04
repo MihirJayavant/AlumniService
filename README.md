@@ -136,6 +136,63 @@ Student and faculty `List` requests default omitted page fields to page 1 and si
 
 Invalid input produces `InvalidArgument`, missing records produce `NotFound`, duplicate records produce `AlreadyExists`, and authentication/authorization failures map to `Unauthenticated`/`PermissionDenied`. Internal handler failures produce `Internal` with a generic message. Cancellation is allowed to propagate to gRPC.
 
+## GraphQL API
+
+The API exposes all 13 controller operations through HotChocolate at `/graphql`, alongside HTTP and gRPC. Resolvers call the same domain handlers through `Execute`, preserving validation, mapping, persistence, and cancellation. Authentication and authorization requirements match the current controller endpoints.
+
+Queries are `students(pageNumber, pageSize)`, `student(id)`, `faculties(pageNumber, pageSize)`, `faculty(facultyId)`, `companies(studentId)`, `exams(studentId)`, and `furtherStudies(studentId)`. Mutations are `addStudent(input)`, `addFaculty(input)`, `deleteFaculty(facultyId)`, `addCompany(input)`, `addExam(input)`, and `addFurtherStudy(input)`. Faculty deletion returns the deleted record.
+
+Student and faculty list pagination arguments are required. Lists return `items`, `totalCount`, `pageNumber`, `pageSize`, `totalPages`, `hasPreviousPage`, and `hasNextPage`. Related-record lists preserve the handlers' fixed pagination: page 1 with size 10 for companies/exams and size 50 for further studies. No extra filtering, sorting, or cursor pagination is applied.
+
+Example query:
+
+```graphql
+query Students($pageNumber: Int!, $pageSize: Int!) {
+  students(pageNumber: $pageNumber, pageSize: $pageSize) {
+    items { studentId firstName lastName email dateOfBirth }
+    totalCount
+    pageNumber
+    pageSize
+    hasNextPage
+  }
+}
+```
+
+Variables: `{"pageNumber": 1, "pageSize": 10}`. Send an HTTP POST to `/graphql` with a JSON body containing `query` and `variables`, using the API URL from Aspire or your direct API launch.
+
+Example mutation:
+
+```graphql
+mutation AddFaculty($input: AddFacultyInput!) {
+  addFaculty(input: $input) {
+    facultyId
+    email
+    firstName
+    createdAt
+  }
+}
+```
+
+Example variables:
+
+```json
+{
+  "input": {
+    "email": "faculty@example.com",
+    "firstName": "Ada",
+    "lastName": "Lovelace",
+    "extension": "123",
+    "mobileNo": 919876543210
+  }
+}
+```
+
+Input fields mirror the corresponding domain request records, including creation IDs where the HTTP requests expose them; handlers still generate persisted IDs. GUIDs use the `UUID` scalar, birth dates use `LocalDate` (`yyyy-MM-dd`), timestamps use `DateTime`, and 64-bit values use `Long`. Student mobile numbers remain strings. Nullable faculty `updatedAt` values remain nullable.
+
+Handler failures appear in GraphQL `errors` with a field `path` and an `extensions.code`: `BAD_REQUEST`, `NOT_FOUND`, `CONFLICT`, `UNAUTHORIZED`, or `FORBIDDEN`. Other failures use `INTERNAL_ERROR` with a generic message. Root fields are nullable so successful sibling fields can still return data. Malformed operations or scalar values are rejected by GraphQL before handler execution and use HotChocolate's own error codes. GraphQL errors do not mirror controller HTTP status codes.
+
+Each resolver uses its own service scope, preventing concurrent query fields from sharing an EF DbContext and isolating tracked changes between mutation fields. Multiple mutations do not form one transaction; each handler retains its own save boundary.
+
 ## Codex agent workflow
 
 Repository guidance lives in `AGENTS.md` and scoped files beneath `Source/`. Reusable workflows are in `.agents/skills`; project subagent roles are in `.codex/agents`. Keep independent workers within assigned file ownership and let the parent agent perform the final build.
