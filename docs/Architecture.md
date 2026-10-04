@@ -1,0 +1,77 @@
+# Architecture
+
+[Home](Home.md) · [Technology stack](Technology-Stack.md) · [Request lifecycle](Patterns-and-Request-Lifecycle.md)
+
+AlumniService is a modular ASP.NET Core API organized into domain features. HTTP, GraphQL and gRPC adapters invoke the same Student and Faculty handlers; a shared EF Core context persists their data to PostgreSQL.
+
+## Project boundaries
+
+| Project | Responsibility |
+| --- | --- |
+| `Alumni.Api` | Startup, transport adapters, OpenAPI, settings and EF migrations |
+| `Alumni.Student` | Student, company, exam and further-study use cases, validators, mapping and EF configuration |
+| `Alumni.Faculty` | Faculty use cases, validators, mapping and EF configuration |
+| `Core` | Handler execution, results, validation helpers, pagination, email value and record-view attribute |
+| `Infrastructure` | PostgreSQL DbContext, Identity, JWT registration and database health checks |
+| `Generators` | Roslyn generator that produces record properties during compilation |
+| `ProxyApp` | Independently started, configuration-driven YARP reverse proxy |
+
+### Compile-time dependencies
+
+Arrows below mean “references.” Solid arrows are ordinary project references; dotted arrows are analyzer references used during compilation.
+
+```mermaid
+flowchart TD
+    API[Alumni.Api] --> Infra[Infrastructure]
+    Infra --> Student[Alumni.Student]
+    Infra --> Faculty[Alumni.Faculty]
+    Infra --> Core[Core]
+    Student --> Core
+    Faculty --> Core
+    Student -. analyzer .-> Gen[Generators]
+    Faculty -. analyzer .-> Gen
+    Proxy[ProxyApp]
+```
+
+The API references Infrastructure directly and receives the domain projects through transitive project references. ProxyApp has no project reference to the API. See the [API project](../Source/Apps/Alumni.Api/Alumni.Api.csproj), [Infrastructure project](../Source/Libraries/Infrastructure/Infrastructure.csproj) and [Student project](../Source/Libraries/Alumni.Student/Alumni.Student.csproj).
+
+## Runtime topology
+
+The root [apphost.cs](../apphost.cs) is a file-based Aspire host. It creates PostgreSQL with a persistent volume, adds pgAdmin, and launches the API after PostgreSQL is ready. It supplies the `alumni-db` connection string to the API. It does not start ProxyApp or apply EF migrations.
+
+```mermaid
+flowchart LR
+    Host["apphost.cs / Aspire"] -. starts .-> API[Alumni.Api]
+    Host -. creates .-> DB[(PostgreSQL)]
+    Host -. creates .-> Admin[pgAdmin]
+    Client[Clients] -->|HTTP / GraphQL / gRPC| API
+    API -->|EF Core / Npgsql| DB
+    Admin --> DB
+    Proxy["ProxyApp - separate process"] -->|configured reverse proxy routes| API
+    Browser[Proxy clients] --> Proxy
+```
+
+The proxy arrow represents its upstream role once configured. The committed ProxyApp settings do not define `ReverseProxy` routes or clusters; supply those locally before forwarding requests. Destination addresses come from ProxyApp configuration rather than Aspire service discovery. See [local development](Local-Development.md) for startup and configuration.
+
+## Composition and persistence
+
+[Program.cs](../Source/Apps/Alumni.Api/Program.cs) is the composition root. It registers Infrastructure, OpenAPI, web API services, gRPC, GraphQL and logging, then maps the transport endpoints. GraphQL is active at `/graphql`.
+
+[ApplicationContext](../Source/Libraries/Infrastructure/ApplicationContext.cs) extends `IdentityDbContext<ApplicationUser>` and implements both domain context interfaces. [Infrastructure registration](../Source/Libraries/Infrastructure/ConfigureServices.cs) exposes those interfaces as scoped adapters to the same underlying context within a scope. Feature-owned EF configurations are applied explicitly in `OnModelCreating`; migrations belong to the API assembly.
+
+The domain libraries depend on EF Core and expose `DbSet` properties through their context interfaces. These boundaries organize implementation and make handler dependencies explicit; they do not remove persistence technology from the domain libraries.
+
+## Transport boundaries
+
+Classes named `*Controller` implement `IEndpoint` and map minimal API routes. [Endpoint.cs](../Source/Apps/Alumni.Api/Controllers/Endpoint.cs) explicitly registers each class. GraphQL resolvers and gRPC service methods create the same domain handlers and call `Execute`.
+
+Each GraphQL resolver receives its own service scope, so parallel query fields do not share a DbContext. Each handler retains its own save boundary; multiple mutation fields are not one transaction. See [API transports](API-Transports.md) for contracts and error handling.
+
+## Where to make a change
+
+- Add domain behavior beside the relevant Student or Faculty use case.
+- Add transport exposure in the API adapter and its explicit registration.
+- Update Infrastructure when context composition or persistence registration changes.
+- Update source models, generated views and handwritten mappers together when contract properties change.
+
+Continue with [request patterns](Patterns-and-Request-Lifecycle.md), [persistence](Persistence-and-Migrations.md) or [source generation](Source-Generation.md).
