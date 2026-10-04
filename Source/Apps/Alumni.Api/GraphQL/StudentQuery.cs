@@ -1,36 +1,27 @@
-// using System;
-// using System.Linq;
-// using System.Threading.Tasks;
-// using Application.Contracts.Response;
-// using Application.Students;
-// using Core.Entities;
-// using HotChocolate.Types.Relay;
-// using MediatR;
-// using Microsoft.Extensions.Logging;
+namespace Alumni.Api.GraphQL;
 
-// namespace Alumni.Api.GraphQL
-// {
-//     public class StudentQuery
-//     {
-//         private readonly IMediator mediator;
+[ExtendObjectType("Query")]
+public sealed class StudentQuery
+{
+    [GraphQLName("students")]
+    public async Task<PaginatedList<StudentResponse>?> GetStudentsAsync(
+        int pageNumber,
+        int pageSize,
+        [Service] IStudentDbContext context,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetAllStudent { PageNumber = pageNumber, PageSize = pageSize };
+        var result = await new GetAllStudentHandler(context).Execute(query, cancellationToken);
+        return GraphQLResult.Unwrap(result);
+    }
 
-//         public StudentQuery(IMediator mediator)
-//             => this.mediator = mediator;
-
-//         [UsePaging]
-//         public async Task<IQueryable<Students>> GetAllStudentAsync()
-//         {
-//             Console.WriteLine("Students");
-//             var query = new GetAllStudentGraphQL();
-//             return await mediator.Send(query);
-//         }
-
-//         public async Task<StudentResponse> GetStudentAsync(string email)
-//         {
-//             var query = new GetStudentQuery(email);
-//             var response = await mediator.Send(query);
-//             return null;
-//         }
-
-//     }
-// }
+    [GraphQLName("student")]
+    public async Task<StudentResponse?> GetStudentAsync(
+        Guid id,
+        [Service] IStudentDbContext context,
+        CancellationToken cancellationToken)
+    {
+        var result = await new GetStudentHandler(context).Execute(new GetStudent { Id = id }, cancellationToken);
+        return GraphQLResult.Unwrap(result);
+    }
+}
