@@ -14,7 +14,6 @@ AlumniService is a modular ASP.NET Core API organized into domain features. HTTP
 | `Core` | Handler execution, results, validation helpers, pagination, email value and record-view attribute |
 | `Infrastructure` | PostgreSQL DbContext, Identity, JWT registration and database health checks |
 | `Generators` | Roslyn generator that produces record properties during compilation |
-| `ProxyApp` | Independently started, configuration-driven YARP reverse proxy |
 
 ### Compile-time dependencies
 
@@ -30,14 +29,13 @@ flowchart TD
     Faculty --> Core
     Student -. analyzer .-> Gen[Generators]
     Faculty -. analyzer .-> Gen
-    Proxy[ProxyApp]
 ```
 
-The API references Infrastructure directly and receives the domain projects through transitive project references. ProxyApp has no project reference to the API. See the [API project](../Source/Apps/Alumni.Api/Alumni.Api.csproj), [Infrastructure project](../Source/Libraries/Infrastructure/Infrastructure.csproj) and [Student project](../Source/Libraries/Alumni.Student/Alumni.Student.csproj).
+The API references Infrastructure directly and receives the domain projects through transitive project references. See the [API project](../Source/Apps/Alumni.Api/Alumni.Api.csproj), [Infrastructure project](../Source/Libraries/Infrastructure/Infrastructure.csproj) and [Student project](../Source/Libraries/Alumni.Student/Alumni.Student.csproj).
 
 ## Runtime topology
 
-The root [apphost.cs](../apphost.cs) is a file-based Aspire host. It creates PostgreSQL with a persistent volume, adds pgAdmin, and launches the API after PostgreSQL is ready. It supplies the `alumni-db` connection string to the API. It does not start ProxyApp or apply EF migrations.
+The root [apphost.cs](../apphost.cs) is a file-based Aspire host. It creates PostgreSQL with a persistent volume, adds pgAdmin, and launches the API after PostgreSQL is ready. It supplies the `alumni-db` connection string to the API. It does not apply EF migrations.
 
 ```mermaid
 flowchart LR
@@ -47,11 +45,7 @@ flowchart LR
     Client[Clients] -->|HTTP / GraphQL / gRPC| API
     API -->|EF Core / Npgsql| DB
     Admin --> DB
-    Proxy["ProxyApp - separate process"] -->|configured reverse proxy routes| API
-    Browser[Proxy clients] --> Proxy
 ```
-
-The proxy arrow represents its upstream role once configured. The committed ProxyApp settings do not define `ReverseProxy` routes or clusters; supply those locally before forwarding requests. Destination addresses come from ProxyApp configuration rather than Aspire service discovery. See [local development](Local-Development.md) for startup and configuration.
 
 ## Composition and persistence
 

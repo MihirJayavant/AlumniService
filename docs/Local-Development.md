@@ -75,13 +75,7 @@ export Authentication__ValidIssuer='<local-issuer>'
 
 The host environment controls development-only API documentation. Separately, `SettingService` reads a configuration key named `Environment`, defaulting to `Development`, to select the fallback database password source. Do not assume `ASPNETCORE_ENVIRONMENT` alone selects that fallback. Prefer a complete `ConnectionStrings:alumni-db` value.
 
-## Proxy and health checks
-
-Start the YARP proxy separately after reviewing its `ReverseProxy` configuration for your API destination:
-
-```sh
-dotnet run --project Source/Apps/ProxyApp
-```
+## Health checks
 
 `GET /healthz` includes a PostgreSQL connectivity check. It can report unhealthy when the database is unavailable; it does not verify that migrations have been applied.
 
@@ -123,4 +117,3 @@ There is no `Run-Local` target in the current build script. Use `dotnet run --fi
 - [Aspire resources](../apphost.cs) and [dashboard launch configuration](../apphost.run.json)
 - [Configuration precedence](../Source/Apps/Alumni.Api/Services/SettingService.cs)
 - [Infrastructure and authentication registration](../Source/Libraries/Infrastructure/ConfigureServices.cs)
-- [Proxy startup](../Source/Apps/ProxyApp/Program.cs)

@@ -2,7 +2,7 @@
 
 ## Project Structure & Modules
 
-This is a .NET solution organized under `Source/`. `Source/Apps/Alumni.Apithe HTTP, GraphQL, and gRPC API, controllers, and EF Core migrations. `Source/Apps/ProxyApp` hosts the YARP proxy, while `Source/Apps/AppHost` configures the .NET Aspire development environment. Reusable code is in `Source/Libraries/`: domain slices such as `Alumni.Student` and `Alumni.Faculty`, plus `Core`, `Infrastructure`, and `Generators`. Keep features grouped by domain and their use cases rather than adding unrelated shared code to the API project. Core unit tests live in `Tests/Core.UnitTests`.
+This is a .NET solution organized under `Source/`. `Source/Apps/Alumni.Apithe HTTP, GraphQL, and gRPC API, controllers, and EF Core migrations. `apphost.cs` configures the .NET Aspire development environment. Reusable code is in `Source/Libraries/`: domain slices such as `Alumni.Student` and `Alumni.Faculty`, plus `Core`, `Infrastructure`, and `Generators`. Keep features grouped by domain and their use cases rather than adding unrelated shared code to the API project. Core unit tests live in `Tests/Core.UnitTests`.
 
 ## Build & Run
 
@@ -45,7 +45,7 @@ If a required command or file change needs access outside the sandbox, the user 
 - Domain behavior belongs in `Source/Libraries/Alumni.Student` or `Alumni.Faculty`; transport wiring belongs in `Source/Apps/Alumni.Api
 - Trace a feature from its endpoint through `IHandler.Execute`, validation, mapping, persistence, and HTTP result conversion before changing it.
 - `[RecordView]` produces properties at compile time. Edit the source model or generator rather than generated files in `obj/`.
-- GraphQL implementation files exist, but GraphQL wiring is currently disabled in `Program.cs`. ProxyApp runs separately from AppHost.
+- GraphQL implementation files exist, but GraphQL wiring is currently disabled in `Program.cs`.
 - Preserve unrelated local changes. Keep package versions in `Directory.Packages.props`.
 
 Repository skills in `.agents/skills` cover feature changes, migrations, local debugging, and testing. Use the relevant skill for those workflows, without loading unrelated skills.
