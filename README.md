@@ -1,232 +1,125 @@
 # AlumniService
 
-An ASP.NET Core alumni API targeting .NET 10, organized into vertical slices for students, companies, exams, further studies, and faculty. Persistence uses Entity Framework Core with PostgreSQL; authentication uses ASP.NET Core Identity and JWT. The repository also includes a gRPC service and a separate YARP proxy.
+**One set of alumni features, three API transports.**
 
-## Repository layout
+AlumniService is an ASP.NET Core application for student and faculty records, employment, exams and further studies. HTTP, GraphQL and gRPC share domain handlers, validation and PostgreSQL persistence. Features are grouped into vertical slices so their requests, rules, mappings and database configuration stay close together.
 
-- `Source/Apps/Alumni.Apioints, configuration, and EF Core migrations.
-- `apphost.cs`: file-based Aspire orchestration for PostgreSQL, pgAdmin, and the API.
-- `Source/Apps/ProxyApp`: standalone YARP proxy; not started by AppHost.
-- `Source/Libraries`: domain features, shared types, infrastructure, and the record-view source generator.
-- `Tests/Core.UnitTests`: isolated tests for shared Core behavior.
-- `Tests/Generators.UnitTests`: compilation-based tests for the record-view source generator.
-- `Tests/Alumni.Faculty.UnitTests`: isolated tests for faculty validation and response mapping.
-- `Tests/Alumni.Student.UnitTests`: isolated tests for student and related-record validation and mapping.
-- `Tests/Alumni.Api.UnitTests`: isolated tests for HTTP result conversion, endpoint registration, settings, and JSON options.
-- `Directory.Packages.props`: centrally managed NuGet versions.
+[Explore the docs](docs/Home.md) · [Architecture](docs/Architecture.md) · [API guide](docs/API-Transports.md) · [Local development](docs/Local-Development.md)
 
-## Prerequisites
+## A tour of the system
 
-- .NET SDK `10.0.401`, as pinned in `global.json`.
-- A running Docker-compatible container runtime for Aspire's PostgreSQL and pgAdmin resources.
-- A trusted development HTTPS certificate (`dotnet dev-certs https --trust`).
+```mermaid
+flowchart LR
+    Client[API clients] --> HTTP[HTTP minimal APIs]
+    Client --> GraphQL[GraphQL]
+    Client --> GRPC[gRPC]
+    HTTP --> Features[Student and Faculty handlers]
+    GraphQL --> Features
+    GRPC --> Features
+    Features --> Rules[Core validation and result types]
+    Features --> Context[EF Core context interfaces]
+    Context --> Infrastructure[Infrastructure / ApplicationContext]
+    Infrastructure --> DB[(PostgreSQL)]
+```
 
-## Restore and build
+The API hosts all three transports. Aspire starts the API, PostgreSQL and pgAdmin for local development; the optional YARP proxy runs separately. The record-view generator produces contract properties at compile time.
+
+## Technology at a glance
+
+| Area | Technology | Role |
+|---|---|---|
+| Runtime | .NET 10 / ASP.NET Core | API host and minimal HTTP endpoints |
+| API contracts | HotChocolate / gRPC / OpenAPI | GraphQL, protobuf services and interactive API references |
+| Domain flow | FluentValidation / OneOf | Request validation and explicit success/error results |
+| Persistence | EF Core / Npgsql / PostgreSQL | Feature mappings, queries and migrations |
+| Identity | ASP.NET Core Identity / JWT | Identity storage, token validation and role policies |
+| Local environment | .NET Aspire / YARP | Service orchestration and a standalone reverse proxy |
+| Build and tests | Cake.Sdk / xUnit v3 / Microsoft.Testing.Platform | Repeatable build, formatting and tests |
+| Code generation | Roslyn incremental generator | `[RecordView]` partial records |
+
+See [Technology Stack](docs/Technology-Stack.md) for package pins and implementation references. Identity and JWT infrastructure are configured; the current domain endpoints do not require authorization.
+
+## Quick start
+
+You need .NET SDK **10.0.401** (see [global.json](global.json)), a running Docker-compatible container runtime, and a trusted development HTTPS certificate.
 
 Run from the repository root:
 
 ```sh
-dotnet tool restore
-dotnet restore AlumniService.slnx
-dotnet build AlumniService.slnx
-```
-
-Alternatively, run the single-file Cake SDK build. `build.cs` uses `Cake.Sdk`, pinned in `global.json`; .NET restores the SDK automatically on first execution. The default target is `Build`, with `Release` configuration:
-
-```sh
+dotnet dev-certs https --trust
+dotnet build.cs -- --target=Bootstrap
 dotnet build.cs
-dotnet build.cs -- --configuration=Debug --rebuild
 ```
 
-`--rebuild` cleans the whole solution before building. Compiler warnings are reported using the SDK defaults.
-
-GitHub Actions runs the same single command locally available for CI:
-
-```sh
-dotnet build.cs -- --target=CI
-```
-
-This restores the solution, builds the record-view generator in Debug for the formatter's default workspace, runs the `Format` target to verify whitespace formatting against `.editorconfig` and check code style and analyzer diagnostics at warning severity or higher, builds in Release with warnings treated as errors, and runs the tests. Checks fail without changing source files. Pass `--configuration=Debug` to use Debug. The workflow runs on pull requests, pushes to `main` (including merged pull requests), and manual dispatches.
-
-## Unit tests
-
-API tests cover successful and error HTTP result conversion, all 13 minimal API route registrations, the paginated FurtherStudy response metadata, strict JSON number handling, and configuration precedence/defaults. They inspect routes without starting a server and require no database, Docker, or secrets. Environment-password cases restore process environment values and run without parallel execution. Request binding, actual HTTP serialization, middleware, and persistence need separate integration tests.
-
-Core tests use xUnit v3 and Microsoft.Testing.Platform, selected in `global.json`. They cover email validation and value behavior, handler validation/results/exceptions/cancellation, pagination calculations, and item mapping. They require no database, Docker, API configuration, or secrets.
-
-Generator tests use the same test framework and run Roslyn against small C# inputs, verifying generated properties and compilation diagnostics. They cover required init properties, exclusions, member selection, nullable and generic types, namespaces, missing attributes, and multiple views. They require no database or API startup.
-
-Faculty tests cover required fields, email syntax and normalized length limits, name and extension boundaries, positive mobile numbers, nonempty identifiers, pagination limits and offset overflow, and response mapping. Invalid requests are also executed through the real handlers to verify `BadRequest` without database access. These tests require no database, Docker, API configuration, or secrets. Persistence normalization, duplicate detection, successful CRUD, and actual page contents require separate PostgreSQL integration tests.
-
-Student tests cover required fields and trimmed database length limits, email and mobile-number validation, branch lengths and supported gender values, birth dates and year chronology, nested addresses, lookup identifiers, pagination limits and offset overflow, and Company, Exam, and FurtherStudy validation. Invalid requests execute through real handlers to verify `BadRequest` without database access. Mapping tests cover creation identity, Student audit timestamps, text trimming, email normalization, canonical gender values, and every response mapper. These tests require no database, Docker, API configuration, or secrets. Successful persistence, duplicate detection, relationships, and actual page contents need separate PostgreSQL integration tests.
-
-Text fields are trimmed before persistence; names, addresses and other free text retain casing, Unicode, punctuation and internal spaces. Branch is required text of at most 30 trimmed characters, with no fixed list; it preserves casing. Gender accepts case-insensitive Male/Female input and persists canonical values. Mobile numbers contain 1–15 ASCII digits and cannot be all zeros; extensions remain required text of at most 10 characters. Reusable mobile, gender, birth-date, year and required-text rules live in Core. Birth dates must represent an age greater than 10 and no older than 100 relative to the current UTC date. Years range from 1900 through the current UTC year; passing years cannot precede admission years, and Student admission cannot precede the birth year. Salaries are nonnegative; exam scores range from 0 to 32767, matching the database SMALLINT. Postal codes remain required free text. These rules apply to new records; existing rows are not rewritten.
-
-The Core `Email` value trims surrounding whitespace and lowercases the whole address using invariant casing before validating and storing it. Equality, conversions, and display use that normalized value. This is the application's case-insensitive email policy; it preserves dots and plus aliases.
-
-Email syntax is limited to unquoted ASCII local parts with nonempty dot-separated segments and a dotted DNS domain. Domain labels allow letters, digits, and internal hyphens, up to 63 characters each. The normalized address allows up to 64 characters before `@` and 254 characters overall. Punycode domains are accepted; quoted local parts, raw Unicode addresses, and IP address literals are outside this policy. Syntax validation does not establish mailbox ownership or deliverability.
-
-Build the solution and run its tests through Cake:
-
-```sh
-dotnet build.cs -- --target=Test
-```
-
-Run only the Core suite directly (builds and restores as needed):
-
-```sh
-dotnet test --project Tests/Core.UnitTests/Core.UnitTests.csproj --configuration Release
-```
-
-Build and run only the generator suite without build servers:
-
-```sh
-dotnet build Tests/Generators.UnitTests/Generators.UnitTests.csproj --configuration Release --disable-build-servers -m:1
-dotnet Tests/Generators.UnitTests/bin/Release/net10.0/Generators.UnitTests.dll
-```
-
-Build and run only the Student suite without build servers:
-
-```sh
-dotnet build Tests/Alumni.Student.UnitTests/Alumni.Student.UnitTests.csproj --configuration Release --disable-build-servers -m:1
-dotnet Tests/Alumni.Student.UnitTests/bin/Release/net10.0/Alumni.Student.UnitTests.dll
-```
-
-After a Release build, run all solution tests without rebuilding:
-
-```sh
-dotnet test --solution AlumniService.slnx --configuration Release --no-build --no-restore
-```
-
-`HandlerExtensions.Execute` returns `BadRequest` for validation failures, preserves handler-returned errors, propagates cancellation, and converts other exceptions to `InternalError`. EF-backed `PaginationQuery.Paginate` needs separate PostgreSQL integration tests; those are deferred. Invalid pagination input rules are also outside this suite's current scope.
-
-## Run with Aspire
-
-Configure local PostgreSQL credentials through the file-based AppHost's user secrets:
+Configure local PostgreSQL parameters and API authentication settings. Replace the placeholders with your own local values. PostgreSQL parameters use AppHost user secrets; API authentication settings use environment variables inherited by the API process.
 
 ```sh
 dotnet user-secrets set "Parameters:pg-user" "alumni-service" --file apphost.cs
 dotnet user-secrets set "Parameters:pg-password" "<local-password>" --file apphost.cs
+export Authentication__Secret='<local-signing-secret>'
+export Authentication__ValidAudience='<local-audience>'
+export Authentication__ValidIssuer='<local-issuer>'
 dotnet run --file apphost.cs
 ```
 
-The dashboard uses the fixed address `https://localhost:18888`, configured in `apphost.run.json`. Open the login URL printed by AppHost to find the API and pgAdmin endpoints. Telemetry and the AppHost resource service use separate HTTPS ports `18889` and `18891`; these ports must be available. PostgreSQL uses a persistent data volume; changing credentials does not reset an existing database volume.
+Open the dashboard login URL printed by Aspire (`https://localhost:18888`). Find the API and pgAdmin endpoints there. PostgreSQL binds host port `5432` and uses a persistent volume.
 
-PostgreSQL uses the fixed host port `5432`; this port must be available when starting AppHost. Aspire supplies `ConnectionStrings:alumni-db` to the API, including the host port and credentials. The API prefers this complete connection string and passes it directly to EF Core.
+**Apply migrations before using database-backed endpoints.** Aspire does not apply them automatically. Follow [Persistence and Migrations](docs/Persistence-and-Migrations.md) to configure the API's connection and update the local database from a second terminal.
 
-## Run the API directly
+For direct API startup, proxy configuration and troubleshooting, see [Local Development](docs/Local-Development.md).
 
-Start an existing PostgreSQL database and configure a complete connection string using the environment variable `ConnectionStrings__alumni-db`. If absent, the API falls back to `Database:Connection`, replacing its `{0}` placeholder with `Database:Password` in development or `DATABASE_PASSWORD` otherwise.
+## Try an API
 
-Configure `Authentication:Secret`, `Authentication:ValidAudience`, and `Authentication:ValidIssuer` using local configuration or their double-underscore environment variable equivalents. Keep credentials and JWT secrets out of committed files.
+| Transport | Entry point | Details |
+|---|---|---|
+| HTTP | `/student/`, `/faculty/`, `/company/`, `/exam/`, `/further-studies/` | 13 operations; student/faculty lists accept page parameters |
+| GraphQL | `/graphql` | Queries and mutations over the same feature handlers |
+| gRPC | Five `alumni.v1` services | Unary methods; HTTPS with HTTP/2 |
+| API reference | `/swagger`, `/scalar`, `/openapi/v1.json` | Available in development |
+| Health | `/healthz` | Includes PostgreSQL connectivity |
 
-```sh
-dotnet run --project Source/Apps/Alumni.Api
-```
-
-## gRPC API
-
-The API exposes all 13 controller operations through five unary gRPC services in package `alumni.v1`: `StudentService` (`List`, `Get`, `Add`), `FacultyService` (`List`, `Get`, `Add`, `Delete`), and `CompanyService`, `ExamService`, and `FurtherStudyService` (each with `ListByStudent` and `Add`). Contracts use snake_case filenames under `Source/Apps/Alumni.Api/Grpc/Protos/alumni/v1`, matching their package. Clients can generate stubs with `Grpc/Protos` as the import root. The API project includes proto files recursively; `common.proto` generates messages only. `AddApplicationGrpc` registers gRPC infrastructure and `MapApplicationGrpc` maps the five services.
-
-Each service calls the same domain handlers through `Execute`, including validation and persistence, and passes the call cancellation token. Use an HTTPS endpoint supporting HTTP/2. Access requirements match the current controller endpoints.
-
-GUIDs use strings; student birth dates use `yyyy-MM-dd`; faculty audit dates use protobuf timestamps, with `updated_at` absent when null. Faculty mobile numbers and annual salaries use `int64`; student mobile numbers remain strings. Client-supplied creation IDs are accepted but the handlers generate the persisted IDs.
-
-Student and faculty `List` requests default omitted page fields to page 1 and size 10; explicitly supplied values are validated by the handlers. Related-record lists preserve the current fixed pagination: page 1, size 10 for companies/exams and size 50 for further studies. Every list reply includes items and pagination metadata. Faculty `Delete` returns the deleted faculty record.
-
-Invalid input produces `InvalidArgument`, missing records produce `NotFound`, duplicate records produce `AlreadyExists`, and authentication/authorization failures map to `Unauthenticated`/`PermissionDenied`. Internal handler failures produce `Internal` with a generic message. Cancellation is allowed to propagate to gRPC.
-
-## GraphQL API
-
-The API exposes all 13 controller operations through HotChocolate at `/graphql`, alongside HTTP and gRPC. Resolvers call the same domain handlers through `Execute`, preserving validation, mapping, persistence, and cancellation. Authentication and authorization requirements match the current controller endpoints.
-
-Queries are `students(pageNumber, pageSize)`, `student(id)`, `faculties(pageNumber, pageSize)`, `faculty(facultyId)`, `companies(studentId)`, `exams(studentId)`, and `furtherStudies(studentId)`. Mutations are `addStudent(input)`, `addFaculty(input)`, `deleteFaculty(facultyId)`, `addCompany(input)`, `addExam(input)`, and `addFurtherStudy(input)`. Faculty deletion returns the deleted record.
-
-Student and faculty list pagination arguments are required. Lists return `items`, `totalCount`, `pageNumber`, `pageSize`, `totalPages`, `hasPreviousPage`, and `hasNextPage`. Related-record lists preserve the handlers' fixed pagination: page 1 with size 10 for companies/exams and size 50 for further studies. No extra filtering, sorting, or cursor pagination is applied.
-
-Example query:
+For example, send this query to `/graphql` using the API URL:
 
 ```graphql
-query Students($pageNumber: Int!, $pageSize: Int!) {
-  students(pageNumber: $pageNumber, pageSize: $pageSize) {
-    items { studentId firstName lastName email dateOfBirth }
+query {
+  students(pageNumber: 1, pageSize: 10) {
+    items { studentId firstName lastName }
     totalCount
-    pageNumber
-    pageSize
     hasNextPage
   }
 }
 ```
 
-Variables: `{"pageNumber": 1, "pageSize": 10}`. Send an HTTP POST to `/graphql` with a JSON body containing `query` and `variables`, using the API URL from Aspire or your direct API launch.
+The [API guide](docs/API-Transports.md) covers route parity, client types, pagination and transport-specific errors.
 
-Example mutation:
+## Find your way around
 
-```graphql
-mutation AddFaculty($input: AddFacultyInput!) {
-  addFaculty(input: $input) {
-    facultyId
-    email
-    firstName
-    createdAt
-  }
-}
+```text
+Source/
+  Apps/
+    Alumni.Api/       HTTP, GraphQL, gRPC and EF migrations
+    ProxyApp/         Standalone YARP proxy
+  Libraries/
+    Alumni.Student/   Student, Company, Exam and FurtherStudy slices
+    Alumni.Faculty/   Faculty slice
+    Core/             Handlers, validation, value and result types
+    Infrastructure/   PostgreSQL context, Identity and registration
+    Generators/       Record-view source generator
+Tests/                Five isolated unit-test projects
+docs/                 Wiki-style documentation
+apphost.cs            File-based Aspire host
+build.cs              Cake build targets
 ```
 
-Example variables:
+Start with [Architecture](docs/Architecture.md), follow a request in [Patterns and Request Lifecycle](docs/Patterns-and-Request-Lifecycle.md), then explore the [Data Model](docs/Domain-and-Data-Model.md) and [Source Generation](docs/Source-Generation.md).
 
-```json
-{
-  "input": {
-    "email": "faculty@example.com",
-    "firstName": "Ada",
-    "lastName": "Lovelace",
-    "extension": "123",
-    "mobileNo": 919876543210
-  }
-}
-```
-
-Input fields mirror the corresponding domain request records, including creation IDs where the HTTP requests expose them; handlers still generate persisted IDs. GUIDs use the `UUID` scalar, birth dates use `LocalDate` (`yyyy-MM-dd`), timestamps use `DateTime`, and 64-bit values use `Long`. Student mobile numbers remain strings. Nullable faculty `updatedAt` values remain nullable.
-
-Handler failures appear in GraphQL `errors` with a field `path` and an `extensions.code`: `BAD_REQUEST`, `NOT_FOUND`, `CONFLICT`, `UNAUTHORIZED`, or `FORBIDDEN`. Other failures use `INTERNAL_ERROR` with a generic message. Root fields are nullable so successful sibling fields can still return data. Malformed operations or scalar values are rejected by GraphQL before handler execution and use HotChocolate's own error codes. GraphQL errors do not mirror controller HTTP status codes.
-
-Each resolver uses its own service scope, preventing concurrent query fields from sharing an EF DbContext and isolating tracked changes between mutation fields. Multiple mutations do not form one transaction; each handler retains its own save boundary.
-
-## Codex agent workflow
-
-Repository guidance lives in `AGENTS.md` and scoped files beneath `Source/`. Reusable workflows are in `.agents/skills`; project subagent roles are in `.codex/agents`. Keep independent workers within assigned file ownership and let the parent agent perform the final build.
-
-Run the reusable Cake targets from the repository root:
+## Build, test and contribute
 
 ```sh
-dotnet build.cs -- --target=Doctor
-dotnet build.cs -- --target=Bootstrap
-dotnet build.cs
-dotnet build.cs -- --configuration=Debug
-dotnet run --file apphost.cs
-dotnet build.cs -- --target=Add-Migration --MigrationName=AddStudentField
+dotnet build.cs -- --target=Test
+dotnet build.cs -- --target=CI
 ```
 
-`Doctor` fails for SDK/tool errors, warns about runtime prerequisites, and lists configuration requirements without reading secret values. If the EF tool is missing, run `Bootstrap` first. `Build` defaults to Release; pass `--configuration=Debug` for Debug builds. Migration generation requires API configuration and does not apply migrations.
+`Test` builds and runs the solution tests. `CI` also verifies formatting, code style and analyzer diagnostics, then builds with warnings treated as errors. Unit tests cover Core, source generation, domain validation/mapping, HTTP registration/results, configuration and GraphQL. Successful persistence and database queries need separate integration checks.
 
-The source generator does not launch a debugger automatically. Use the Core unit tests, CI checks, and relevant manual runtime checks for verification.
-
-For unit-test planning and implementation, use the `alumni-testing` skill in `.agents/skills/alumni-testing/SKILL.md`. The `test-worker` agent in `.codex/agents/test-worker.toml` handles assigned test files; the parent agent owns contract decisions, shared project/build configuration, integration, and final verification. Use independent workers only for disjoint test files and serialize all builds and test runs in a shared checkout. Pure Core tests live in `Tests/Core.UnitTests`; keep EF query execution in separate integration tests.
-
-## Database migrations
-
-Migrations live in the API project. Configure its database connection before running EF commands. For the Aspire database, use the connection string shown in the dashboard; PostgreSQL listens on host port `5432`.
-
-```sh
-dotnet ef migrations add <MigrationName> --project Source/Apps/Alumni.Apiproject Source/Apps/Alumni.Api Alumni.Apilopment
-dotnet ef database update --project Source/Apps/Alumni.Apiproject Source/Apps/Alumni.Api Alumni.Apilopment
-```
-
-Apply migrations manually from the repository root before using endpoints that require database tables; AppHost does not apply them automatically.
-
-Cake also supports creating a migration through the restored `dotnet-ef` tool:
-
-```sh
-dotnet build.cs -- --target=Add-Migration --MigrationName=AddStudentField
-```
+See [Testing and CI](docs/Testing-and-CI.md) for suite-specific commands and coverage boundaries. Read [repository guidance](AGENTS.md) and scoped instructions before contributing. Keep package versions in [Directory.Packages.props](Directory.Packages.props), preserve unrelated changes, and keep secrets out of commits.
