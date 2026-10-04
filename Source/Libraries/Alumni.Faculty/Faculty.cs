@@ -9,6 +9,8 @@ public record Faculty : IAuditableEntity
     public required string LastName { get; init; }
     public required string Extension { get; init; }
     public required long MobileNo { get; init; }
+    // External account identifier; no navigation or foreign-key constraint.
+    public string? AuthUserId { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public bool IsDeleted { get; set; }

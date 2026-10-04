@@ -48,21 +48,41 @@ public sealed class AuthModelTests
     }
 
     [Theory]
-    [InlineData(nameof(AuthUser.StudentProfileId), typeof(StudentEntity))]
-    [InlineData(nameof(AuthUser.FacultyProfileId), typeof(Alumni.Faculty.Faculty))]
-    public void Model_WhenAccountLinksToAProfile_PreventsSharingAndCascadeDeletion(
-        string propertyName, Type profileType)
+    [InlineData(typeof(StudentEntity))]
+    [InlineData(typeof(Alumni.Faculty.Faculty))]
+    public void Model_WhenProfileReferencesAnAccount_UsesUniqueIdentifierWithoutForeignKey(Type profileType)
     {
         using var context = CreateContext();
-        var user = Entity(context.Model, typeof(AuthUser));
-        var relationship = Assert.Single(user.GetForeignKeys(), foreignKey =>
-            foreignKey.Properties.Select(property => property.Name).SequenceEqual([propertyName]));
+        var profile = Entity(context.Model, profileType);
+        const string propertyName = "AuthUserId";
 
-        Assert.Equal(profileType, relationship.PrincipalEntityType.ClrType);
-        Assert.True(relationship.IsUnique);
-        Assert.Equal(DeleteBehavior.Restrict, relationship.DeleteBehavior);
-        Assert.True(Assert.Single(user.GetIndexes(), index =>
+        Assert.NotNull(profile.FindProperty(propertyName));
+        Assert.DoesNotContain(profile.GetForeignKeys(), foreignKey =>
+            foreignKey.Properties.Any(property => property.Name == propertyName));
+        Assert.True(Assert.Single(profile.GetIndexes(), index =>
             index.Properties.Select(property => property.Name).SequenceEqual([propertyName])).IsUnique);
+        Assert.DoesNotContain(context.Model.GetEntityTypes().SelectMany(entity => entity.GetForeignKeys()),
+            foreignKey =>
+            {
+                var belongsToAuth = foreignKey.DeclaringEntityType.GetSchema() == "Auth";
+                var referencesAuth = foreignKey.PrincipalEntityType.GetSchema() == "Auth";
+                return belongsToAuth != referencesAuth;
+            });
+    }
+
+    [Fact]
+    public void Model_WhenInvitingAnExistingAccount_ReferencesTheAccountWithoutDomainProfiles()
+    {
+        using var context = CreateContext();
+        var invitation = Entity(context.Model, typeof(Invitation));
+        var target = Assert.Single(invitation.GetForeignKeys(), foreignKey =>
+            foreignKey.Properties.Select(property => property.Name).SequenceEqual([nameof(Invitation.UserId)]));
+
+        Assert.Equal(typeof(AuthUser), target.PrincipalEntityType.ClrType);
+        Assert.True(target.IsRequired);
+        var account = Entity(context.GetService<IDesignTimeModel>().Model, typeof(AuthUser));
+        Assert.Equal(AccountStatus.PendingActivation, account.FindProperty(nameof(AuthUser.Status))!.GetDefaultValue());
+        Assert.Contains(account.GetCheckConstraints(), constraint => constraint.Name == "CK_Users_ActivePassword");
     }
 
     [Fact]

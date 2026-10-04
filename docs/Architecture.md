@@ -13,7 +13,7 @@ AlumniService is a modular ASP.NET Core API organized into domain features. HTTP
 | `Alumni.Faculty` | Faculty use cases, validators, mapping and EF configuration |
 | `Core` | Handler execution, results, validation helpers, pagination, email value and record-view attribute |
 | `Alumni.Auth` | Identity account/role entities, invitations, sessions and auth EF mappings |
-| `Infrastructure` | PostgreSQL DbContext, cross-domain profile relationships and database health checks |
+| `Infrastructure` | PostgreSQL DbContext, independent domain/auth model composition and database health checks |
 | `Generators` | Roslyn generator that produces record properties during compilation |
 
 ### Compile-time dependencies

@@ -15,14 +15,17 @@ public static class AuthModelConfiguration
 
         builder.Entity<AuthUser>(user =>
         {
-            user.ToTable("AspNetUsers", Schema, table => table.HasCheckConstraint("CK_Users_ActiveProfile",
-                "NOT \"IsActive\" OR \"StudentProfileId\" IS NOT NULL OR \"FacultyProfileId\" IS NOT NULL"));
+            user.ToTable("AspNetUsers", Schema, table =>
+            {
+                table.HasCheckConstraint("CK_Users_Status", "\"Status\" IN ('PendingActivation', 'Active', 'Disabled')");
+                table.HasCheckConstraint("CK_Users_ActivePassword",
+                    "\"Status\" <> 'Active' OR (\"PasswordHash\" IS NOT NULL AND length(\"PasswordHash\") > 0)");
+            });
             user.Property(account => account.Email).HasMaxLength(256).IsRequired();
             user.Property(account => account.NormalizedEmail).HasMaxLength(256).IsRequired();
-            user.Property(account => account.IsActive).HasDefaultValue(false);
+            user.Property(account => account.Status).HasConversion<string>().HasMaxLength(32)
+                .HasDefaultValue(AccountStatus.PendingActivation);
             user.HasIndex(account => account.NormalizedEmail).IsUnique();
-            user.HasIndex(account => account.StudentProfileId).IsUnique();
-            user.HasIndex(account => account.FacultyProfileId).IsUnique();
         });
         builder.Entity<AuthRole>().ToTable("AspNetRoles", Schema);
         builder.Entity<IdentityUserRole<string>>().ToTable("AspNetUserRoles", Schema);

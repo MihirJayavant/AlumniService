@@ -10,12 +10,8 @@ public sealed class InvitationConfiguration : IEntityTypeConfiguration<Invitatio
         builder.ToTable("Invitations", AuthModelConfiguration.Schema, table =>
         {
             table.HasCheckConstraint("CK_Invitations_Expiry", "\"ExpiresAt\" > \"CreatedAt\"");
-            table.HasCheckConstraint("CK_Invitations_ProfileRole",
-                "(\"RoleId\" = 'Student' AND \"StudentProfileId\" IS NOT NULL AND \"FacultyProfileId\" IS NULL) OR " +
-                "(\"RoleId\" IN ('FacultyReader', 'FacultyEditor', 'FacultyAdmin') AND \"FacultyProfileId\" IS NOT NULL AND \"StudentProfileId\" IS NULL)");
             table.HasCheckConstraint("CK_Invitations_Acceptance",
-                "(\"AcceptedAt\" IS NULL AND \"AcceptedByUserId\" IS NULL) OR " +
-                "(\"AcceptedAt\" IS NOT NULL AND \"AcceptedByUserId\" IS NOT NULL AND \"RevokedAt\" IS NULL)");
+                "\"AcceptedAt\" IS NULL OR \"RevokedAt\" IS NULL");
         });
         builder.HasKey(invitation => invitation.Id);
         builder.Property(invitation => invitation.Email).HasMaxLength(256).IsRequired();
@@ -29,7 +25,7 @@ public sealed class InvitationConfiguration : IEntityTypeConfiguration<Invitatio
             .OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<AuthUser>().WithMany().HasForeignKey(invitation => invitation.InvitedByUserId)
             .OnDelete(DeleteBehavior.Restrict);
-        builder.HasOne<AuthUser>().WithMany().HasForeignKey(invitation => invitation.AcceptedByUserId)
+        builder.HasOne<AuthUser>().WithMany().HasForeignKey(invitation => invitation.UserId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

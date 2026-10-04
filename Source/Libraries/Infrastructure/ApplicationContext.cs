@@ -1,5 +1,4 @@
 using Alumni.Auth;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Infrastructure;
@@ -24,14 +23,7 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options)
         builder.ApplyConfiguration(new CompanyConfiguration());
         builder.ApplyConfiguration(new FurtherStudyConfiguration());
         builder.ApplyConfiguration(new FacultyConfiguration());
-        builder.Entity<AuthUser>().HasOne<StudentEntity>().WithOne()
-            .HasForeignKey<AuthUser>(user => user.StudentProfileId).OnDelete(DeleteBehavior.Restrict);
-        builder.Entity<AuthUser>().HasOne<Faculty>().WithOne()
-            .HasForeignKey<AuthUser>(user => user.FacultyProfileId).OnDelete(DeleteBehavior.Restrict);
-        builder.Entity<Invitation>().HasOne<StudentEntity>().WithMany()
-            .HasForeignKey(invitation => invitation.StudentProfileId).OnDelete(DeleteBehavior.Restrict);
-        builder.Entity<Invitation>().HasOne<Faculty>().WithMany()
-            .HasForeignKey(invitation => invitation.FacultyProfileId).OnDelete(DeleteBehavior.Restrict);
+
     }
 }
 
