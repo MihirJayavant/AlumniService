@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package alumni.v1;
+
+import "alumni/v1/common.proto";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "Alumni.Api.Grpc.Contracts";
+
+service FacultyService {
+  rpc List(PaginationRequest) returns (FacultyListReply);
+  rpc Get(FacultyIdRequest) returns (FacultyReply);
+  rpc Add(AddFacultyRequest) returns (FacultyReply);
+  rpc Delete(FacultyIdRequest) returns (FacultyReply);
+}
+
+message FacultyIdRequest {
+  string faculty_id = 1;
+}
+
+message AddFacultyRequest {
+  string email = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string extension = 4;
+  int64 mobile_no = 5;
+}
+
+message FacultyReply {
+  string email = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string extension = 4;
+  int64 mobile_no = 5;
+  string faculty_id = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message FacultyListReply {
+  repeated FacultyReply items = 1;
+  PaginationMetadata pagination = 2;
+}

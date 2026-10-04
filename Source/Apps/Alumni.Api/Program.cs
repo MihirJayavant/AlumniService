@@ -1,6 +1,5 @@
 using Alumni.Api.Controllers;
 using Alumni.Api.ExtensionService;
-using Alumni.Api.Grpc;
 using Alumni.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +11,7 @@ builder.Services.AddSingleton<ISettingService>(new SettingService(builder.Config
 builder.Services.AddInfrastructureServices(new SettingService(builder.Configuration));
 builder.Services.AddApplicationOpenApi(builder);
 builder.Services.AddWebApiServices(builder.Configuration);
+builder.Services.AddApplicationGrpc();
 builder.Services.AddApplicationLogging(builder.Environment);
 
 var app = builder.Build();
@@ -24,6 +24,6 @@ app.UseAuth();
 app.AddControllers();
 
 // app.UseApplicationGraphQL();
-app.MapGrpcService<IdentityGrpc>();
+app.MapApplicationGrpc();
 
 app.Run();

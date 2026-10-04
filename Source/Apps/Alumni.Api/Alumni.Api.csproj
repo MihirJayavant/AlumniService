@@ -3,7 +3,8 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>
-    <Protobuf Include="Grpc\Protos\Identity.proto" GrpcServices="Server" />
+    <Protobuf Include="Grpc/Protos/**/*.proto" ProtoRoot="Grpc/Protos" GrpcServices="Server" />
+    <Protobuf Update="Grpc/Protos/**/common.proto" GrpcServices="None" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />

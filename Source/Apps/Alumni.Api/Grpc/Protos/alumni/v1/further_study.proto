@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package alumni.v1;
+
+import "alumni/v1/common.proto";
+
+option csharp_namespace = "Alumni.Api.Grpc.Contracts";
+
+service FurtherStudyService {
+  rpc ListByStudent(StudentIdRequest) returns (FurtherStudyListReply);
+  rpc Add(AddFurtherStudyRequest) returns (FurtherStudyReply);
+}
+
+message AddFurtherStudyRequest {
+  string student_id = 1;
+  string further_study_id = 2;
+  string institute_name = 3;
+  string degree = 4;
+  int32 admission_year = 5;
+  int32 passing_year = 6;
+  string country = 7;
+  string city = 8;
+}
+
+message FurtherStudyReply {
+  string further_study_id = 1;
+  string institute_name = 2;
+  string degree = 3;
+  int32 admission_year = 4;
+  int32 passing_year = 5;
+  string country = 6;
+  string city = 7;
+}
+
+message FurtherStudyListReply {
+  repeated FurtherStudyReply items = 1;
+  PaginationMetadata pagination = 2;
+}

@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package alumni.v1;
+
+import "alumni/v1/common.proto";
+
+option csharp_namespace = "Alumni.Api.Grpc.Contracts";
+
+service CompanyService {
+  rpc ListByStudent(StudentIdRequest) returns (CompanyListReply);
+  rpc Add(AddCompanyRequest) returns (CompanyReply);
+}
+
+message AddCompanyRequest {
+  string student_id = 1;
+  string company_id = 2;
+  string company_name = 3;
+  string designation = 4;
+  int32 year_of_joining = 5;
+  int64 annual_salary = 6;
+}
+
+message CompanyReply {
+  string company_id = 1;
+  string company_name = 2;
+  string designation = 3;
+  int32 year_of_joining = 4;
+  int64 annual_salary = 5;
+}
+
+message CompanyListReply {
+  repeated CompanyReply items = 1;
+  PaginationMetadata pagination = 2;
+}
