@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package alumni.v1;
+
+import "alumni/v1/common.proto";
+
+option csharp_namespace = "Alumni.Api.Grpc.Contracts";
+
+service StudentService {
+  rpc List(PaginationRequest) returns (StudentListReply);
+  rpc Get(StudentIdRequest) returns (StudentReply);
+  rpc Add(AddStudentRequest) returns (StudentReply);
+}
+
+message AddStudentRequest {
+  // Accepted for parity; the handler generates the persisted ID.
+  string student_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string mobile_no = 4;
+  string extension = 5;
+  string gender = 6;
+  // ISO 8601 calendar date: yyyy-MM-dd.
+  string date_of_birth = 7;
+  string email = 8;
+  string branch = 9;
+  AddressMessage current_address = 10;
+  AddressMessage correspondence_address = 11;
+  int32 admission_year = 12;
+  int32 passing_year = 13;
+}
+
+message StudentReply {
+  string student_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string mobile_no = 4;
+  string extension = 5;
+  string gender = 6;
+  // ISO 8601 calendar date: yyyy-MM-dd.
+  string date_of_birth = 7;
+  string email = 8;
+  string branch = 9;
+  AddressMessage current_address = 10;
+  AddressMessage correspondence_address = 11;
+  int32 admission_year = 12;
+  int32 passing_year = 13;
+}
+
+message StudentListReply {
+  repeated StudentReply items = 1;
+  PaginationMetadata pagination = 2;
+}

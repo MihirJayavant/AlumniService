@@ -14,7 +14,6 @@ public static class WebApiExtension
             services.AddSingleton(configuration);
             services.AddCors();
             services.AddSingleton<ISettingService>(new SettingService(configuration));
-            services.AddGrpc();
         }
     }
 

@@ -124,6 +124,18 @@ Configure `Authentication:Secret`, `Authentication:ValidAudience`, and `Authenti
 dotnet run --project Source/Apps/Alumni.Api
 ```
 
+## gRPC API
+
+The API exposes all 13 controller operations through five unary gRPC services in package `alumni.v1`: `StudentService` (`List`, `Get`, `Add`), `FacultyService` (`List`, `Get`, `Add`, `Delete`), and `CompanyService`, `ExamService`, and `FurtherStudyService` (each with `ListByStudent` and `Add`). Contracts use snake_case filenames under `Source/Apps/Alumni.Api/Grpc/Protos/alumni/v1`, matching their package. Clients can generate stubs with `Grpc/Protos` as the import root. The API project includes proto files recursively; `common.proto` generates messages only. `AddApplicationGrpc` registers gRPC infrastructure and `MapApplicationGrpc` maps the five services.
+
+Each service calls the same domain handlers through `Execute`, including validation and persistence, and passes the call cancellation token. Use an HTTPS endpoint supporting HTTP/2. Access requirements match the current controller endpoints.
+
+GUIDs use strings; student birth dates use `yyyy-MM-dd`; faculty audit dates use protobuf timestamps, with `updated_at` absent when null. Faculty mobile numbers and annual salaries use `int64`; student mobile numbers remain strings. Client-supplied creation IDs are accepted but the handlers generate the persisted IDs.
+
+Student and faculty `List` requests default omitted page fields to page 1 and size 10; explicitly supplied values are validated by the handlers. Related-record lists preserve the current fixed pagination: page 1, size 10 for companies/exams and size 50 for further studies. Every list reply includes items and pagination metadata. Faculty `Delete` returns the deleted faculty record.
+
+Invalid input produces `InvalidArgument`, missing records produce `NotFound`, duplicate records produce `AlreadyExists`, and authentication/authorization failures map to `Unauthenticated`/`PermissionDenied`. Internal handler failures produce `Internal` with a generic message. Cancellation is allowed to propagate to gRPC.
+
 ## Codex agent workflow
 
 Repository guidance lives in `AGENTS.md` and scoped files beneath `Source/`. Reusable workflows are in `.agents/skills`; project subagent roles are in `.codex/agents`. Keep independent workers within assigned file ownership and let the parent agent perform the final build.

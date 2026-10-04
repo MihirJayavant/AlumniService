@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package alumni.v1;
+
+import "alumni/v1/common.proto";
+
+option csharp_namespace = "Alumni.Api.Grpc.Contracts";
+
+service ExamService {
+  rpc ListByStudent(StudentIdRequest) returns (ExamListReply);
+  rpc Add(AddExamRequest) returns (ExamReply);
+}
+
+message AddExamRequest {
+  string student_id = 1;
+  string exam_id = 2;
+  string exam_name = 3;
+  int32 score = 4;
+  int32 year = 5;
+}
+
+message ExamReply {
+  string exam_id = 1;
+  string exam_name = 2;
+  int32 score = 3;
+  int32 year = 4;
+}
+
+message ExamListReply {
+  repeated ExamReply items = 1;
+  PaginationMetadata pagination = 2;
+}

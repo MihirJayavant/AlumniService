@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option csharp_namespace = "Alumni.Api.Grpc.Contracts";
+
+package alumni.v1;
+
+message StudentIdRequest {
+  string student_id = 1;
+}
+
+message PaginationRequest {
+  optional int32 page_number = 1;
+  optional int32 page_size = 2;
+}
+
+message PaginationMetadata {
+  int32 total_count = 1;
+  int32 page_number = 2;
+  int32 page_size = 3;
+  int32 total_pages = 4;
+  bool has_previous_page = 5;
+  bool has_next_page = 6;
+}
+
+message AddressMessage {
+  string pin_code = 1;
+  string country = 2;
+  string state = 3;
+  string city = 4;
+  string user_address = 5;
+}
