@@ -7,7 +7,7 @@ public sealed class FurtherStudiesController : IEndpoint
     {
         var api = app.MapGroup("/further-studies").WithTags(["FurtherStudies"]);
 
-        api.MapGet("/{studentId:guid}", GetAsync).Produces<IEnumerable<FurtherStudyResponse>>();
+        api.MapGet("/{studentId:guid}", GetAsync).Produces<PaginatedList<FurtherStudyResponse>>();
         api.MapPost("/", PostAsync).Produces<FurtherStudyResponse>();
     }
 
