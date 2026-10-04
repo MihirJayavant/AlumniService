@@ -12,7 +12,8 @@ AlumniService is a modular ASP.NET Core API organized into domain features. HTTP
 | `Alumni.Student` | Student, company, exam and further-study use cases, validators, mapping and EF configuration |
 | `Alumni.Faculty` | Faculty use cases, validators, mapping and EF configuration |
 | `Core` | Handler execution, results, validation helpers, pagination, email value and record-view attribute |
-| `Infrastructure` | PostgreSQL DbContext, Identity, JWT registration and database health checks |
+| `Alumni.Auth` | Identity account/role entities, invitations, sessions and auth EF mappings |
+| `Infrastructure` | PostgreSQL DbContext, cross-domain profile relationships and database health checks |
 | `Generators` | Roslyn generator that produces record properties during compilation |
 
 ### Compile-time dependencies
@@ -22,6 +23,7 @@ Arrows below mean “references.” Solid arrows are ordinary project references
 ```mermaid
 flowchart TD
     API[Alumni.Api] --> Infra[Infrastructure]
+    Infra --> Auth[Alumni.Auth]
     Infra --> Student[Alumni.Student]
     Infra --> Faculty[Alumni.Faculty]
     Infra --> Core[Core]
@@ -51,7 +53,7 @@ flowchart LR
 
 [Program.cs](../Source/Apps/Alumni.Api/Program.cs) is the composition root. It registers Infrastructure, OpenAPI, web API services, gRPC, GraphQL and logging, then maps the transport endpoints. GraphQL is active at `/graphql`.
 
-[ApplicationContext](../Source/Libraries/Infrastructure/ApplicationContext.cs) extends `IdentityDbContext<ApplicationUser>` and implements both domain context interfaces. [Infrastructure registration](../Source/Libraries/Infrastructure/ConfigureServices.cs) exposes those interfaces as scoped adapters to the same underlying context within a scope. Feature-owned EF configurations are applied explicitly in `OnModelCreating`; migrations belong to the API assembly.
+[ApplicationContext](../Source/Libraries/Infrastructure/ApplicationContext.cs) extends `IdentityDbContext<AuthUser, AuthRole, string>` and implements both domain context interfaces. [Infrastructure registration](../Source/Libraries/Infrastructure/ConfigureServices.cs) exposes those interfaces as scoped adapters to the same underlying context within a scope. Identity base configuration is applied first, followed by feature-owned EF mappings. All auth tables use the `Auth` schema; migrations belong to the API assembly. Auth runtime services and authorization enforcement are deferred.
 
 The domain libraries depend on EF Core and expose `DbSet` properties through their context interfaces. These boundaries organize implementation and make handler dependencies explicit; they do not remove persistence technology from the domain libraries.
 

@@ -20,11 +20,11 @@ The repository pins its SDK in [global.json](../global.json), shares compiler se
 | --- | --- | --- |
 | EF Core 10 | LINQ queries, change tracking, relationship configuration and migrations | [ApplicationContext](../Source/Libraries/Infrastructure/ApplicationContext.cs) |
 | Npgsql EF provider | PostgreSQL database access; migration assembly is `Alumni.Api` | [Infrastructure services](../Source/Libraries/Infrastructure/ConfigureServices.cs) |
-| ASP.NET Core Identity | User and role persistence in the shared DbContext | [ApplicationUser](../Source/Libraries/Infrastructure/Identity/ApplicationUser.cs) |
-| JWT bearer authentication | Signing-key, issuer, audience and lifetime validation; role policies are registered | [Infrastructure services](../Source/Libraries/Infrastructure/ConfigureServices.cs) |
+| ASP.NET Core Identity | User and role persistence in the shared DbContext | [AuthUser](../Source/Libraries/Alumni.Auth/AuthUser.cs) |
+| OpenIddict EF Core | Application, authorization, scope and token storage; server/validation runtime integration is deferred | [Auth model](../Source/Libraries/Alumni.Auth/AuthModelConfiguration.cs) |
 | ASP.NET Core health checks | `/healthz` includes a PostgreSQL check and a JSON health response | [Web API registration](../Source/Apps/Alumni.Api/ExtensionService/WebApiExtension.cs) |
 
-Authentication registration and role policies do not imply that every endpoint requires authorization. Read the individual transport declarations when checking access requirements.
+The current step defines auth storage only. Authentication middleware, token issuance and endpoint authorization are not configured.
 
 ## API and development tooling
 
@@ -43,7 +43,7 @@ Authentication registration and role policies do not imply that every endpoint r
 ## Configuration ownership
 
 - Package versions belong in `Directory.Packages.props`; project files select package references.
-- Database and authentication settings are resolved by [SettingService](../Source/Apps/Alumni.Api/Services/SettingService.cs).
+- Database settings are resolved by [SettingService](../Source/Apps/Alumni.Api/Services/SettingService.cs).
 - Local passwords and JWT secrets belong in user secrets or local environment configuration.
 - AppHost parameters and API settings have distinct configuration scopes. Aspire passes a complete database connection string to the API.
 

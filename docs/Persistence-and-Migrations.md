@@ -18,9 +18,9 @@ flowchart TD
     MG[Alumni.Api migrations] --> PG
 ```
 
-[ApplicationContext](../Source/Libraries/Infrastructure/ApplicationContext.cs) derives from `IdentityDbContext<ApplicationUser>` and implements `IApplicationContext`, which combines [IStudentDbContext](../Source/Libraries/Alumni.Student/IStudentDbContext.cs) and [IFacultyDbContext](../Source/Libraries/Alumni.Faculty/IFacultyDbContext.cs). These interfaces expose feature `DbSet` properties and `SaveChangesAsync`; they are direct EF abstractions rather than repository interfaces.
+[ApplicationContext](../Source/Libraries/Infrastructure/ApplicationContext.cs) derives from `IdentityDbContext<AuthUser, AuthRole, string>` and implements `IApplicationContext`, which combines [IStudentDbContext](../Source/Libraries/Alumni.Student/IStudentDbContext.cs) and [IFacultyDbContext](../Source/Libraries/Alumni.Faculty/IFacultyDbContext.cs). These interfaces expose feature `DbSet` properties and `SaveChangesAsync`; they are direct EF abstractions rather than repository interfaces.
 
-[Infrastructure registration](../Source/Libraries/Infrastructure/ConfigureServices.cs) registers the context as scoped, then resolves both domain interfaces from that same scoped context. It selects PostgreSQL and `MigrationsAssembly("Alumni.Api")`. Each write handler calls `SaveChangesAsync` at its own save boundary. The context explicitly applies all five feature configurations and then Identity's base configuration. It does not override save methods for audit stamping or apply a global soft-delete filter.
+[Infrastructure registration](../Source/Libraries/Infrastructure/ConfigureServices.cs) registers the context as scoped, then resolves both domain interfaces from that same scoped context. It selects PostgreSQL and `MigrationsAssembly("Alumni.Api")`. Each write handler calls `SaveChangesAsync` at its own save boundary. The context applies Identity's base configuration first, then auth and domain configurations. It does not override save methods for audit stamping or apply a global soft-delete filter.
 
 ## Schemas and mappings
 
@@ -31,7 +31,9 @@ flowchart TD
 | `Student.exams` | Generated integer primary key; unique exam GUID; exam-name index; required student foreign key |
 | `Student.further_studies` | Base/derived further-study records share one table with a discriminator; unique public GUID; derived student foreign key (nullable table column for base rows) |
 | `Faculty.faculties` | Generated integer primary key; unique faculty GUID and email |
-| `AspNet*` tables | Identity users, roles, claims, logins, tokens and user-role links in the default schema |
+| `Auth.AspNetUsers`, `AspNetRoles`, `AspNetUserRoles`, `AspNetUserClaims`, `AspNetUserLogins`, `AspNetUserTokens`, `AspNetRoleClaims` | Identity account and role storage; unique normalized email and profile links |
+| `Auth.Invitations`, `Sessions` | Hashed invitation secrets, invitation lifecycle and device sessions with concurrency tokens |
+| `Auth.Applications`, `Authorizations`, `Scopes`, `Tokens` | OpenIddict protocol storage; token runtime integration is deferred |
 
 Year fields and exam scores use PostgreSQL `SMALLINT`; salaries and faculty mobile numbers use `bigint`. Student mobile numbers and postal codes remain text. Birth dates use `date`, and audit timestamps use `timestamp with time zone`. Current student/faculty configuration requires `UpdatedAt` in the database even though the CLR property is nullable.
 
@@ -45,18 +47,15 @@ For EF commands launched from a separate terminal, Aspire does not inject the co
 
 ```sh
 export ConnectionStrings__alumni-db='Host=localhost;Port=5432;Database=alumni-db;Username=<local-user>;Password=<local-password>'
-export Authentication__Secret='<local-signing-secret>'
-export Authentication__ValidAudience='<local-audience>'
-export Authentication__ValidIssuer='<local-issuer>'
 ```
 
-If that value is blank, the service formats `Database:Connection`, substituting its `{0}` placeholder with `Database:Password` when its configured `Environment` is `Development`, or `DATABASE_PASSWORD` otherwise. That `Environment` configuration key defaults to `Development`. Authentication settings are also required when startup constructs infrastructure services; see [Local development](Local-Development.md).
+If that value is blank, the service formats `Database:Connection`, substituting its `{0}` placeholder with `Database:Password` when its configured `Environment` is `Development`, or `DATABASE_PASSWORD` otherwise. That `Environment` configuration key defaults to `Development`. The legacy authentication settings are no longer required.
 
 Keep database credentials and JWT secrets in local secret storage or environment configuration. Use local placeholder values when sharing command output; do not publish the dashboard's credential-bearing connection string.
 
 ## Create a migration
 
-Run from the repository root. Configure the API's database and authentication settings first; the EF startup project builds the API's service configuration.
+Run from the repository root. Configure the API's database settings first; the EF startup project builds the API's service configuration.
 
 Restore the repository tool and generate the migration:
 
@@ -95,7 +94,7 @@ For the Aspire database, PostgreSQL binds host port `5432`. Its persistent volum
 - [Student configuration](../Source/Libraries/Alumni.Student/StudentConfiguration.cs)
 - [Company configuration](../Source/Libraries/Alumni.Student/Company/CompanyConfiguration.cs), [exam configuration](../Source/Libraries/Alumni.Student/Exam/ExamConfiguration.cs), [further-study configuration](../Source/Libraries/Alumni.Student/FurtherStudy/FurtherStudyConfiguration.cs)
 - [Faculty configuration](../Source/Libraries/Alumni.Faculty/FacultyConfiguration.cs)
-- [Application user](../Source/Libraries/Infrastructure/Identity/ApplicationUser.cs) and [database health check](../Source/Libraries/Infrastructure/HealthCheck.cs)
+- [Auth model](../Source/Libraries/Alumni.Auth/AuthModelConfiguration.cs) and [database health check](../Source/Libraries/Infrastructure/HealthCheck.cs)
 
 ---
 

@@ -72,9 +72,6 @@ public sealed class SettingServiceTests
         Assert.True(settings.IsDevelopment);
         Assert.Equal("", settings.DatabaseSetting.Connection);
         Assert.Equal("", settings.DatabaseSetting.Password);
-        Assert.Equal("", settings.AuthSetting.Secret);
-        Assert.Equal("", settings.AuthSetting.ValidAudience);
-        Assert.Equal("", settings.AuthSetting.ValidIssuer);
     }
 
     [Fact]
@@ -87,21 +84,6 @@ public sealed class SettingServiceTests
 
         Assert.Equal("", settings.DatabaseSetting.Password);
         Assert.Equal("Host=localhost;Password=", settings.DatabaseSetting.Connection);
-    }
-
-    [Fact]
-    public void Constructor_WhenAuthenticationSettingsAreSupplied_PreservesTheirValues()
-    {
-        var settings = CreateSettings(new()
-        {
-            ["Authentication:Secret"] = "test-signing-value",
-            ["Authentication:ValidAudience"] = "test-audience",
-            ["Authentication:ValidIssuer"] = "test-issuer"
-        });
-
-        Assert.Equal("test-signing-value", settings.AuthSetting.Secret);
-        Assert.Equal("test-audience", settings.AuthSetting.ValidAudience);
-        Assert.Equal("test-issuer", settings.AuthSetting.ValidIssuer);
     }
 
     [Theory]

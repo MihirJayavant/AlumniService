@@ -19,7 +19,6 @@ var app = builder.Build();
 
 app.UseApplicationOpenApi();
 app.UseApplication();
-app.UseAuth();
 
 // Add Controllers
 app.AddControllers();

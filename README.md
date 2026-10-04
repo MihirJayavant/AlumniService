@@ -32,12 +32,12 @@ The API hosts all three transports. Aspire starts the API, PostgreSQL and pgAdmi
 | API contracts | HotChocolate / gRPC / OpenAPI | GraphQL, protobuf services and interactive API references |
 | Domain flow | FluentValidation / OneOf | Request validation and explicit success/error results |
 | Persistence | EF Core / Npgsql / PostgreSQL | Feature mappings, queries and migrations |
-| Identity | ASP.NET Core Identity / JWT | Identity storage, token validation and role policies |
+| Auth storage | ASP.NET Core Identity / OpenIddict | Account, invitation, session and token entities in the `Auth` schema |
 | Local environment | .NET Aspire | Service orchestration |
 | Build and tests | Cake.Sdk / xUnit v3 / Microsoft.Testing.Platform | Repeatable build, formatting and tests |
 | Code generation | Roslyn incremental generator | `[RecordView]` partial records |
 
-See [Technology Stack](docs/Technology-Stack.md) for package pins and implementation references. Identity and JWT infrastructure are configured; the current domain endpoints do not require authorization.
+See [Technology Stack](docs/Technology-Stack.md) for package pins and implementation references. Auth persistence is defined; login, token issuance and authorization enforcement are deferred. The current domain endpoints do not require authorization.
 
 ## Quick start
 
@@ -51,14 +51,11 @@ dotnet build.cs -- --target=Bootstrap
 dotnet build.cs
 ```
 
-Configure local PostgreSQL parameters and API authentication settings. Replace the placeholders with your own local values. PostgreSQL parameters use AppHost user secrets; API authentication settings use environment variables inherited by the API process.
+Configure local PostgreSQL parameters through AppHost user secrets. Replace the placeholders with your own local values.
 
 ```sh
 dotnet user-secrets set "Parameters:pg-user" "alumni-service" --file apphost.cs
 dotnet user-secrets set "Parameters:pg-password" "<local-password>" --file apphost.cs
-export Authentication__Secret='<local-signing-secret>'
-export Authentication__ValidAudience='<local-audience>'
-export Authentication__ValidIssuer='<local-issuer>'
 dotnet run --file apphost.cs
 ```
 
@@ -102,7 +99,8 @@ Source/
     Alumni.Student/   Student, Company, Exam and FurtherStudy slices
     Alumni.Faculty/   Faculty slice
     Core/             Handlers, validation, value and result types
-    Infrastructure/   PostgreSQL context, Identity and registration
+    Alumni.Auth/      Auth entities, role definitions and EF configuration
+    Infrastructure/   PostgreSQL context and registration
     Generators/       Record-view source generator
 Tests/                Five isolated unit-test projects
 docs/                 Wiki-style documentation
