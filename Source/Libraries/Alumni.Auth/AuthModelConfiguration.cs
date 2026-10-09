@@ -17,9 +17,9 @@ public static class AuthModelConfiguration
         {
             user.ToTable("AspNetUsers", Schema, table =>
             {
-                table.HasCheckConstraint("CK_Users_Status", "\"Status\" IN ('PendingActivation', 'Active', 'Disabled')");
+                table.HasCheckConstraint("CK_Users_Status", """ "Status" IN ('PendingActivation', 'Active', 'Disabled') """);
                 table.HasCheckConstraint("CK_Users_ActivePassword",
-                    "\"Status\" <> 'Active' OR (\"PasswordHash\" IS NOT NULL AND length(\"PasswordHash\") > 0)");
+                    """ "Status" <> 'Active' OR ("PasswordHash" IS NOT NULL AND length("PasswordHash") > 0) """);
             });
             user.Property(account => account.Email).HasMaxLength(256).IsRequired();
             user.Property(account => account.NormalizedEmail).HasMaxLength(256).IsRequired();

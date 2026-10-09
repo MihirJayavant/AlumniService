@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Alumni.Auth;
 
-public class AuthRole : IdentityRole
+public sealed class AuthRole : IdentityRole
 {
 }
 

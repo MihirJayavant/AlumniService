@@ -2,7 +2,7 @@ namespace Alumni.Auth;
 
 public enum AccountStatus
 {
-    PendingActivation,
-    Active,
-    Disabled
+    PendingActivation = 0,
+    Active = 1,
+    Disabled = 2
 }
