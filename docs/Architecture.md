@@ -12,7 +12,7 @@ AlumniService is a modular ASP.NET Core API organized into domain features. HTTP
 | `Alumni.Student` | Student, company, exam and further-study use cases, validators, mapping and EF configuration |
 | `Alumni.Faculty` | Faculty use cases, validators, mapping and EF configuration |
 | `Core` | Handler execution, results, validation helpers, pagination, email value and record-view attribute |
-| `Alumni.Auth` | Identity account/role entities, invitations, sessions and auth EF mappings |
+| `Alumni.Auth` | Identity account/role entities, invitations, sessions, auth EF mappings and shared permission policies |
 | `Infrastructure` | PostgreSQL DbContext, independent domain/auth model composition and database health checks |
 | `Generators` | Roslyn generator that produces record properties during compilation |
 
@@ -53,7 +53,13 @@ flowchart LR
 
 [Program.cs](../Source/Apps/Alumni.Api/Program.cs) is the composition root. It registers Infrastructure, OpenAPI, web API services, gRPC, GraphQL and logging, then maps the transport endpoints. GraphQL is active at `/graphql`.
 
-[ApplicationContext](../Source/Libraries/Infrastructure/ApplicationContext.cs) extends `IdentityDbContext<AuthUser, AuthRole, string>` and implements both domain context interfaces. [Infrastructure registration](../Source/Libraries/Infrastructure/ConfigureServices.cs) exposes those interfaces as scoped adapters to the same underlying context within a scope. Identity base configuration is applied first, followed by feature-owned EF mappings. All auth tables use the `Auth` schema; migrations belong to the API assembly. Auth runtime services and authorization enforcement are deferred.
+[ApplicationContext](../Source/Libraries/Infrastructure/ApplicationContext.cs) extends `IdentityDbContext<AuthUser, AuthRole, string>` and implements both domain context interfaces. [Infrastructure registration](../Source/Libraries/Infrastructure/ConfigureServices.cs) exposes those interfaces as scoped adapters to the same underlying context within a scope. Identity base configuration is applied first, followed by feature-owned EF mappings. All auth tables use the `Auth` schema; migrations belong to the API assembly. Login, token issuance and authorization enforcement are deferred.
+
+### Authorization foundation
+
+[ICurrentActor](../Source/Libraries/Core/ICurrentActor.cs) exposes authentication state and the account ID without referencing any transport. The API registers a scoped [CurrentActor](../Source/Apps/Alumni.Api/Services/CurrentActor.cs), reading the `sub` claim from authenticated identities through `IHttpContextAccessor`. REST, GraphQL resolver scopes and gRPC calls share this request principal. Missing contexts or subjects yield a null account ID; use cases must reject operations requiring an account when it is unavailable.
+
+[AuthPermissions](../Source/Libraries/Alumni.Auth/AuthPermissions.cs) names the shared ASP.NET Core policies. `Students.Read` admits all four known roles; `Students.ReadAll` admits all faculty roles; `Students.Write` admits faculty editors and admins; `Students.SelfService` admits students; `Faculty.Manage` and `Invitations.Manage` admit faculty admins. Every policy requires an authenticated caller. These are operation eligibility checks: student reads and self-service still require ownership checks, and self-service commands must restrict editable fields. Registering these policies does not protect endpoints or handlers. Authentication schemes, resource checks and transport enforcement will be added in subsequent steps.
 
 The domain libraries depend on EF Core and expose `DbSet` properties through their context interfaces. These boundaries organize implementation and make handler dependencies explicit; they do not remove persistence technology from the domain libraries.
 

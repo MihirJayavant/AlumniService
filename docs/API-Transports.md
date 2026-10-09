@@ -24,7 +24,7 @@ Use the API HTTPS URL reported by Aspire or the direct launch profile. In develo
 
 ## Authentication and authorization
 
-Identity storage, JWT validation middleware and role policies (`StudentAccess`, `AdminAccess`, `SuperAdminAccess`) are configured. Current domain routes, GraphQL fields and gRPC services do not attach authorization requirements. Registering policies does not itself protect an endpoint. The commented Identity service is not an active token-issuance API.
+Identity and OpenIddict storage, shared permission policies and a transport-independent current actor are defined. JWT issuance and validation are not enabled yet. Current domain routes, GraphQL fields and gRPC services do not attach authorization requirements. Registering policies does not itself protect an endpoint. See [Authorization foundation](Architecture.md#authorization-foundation) for the role mapping and deferred ownership checks.
 
 ## Error conversion
 

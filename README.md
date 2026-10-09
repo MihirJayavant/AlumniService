@@ -37,7 +37,7 @@ The API hosts all three transports. Aspire starts the API, PostgreSQL and pgAdmi
 | Build and tests | Cake.Sdk / xUnit v3 / Microsoft.Testing.Platform | Repeatable build, formatting and tests |
 | Code generation | Roslyn incremental generator | `[RecordView]` partial records |
 
-See [Technology Stack](docs/Technology-Stack.md) for package pins and implementation references. Auth persistence is defined; login, token issuance and authorization enforcement are deferred. The current domain endpoints do not require authorization.
+See [Technology Stack](docs/Technology-Stack.md) for package pins and implementation references. Auth persistence, shared permission policies and the current-actor abstraction are defined; login, token issuance and authorization enforcement are deferred. The current domain endpoints do not require authorization.
 
 ## Quick start
 
@@ -99,7 +99,7 @@ Source/
     Alumni.Student/   Student, Company, Exam and FurtherStudy slices
     Alumni.Faculty/   Faculty slice
     Core/             Handlers, validation, value and result types
-    Alumni.Auth/      Auth entities, role definitions and EF configuration
+    Alumni.Auth/      Auth entities, roles, permission policies and EF configuration
     Infrastructure/   PostgreSQL context and registration
     Generators/       Record-view source generator
 Tests/                Five isolated unit-test projects

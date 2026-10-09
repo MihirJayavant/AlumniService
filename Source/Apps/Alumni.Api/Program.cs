@@ -9,6 +9,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddSingleton<ISettingService>(new SettingService(builder.Configuration));
 builder.Services.AddInfrastructureServices(new SettingService(builder.Configuration));
+builder.Services.AddApplicationAuthorization();
 builder.Services.AddApplicationOpenApi(builder);
 builder.Services.AddWebApiServices(builder.Configuration);
 builder.Services.AddApplicationGrpc();
