@@ -37,7 +37,9 @@ The API hosts all three transports. Aspire starts the API, PostgreSQL and pgAdmi
 | Build and tests | Cake.Sdk / xUnit v3 / Microsoft.Testing.Platform | Repeatable build, formatting and tests |
 | Code generation | Roslyn incremental generator | `[RecordView]` partial records |
 
-See [Technology Stack](docs/Technology-Stack.md) for package pins and implementation references. Auth persistence, shared permission policies and the current-actor abstraction are defined; login, token issuance and authorization enforcement are deferred. The current domain endpoints do not require authorization.
+See [Technology Stack](docs/Technology-Stack.md) for package pins and implementation references. Auth persistence, shared permission policies, invitation provisioning and account activation are implemented. See [Invitations](docs/Invitations.md) for first-admin bootstrap and invitation acceptance. Login, token issuance and domain authorization enforcement are deferred; current domain endpoints do not require authorization.
+
+Deferred auth work and new-session handoff are tracked in [Authentication and Authorization Roadmap](docs/Auth-Roadmap.md).
 
 ## Quick start
 

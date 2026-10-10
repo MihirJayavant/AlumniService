@@ -10,6 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<ISettingService>(new SettingService(builder.Configuration));
 builder.Services.AddInfrastructureServices(new SettingService(builder.Configuration));
 builder.Services.AddApplicationAuthorization();
+builder.Services.AddInvitationRateLimiting();
 builder.Services.AddApplicationOpenApi(builder);
 builder.Services.AddWebApiServices(builder.Configuration);
 builder.Services.AddApplicationGrpc();
@@ -20,6 +21,8 @@ var app = builder.Build();
 
 app.UseApplicationOpenApi();
 app.UseApplication();
+app.UseRouting();
+app.UseRateLimiter();
 
 // Add Controllers
 app.AddControllers();

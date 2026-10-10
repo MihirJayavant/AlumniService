@@ -10,6 +10,8 @@
 - Work with the application
   - [Local Development](Local-Development.md)
   - [API Transports](API-Transports.md)
+  - [Invitations and Account Activation](Invitations.md)
+  - [Authentication and Authorization Roadmap](Auth-Roadmap.md)
   - [Persistence and Migrations](Persistence-and-Migrations.md)
   - [Testing and CI](Testing-and-CI.md)
 - [Repository README](../README.md)

@@ -24,7 +24,9 @@ Use the API HTTPS URL reported by Aspire or the direct launch profile. In develo
 
 ## Authentication and authorization
 
-Identity and OpenIddict storage, shared permission policies and a transport-independent current actor are defined. JWT issuance and validation are not enabled yet. Current domain routes, GraphQL fields and gRPC services do not attach authorization requirements. Registering policies does not itself protect an endpoint. See [Authorization foundation](Architecture.md#authorization-foundation) for the role mapping and deferred ownership checks.
+Identity and OpenIddict storage, shared permission policies and a transport-independent current actor are defined. Anonymous `POST /auth/bootstrap` takes email and password and creates the first admin only when no admin exists. Invitation acceptance is exposed through anonymous `POST /auth/invitations/accept`, authenticated by the single-use invitation token in its JSON body. Provisioning, resend and revocation are internal operations pending authenticated admin endpoints. See [Invitations](Invitations.md).
+
+JWT issuance and validation are not enabled yet. Current domain routes, GraphQL fields and gRPC services do not attach authorization requirements. Registering policies does not itself protect an endpoint. See [Authorization foundation](Architecture.md#authorization-foundation) for the role mapping and deferred ownership checks.
 
 ## Error conversion
 

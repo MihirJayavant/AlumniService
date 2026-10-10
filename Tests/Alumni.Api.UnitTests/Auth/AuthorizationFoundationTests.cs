@@ -160,6 +160,7 @@ public sealed class AuthorizationFoundationTests
     {
         var provider = new ServiceCollection()
             .AddLogging()
+            .AddRouting()
             .AddApplicationAuthorization()
             .BuildServiceProvider(new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true });
         provider.GetRequiredService<IHttpContextAccessor>().HttpContext = null;

@@ -29,7 +29,8 @@ public class EndpointRegistrationTests
             "GET /faculty/", "GET /faculty/{facultyId:guid}", "POST /faculty/", "DELETE /faculty/{facultyId:guid}",
             "GET /company/{studentId:guid}", "POST /company/",
             "GET /exam/{studentId:guid}", "POST /exam/",
-            "GET /further-studies/{studentId:guid}", "POST /further-studies/"
+            "GET /further-studies/{studentId:guid}", "POST /further-studies/",
+            "POST /auth/invitations/accept", "POST /auth/bootstrap"
         ];
 
         Assert.Equal(expected.Order(StringComparer.Ordinal), routes);

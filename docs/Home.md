@@ -13,6 +13,7 @@ Welcome to the repository documentation. AlumniService groups alumni features in
 | Understand records and validation | [Domain and Data Model](Domain-and-Data-Model.md) |
 | Work with EF or migrations | [Persistence and Migrations](Persistence-and-Migrations.md) |
 | Call the APIs | [API Transports](API-Transports.md) |
+| Resume deferred auth work | [Authentication and Authorization Roadmap](Auth-Roadmap.md) |
 | Understand generated properties | [Source Generation](Source-Generation.md) |
 | Verify a change | [Testing and CI](Testing-and-CI.md) |
 

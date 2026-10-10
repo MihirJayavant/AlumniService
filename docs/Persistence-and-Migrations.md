@@ -35,9 +35,9 @@ flowchart TD
 | `Auth.Invitations`, `Sessions` | Hashed invitation secrets targeting pre-created accounts, invitation lifecycle and device sessions with concurrency tokens |
 | `Auth.Applications`, `Authorizations`, `Scopes`, `Tokens` | OpenIddict protocol storage; token runtime integration is deferred |
 
-Student and faculty profiles store a nullable, unique `AuthUserId` scalar. No EF relationship or database foreign key crosses between the domain and auth schemas. Null accommodates existing records until invitation provisioning is implemented; new invitation workflows will create both the account and profile and supply the identifier immediately. Auth accounts and invitations contain no student/faculty IDs.
+Student and faculty profiles store a nullable, unique `AuthUserId` scalar. No EF relationship or database foreign key crosses between the domain and auth schemas. Null accommodates existing records and the legacy profile creation endpoints; invitation provisioning creates both the account and profile and supplies the identifier immediately. Auth accounts and invitations contain no student/faculty IDs.
 
-Invited accounts start in `PendingActivation` with a null Identity `PasswordHash`. A check constraint prevents setting `Active` without a nonempty password hash. Acceptance will set the password and activate the account in a later workflow; disabled accounts remain a separate state. Runtime login enforcement is still deferred.
+Invited accounts start in `PendingActivation` with a null Identity `PasswordHash`. A check constraint prevents setting `Active` without a nonempty password hash. [Invitation acceptance](Invitations.md) sets the password and activates the account atomically; disabled accounts remain a separate state. Runtime login enforcement is still deferred.
 
 Year fields and exam scores use PostgreSQL `SMALLINT`; salaries and faculty mobile numbers use `bigint`. Student mobile numbers and postal codes remain text. Birth dates use `date`, and audit timestamps use `timestamp with time zone`. Current student/faculty configuration requires `UpdatedAt` in the database even though the CLR property is nullable.
 

@@ -6,4 +6,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
         <PackageReference Include="OpenIddict.EntityFrameworkCore" />
     </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Core\Core.csproj" />
+    </ItemGroup>
 </Project>
