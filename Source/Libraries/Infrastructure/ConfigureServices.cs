@@ -27,6 +27,19 @@ public static class ConfigureServices
             services.AddHealthChecks().AddCheck<DatabaseHealthCheck>("Postgres");
 
             services.AddScoped<BootstrapAdminHandler>();
+            services.AddScoped<GetAllStudentHandler>();
+            services.AddScoped<GetStudentHandler>();
+            services.AddScoped<AddStudentHandler>();
+            services.AddScoped<GetAllFacultiesHandler>();
+            services.AddScoped<GetFacultyHandler>();
+            services.AddScoped<AddFacultyHandler>();
+            services.AddScoped<DeleteFacultyHandler>();
+            services.AddScoped<GetCompanyHandler>();
+            services.AddScoped<AddCompanyHandler>();
+            services.AddScoped<GetExamHandler>();
+            services.AddScoped<AddExamHandler>();
+            services.AddScoped<GetFurtherStudyHandler>();
+            services.AddScoped<AddFurtherStudyHandler>();
 
             return services;
         }

@@ -2,12 +2,14 @@ using Grpc.Core;
 
 namespace Alumni.Api.Grpc;
 
-public sealed class FurtherStudyGrpc(IStudentDbContext database) : Contracts.FurtherStudyService.FurtherStudyServiceBase
+public sealed class FurtherStudyGrpc(
+    GetFurtherStudyHandler getFurtherStudyHandler,
+    AddFurtherStudyHandler addFurtherStudyHandler) : Contracts.FurtherStudyService.FurtherStudyServiceBase
 {
     public override async Task<Contracts.FurtherStudyListReply> ListByStudent(Contracts.StudentIdRequest request, ServerCallContext context)
     {
         var query = new GetFurtherStudy { StudentId = GrpcInput.Guid(request.StudentId, "student_id") };
-        var result = await new GetFurtherStudyHandler(database).Execute(query, context.CancellationToken);
+        var result = await getFurtherStudyHandler.Execute(query, context.CancellationToken);
         return GrpcResult.Map(result, page =>
         {
             var reply = new Contracts.FurtherStudyListReply { Pagination = GrpcMapping.Pagination(page) };
@@ -29,7 +31,7 @@ public sealed class FurtherStudyGrpc(IStudentDbContext database) : Contracts.Fur
             Country = request.Country,
             City = request.City,
         };
-        var result = await new AddFurtherStudyHandler(database).Execute(command, context.CancellationToken);
+        var result = await addFurtherStudyHandler.Execute(command, context.CancellationToken);
         return GrpcResult.Map(result, Map);
     }
 

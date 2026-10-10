@@ -1,11 +1,8 @@
 using Alumni.Api.ExtensionService;
-using Alumni.Faculty;
-using Alumni.Student;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Template;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Alumni.Api.UnitTests.GraphQL;
@@ -16,8 +13,7 @@ public class GraphQLEndpointTests
     public async Task MapApplicationGraphQL_WhenRegistered_ExposesGraphQLEndpointWithoutDatabaseAccess()
     {
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions { Args = [] });
-        builder.Services.AddScoped<IStudentDbContext>(_ => throw new InvalidOperationException("Database must not be accessed."));
-        builder.Services.AddScoped<IFacultyDbContext>(_ => throw new InvalidOperationException("Database must not be accessed."));
+        HandlerTestRegistration.AddUnreachableHandlers(builder.Services);
         builder.Services.AddApplicationGraphQL();
         await using var app = builder.Build();
 

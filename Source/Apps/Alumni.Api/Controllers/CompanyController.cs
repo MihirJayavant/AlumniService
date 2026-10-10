@@ -11,16 +11,16 @@ public sealed class CompanyController : IEndpoint
         api.MapPost("/", PostAsync).Produces<CompanyResponse>();
     }
 
-    private static async Task<IResult> GetByIdAsync(Guid studentId, IStudentDbContext context, CancellationToken cancellationToken)
+    private static async Task<IResult> GetByIdAsync(Guid studentId, GetCompanyHandler handler, CancellationToken cancellationToken)
     {
         var query = new GetCompany { StudentId = studentId };
-        var response = await new GetCompanyHandler(context).Execute(query, cancellationToken);
+        var response = await handler.Execute(query, cancellationToken);
         return response.ToServerResult();
     }
 
-    private static async Task<IResult> PostAsync(AddCompany company, IStudentDbContext context, CancellationToken cancellationToken)
+    private static async Task<IResult> PostAsync(AddCompany company, AddCompanyHandler handler, CancellationToken cancellationToken)
     {
-        var response = await new AddCompanyHandler(context).Execute(company, cancellationToken);
+        var response = await handler.Execute(company, cancellationToken);
         return response.ToServerResult();
     }
 

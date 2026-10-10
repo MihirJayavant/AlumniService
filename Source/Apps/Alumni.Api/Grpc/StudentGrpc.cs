@@ -3,7 +3,10 @@ using Grpc.Core;
 
 namespace Alumni.Api.Grpc;
 
-public sealed class StudentGrpc(IStudentDbContext dbContext) : Contracts.StudentService.StudentServiceBase
+public sealed class StudentGrpc(
+    GetAllStudentHandler getAllStudentHandler,
+    GetStudentHandler getStudentHandler,
+    AddStudentHandler addStudentHandler) : Contracts.StudentService.StudentServiceBase
 {
     public override async Task<Contracts.StudentListReply> List(Contracts.PaginationRequest request, ServerCallContext context)
     {
@@ -12,7 +15,7 @@ public sealed class StudentGrpc(IStudentDbContext dbContext) : Contracts.Student
             PageNumber = request.HasPageNumber ? request.PageNumber : 1,
             PageSize = request.HasPageSize ? request.PageSize : 10
         };
-        var result = await new GetAllStudentHandler(dbContext).Execute(query, context.CancellationToken);
+        var result = await getAllStudentHandler.Execute(query, context.CancellationToken);
         return GrpcResult.Map(result, page =>
         {
             var reply = new Contracts.StudentListReply { Pagination = GrpcMapping.Pagination(page) };
@@ -24,7 +27,7 @@ public sealed class StudentGrpc(IStudentDbContext dbContext) : Contracts.Student
     public override async Task<Contracts.StudentReply> Get(Contracts.StudentIdRequest request, ServerCallContext context)
     {
         var query = new GetStudent { Id = GrpcInput.Guid(request.StudentId, "student_id") };
-        var result = await new GetStudentHandler(dbContext).Execute(query, context.CancellationToken);
+        var result = await getStudentHandler.Execute(query, context.CancellationToken);
         return GrpcResult.Map(result, ToReply);
     }
 
@@ -46,7 +49,7 @@ public sealed class StudentGrpc(IStudentDbContext dbContext) : Contracts.Student
             AdmissionYear = request.AdmissionYear,
             PassingYear = request.PassingYear
         };
-        var result = await new AddStudentHandler(dbContext).Execute(command, context.CancellationToken);
+        var result = await addStudentHandler.Execute(command, context.CancellationToken);
         return GrpcResult.Map(result, ToReply);
     }
 

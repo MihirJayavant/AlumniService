@@ -6,10 +6,10 @@ public sealed class CompanyQuery
     [GraphQLName("companies")]
     public async Task<PaginatedList<CompanyResponse>?> GetCompanyAsync(
         Guid studentId,
-        [Service] IStudentDbContext context,
+        [Service] GetCompanyHandler handler,
         CancellationToken cancellationToken)
     {
-        var result = await new GetCompanyHandler(context).Execute(
+        var result = await handler.Execute(
             new GetCompany { StudentId = studentId }, cancellationToken);
         return GraphQLResult.Unwrap(result);
     }

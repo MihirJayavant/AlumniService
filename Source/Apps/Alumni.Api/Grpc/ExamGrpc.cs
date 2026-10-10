@@ -2,12 +2,14 @@ using Grpc.Core;
 
 namespace Alumni.Api.Grpc;
 
-public sealed class ExamGrpc(IStudentDbContext database) : Contracts.ExamService.ExamServiceBase
+public sealed class ExamGrpc(
+    GetExamHandler getExamHandler,
+    AddExamHandler addExamHandler) : Contracts.ExamService.ExamServiceBase
 {
     public override async Task<Contracts.ExamListReply> ListByStudent(Contracts.StudentIdRequest request, ServerCallContext context)
     {
         var query = new GetExam { StudentId = GrpcInput.Guid(request.StudentId, "student_id") };
-        var result = await new GetExamHandler(database).Execute(query, context.CancellationToken);
+        var result = await getExamHandler.Execute(query, context.CancellationToken);
         return GrpcResult.Map(result, page =>
         {
             var reply = new Contracts.ExamListReply { Pagination = GrpcMapping.Pagination(page) };
@@ -26,7 +28,7 @@ public sealed class ExamGrpc(IStudentDbContext database) : Contracts.ExamService
             Score = request.Score,
             Year = request.Year,
         };
-        var result = await new AddExamHandler(database).Execute(command, context.CancellationToken);
+        var result = await addExamHandler.Execute(command, context.CancellationToken);
         return GrpcResult.Map(result, Map);
     }
 

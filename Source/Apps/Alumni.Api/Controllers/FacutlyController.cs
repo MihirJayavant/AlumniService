@@ -13,30 +13,30 @@ public sealed class FacultyController : IEndpoint
         api.MapDelete("/{facultyId:guid}", DeleteAsync);
     }
 
-    private static async Task<IResult> GetAsync(int pageNumber, int pageSize, IFacultyDbContext context, CancellationToken cancellationToken)
+    private static async Task<IResult> GetAsync(int pageNumber, int pageSize, GetAllFacultiesHandler handler, CancellationToken cancellationToken)
     {
         var query = new GetAllFaculties { PageNumber = pageNumber, PageSize = pageSize };
-        var result = await new GetAllFacultiesHandler(context).Execute(query, cancellationToken);
+        var result = await handler.Execute(query, cancellationToken);
         return result.ToServerResult();
     }
 
-    private static async Task<IResult> GetByEmailAsync(Guid facultyId, IFacultyDbContext context, CancellationToken cancellationToken)
+    private static async Task<IResult> GetByEmailAsync(Guid facultyId, GetFacultyHandler handler, CancellationToken cancellationToken)
     {
         var query = new GetFaculty { FacultyId = facultyId };
-        var result = await new GetFacultyHandler(context).Execute(query, cancellationToken);
+        var result = await handler.Execute(query, cancellationToken);
         return result.ToServerResult();
     }
 
-    private static async Task<IResult> PostAsync(AddFaculty faculty, IFacultyDbContext context, CancellationToken cancellationToken)
+    private static async Task<IResult> PostAsync(AddFaculty faculty, AddFacultyHandler handler, CancellationToken cancellationToken)
     {
-        var result = await new AddFacultyHandler(context).Execute(faculty, cancellationToken);
+        var result = await handler.Execute(faculty, cancellationToken);
         return result.ToServerResult();
     }
 
-    private static async Task<IResult> DeleteAsync(Guid facultyId, IFacultyDbContext context, CancellationToken cancellationToken)
+    private static async Task<IResult> DeleteAsync(Guid facultyId, DeleteFacultyHandler handler, CancellationToken cancellationToken)
     {
         var query = new DeleteFaculty { FacultyId = facultyId };
-        var result = await new DeleteFacultyHandler(context).Execute(query, cancellationToken);
+        var result = await handler.Execute(query, cancellationToken);
         return result.ToServerResult();
     }
 }

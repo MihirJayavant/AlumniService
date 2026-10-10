@@ -49,6 +49,34 @@ public class InvitationRegistrationTests
         Assert.Equal(8, options.Password.RequiredLength);
     }
 
+    public static TheoryData<Type> HandlerTypes
+    {
+        get
+        {
+            var handlers = new TheoryData<Type>();
+            foreach (var handler in HandlerTestRegistration.AllHandlers)
+            {
+                handlers.Add(handler);
+            }
+
+            return handlers;
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(HandlerTypes))]
+    public void AddInfrastructureServices_WhenHandlerResolved_ReusesWithinScopeAndSeparatesScopes(Type handlerType)
+    {
+        using var provider = CreateServices();
+        using var firstScope = provider.CreateScope();
+        using var secondScope = provider.CreateScope();
+
+        var handler = firstScope.ServiceProvider.GetRequiredService(handlerType);
+
+        Assert.Same(handler, firstScope.ServiceProvider.GetRequiredService(handlerType));
+        Assert.NotSame(handler, secondScope.ServiceProvider.GetRequiredService(handlerType));
+    }
+
     private static ServiceProvider CreateServices()
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>

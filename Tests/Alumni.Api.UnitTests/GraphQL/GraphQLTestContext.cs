@@ -28,6 +28,7 @@ internal sealed class GraphQLTestContext : IAsyncDisposable
         services.AddScoped<RejectingContext>();
         services.AddScoped<IStudentDbContext>(provider => provider.GetRequiredService<RejectingContext>());
         services.AddScoped<IFacultyDbContext>(provider => provider.GetRequiredService<RejectingContext>());
+        HandlerTestRegistration.AddDomainHandlers(services);
         services.AddApplicationGraphQL();
         if (includeScalarFixture)
         {

@@ -3,7 +3,11 @@ using Grpc.Core;
 
 namespace Alumni.Api.Grpc;
 
-public sealed class FacultyGrpc(IFacultyDbContext dbContext) : Contracts.FacultyService.FacultyServiceBase
+public sealed class FacultyGrpc(
+    GetAllFacultiesHandler getAllFacultiesHandler,
+    GetFacultyHandler getFacultyHandler,
+    AddFacultyHandler addFacultyHandler,
+    DeleteFacultyHandler deleteFacultyHandler) : Contracts.FacultyService.FacultyServiceBase
 {
     public override async Task<Contracts.FacultyListReply> List(Contracts.PaginationRequest request, ServerCallContext context)
     {
@@ -12,7 +16,7 @@ public sealed class FacultyGrpc(IFacultyDbContext dbContext) : Contracts.Faculty
             PageNumber = request.HasPageNumber ? request.PageNumber : 1,
             PageSize = request.HasPageSize ? request.PageSize : 10
         };
-        var result = await new GetAllFacultiesHandler(dbContext).Execute(query, context.CancellationToken);
+        var result = await getAllFacultiesHandler.Execute(query, context.CancellationToken);
         return GrpcResult.Map(result, page =>
         {
             var reply = new Contracts.FacultyListReply { Pagination = GrpcMapping.Pagination(page) };
@@ -24,7 +28,7 @@ public sealed class FacultyGrpc(IFacultyDbContext dbContext) : Contracts.Faculty
     public override async Task<Contracts.FacultyReply> Get(Contracts.FacultyIdRequest request, ServerCallContext context)
     {
         var query = new GetFaculty { FacultyId = GrpcInput.Guid(request.FacultyId, "faculty_id") };
-        var result = await new GetFacultyHandler(dbContext).Execute(query, context.CancellationToken);
+        var result = await getFacultyHandler.Execute(query, context.CancellationToken);
         return GrpcResult.Map(result, ToReply);
     }
 
@@ -38,14 +42,14 @@ public sealed class FacultyGrpc(IFacultyDbContext dbContext) : Contracts.Faculty
             Extension = request.Extension,
             MobileNo = request.MobileNo
         };
-        var result = await new AddFacultyHandler(dbContext).Execute(command, context.CancellationToken);
+        var result = await addFacultyHandler.Execute(command, context.CancellationToken);
         return GrpcResult.Map(result, ToReply);
     }
 
     public override async Task<Contracts.FacultyReply> Delete(Contracts.FacultyIdRequest request, ServerCallContext context)
     {
         var command = new DeleteFaculty { FacultyId = GrpcInput.Guid(request.FacultyId, "faculty_id") };
-        var result = await new DeleteFacultyHandler(dbContext).Execute(command, context.CancellationToken);
+        var result = await deleteFacultyHandler.Execute(command, context.CancellationToken);
         return GrpcResult.Map(result, ToReply);
     }
 

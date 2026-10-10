@@ -1,13 +1,9 @@
 using Alumni.Api.Controllers;
-using Alumni.Auth;
-using Alumni.Faculty;
-using Alumni.Student;
 using Alumni.Student.FurtherStudy;
 using Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Alumni.Api.UnitTests.Controllers;
@@ -54,9 +50,7 @@ public class EndpointRegistrationTests
     private static WebApplication CreateApplication()
     {
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions { Args = [] });
-        builder.Services.AddScoped<IStudentDbContext>(_ => throw new InvalidOperationException("Database must not be accessed."));
-        builder.Services.AddScoped<IFacultyDbContext>(_ => throw new InvalidOperationException("Database must not be accessed."));
-        builder.Services.AddScoped<BootstrapAdminHandler>(_ => throw new InvalidOperationException("Handler must not be invoked during route inspection."));
+        HandlerTestRegistration.AddUnreachableHandlers(builder.Services);
         return builder.Build();
     }
 
