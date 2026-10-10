@@ -23,8 +23,7 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options)
         builder.ApplyConfiguration(new CompanyConfiguration());
         builder.ApplyConfiguration(new FurtherStudyConfiguration());
         builder.ApplyConfiguration(new FacultyConfiguration());
-
     }
 }
 
-public interface IApplicationContext : IStudentDbContext, IFacultyDbContext;
+public interface IApplicationContext : IStudentDbContext, IFacultyDbContext, IAuthDbContext;
