@@ -19,7 +19,9 @@ public sealed class BootstrapController : IEndpoint
         CancellationToken cancellationToken)
     {
         var result = await handler.Execute(request, cancellationToken);
-        return result.ToServerResult();
+        return result.IsT0
+            ? Results.Json(result.AsT0, statusCode: StatusCodes.Status201Created)
+            : result.ToServerResult();
     }
 
 }

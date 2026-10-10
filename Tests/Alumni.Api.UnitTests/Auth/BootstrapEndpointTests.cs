@@ -1,8 +1,6 @@
 using System.Text;
-using System.Text.Json;
 using Alumni.Api.Controllers;
-using Alumni.Auth.Bootstrap;
-using Core;
+using Alumni.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -17,12 +15,10 @@ namespace Alumni.Api.UnitTests.Auth;
 
 public class BootstrapEndpointTests
 {
-    private const string ValidRequest = """{"email":"admin@example.com","password":"ValidPassword123!"}""";
-
     [Fact]
     public async Task Add_WhenRegistered_ExposesAnonymousJsonPostWithRateLimit()
     {
-        await using var app = CreateApplication(new BootstrapStoreStub());
+        await using var app = CreateApplication(new UnexpectedAuthDbContext());
 
         var endpoint = GetEndpoint(app);
 
@@ -34,106 +30,45 @@ public class BootstrapEndpointTests
         Assert.Equal(typeof(BootstrapAdmin), accepts.RequestType);
         Assert.Contains("application/json", accepts.ContentTypes);
         Assert.False(accepts.IsOptional);
-    }
-
-    [Fact]
-    public async Task Bootstrap_WhenSuccessful_ReturnsCreatedAccountWithoutTokensOrPassword()
-    {
-        var store = new BootstrapStoreStub();
-        await using var app = CreateApplication(store);
-        var context = CreateContext(app.Services, ValidRequest);
-
-        await GetEndpoint(app).RequestDelegate!(context);
-
-        Assert.Equal(StatusCodes.Status201Created, context.Response.StatusCode);
-        var response = await ReadResponseAsync(context);
-        Assert.Equal("admin-account", response.GetProperty("userId").GetString());
-        Assert.Equal("admin@example.com", response.GetProperty("email").GetString());
-        Assert.Equal(2, response.EnumerateObject().Count());
-        Assert.Equal("ValidPassword123!", store.Request?.Password);
-        Assert.Equal(TestContext.Current.CancellationToken, store.CancellationToken);
-    }
-
-    [Fact]
-    public async Task Bootstrap_WhenAlreadyInitialized_ReturnsConflict()
-    {
-        var store = new BootstrapStoreStub
-        {
-            Result = new ErrorType { Status = ResponseStatus.Conflict, Message = "Bootstrap is unavailable." }
-        };
-        await using var app = CreateApplication(store);
-        var context = CreateContext(app.Services, ValidRequest);
-
-        await GetEndpoint(app).RequestDelegate!(context);
-
-        Assert.Equal(StatusCodes.Status409Conflict, context.Response.StatusCode);
-        var response = await ReadResponseAsync(context);
-        Assert.Equal("Bootstrap is unavailable.", response.GetProperty("error").GetString());
+        Assert.Contains(endpoint.Metadata.GetOrderedMetadata<IProducesResponseTypeMetadata>(),
+            response => response.StatusCode == StatusCodes.Status201Created
+                && response.Type == typeof(AdminBootstrapped));
     }
 
     [Theory]
     [InlineData("{malformed")]
     [InlineData("""{"email":"invalid","password":"ValidPassword123!"}""")]
     [InlineData("""{"email":"admin@example.com","password":"short"}""")]
-    public async Task Bootstrap_WhenRequestIsInvalid_RejectsWithoutStore(string json)
+    public async Task Bootstrap_WhenRequestIsInvalid_RejectsWithoutPersistence(string json)
     {
-        var store = new BootstrapStoreStub();
-        await using var app = CreateApplication(store);
+        var persistence = new UnexpectedAuthDbContext();
+        await using var app = CreateApplication(persistence);
         var context = CreateContext(app.Services, json);
 
         await GetEndpoint(app).RequestDelegate!(context);
 
         Assert.Equal(StatusCodes.Status400BadRequest, context.Response.StatusCode);
-        Assert.Equal(0, store.Calls);
+        Assert.Equal(0, persistence.Accesses);
     }
 
     [Fact]
-    public async Task Bootstrap_WhenCredentialsAreOnlyInQuery_RejectsWithoutStore()
+    public async Task Bootstrap_WhenCredentialsAreOnlyInQuery_RejectsWithoutPersistence()
     {
-        var store = new BootstrapStoreStub();
-        await using var app = CreateApplication(store);
+        var persistence = new UnexpectedAuthDbContext();
+        await using var app = CreateApplication(persistence);
         var context = CreateContext(app.Services, null);
         context.Request.QueryString = new QueryString("?email=admin@example.com&password=ValidPassword123!");
 
         await GetEndpoint(app).RequestDelegate!(context);
 
         Assert.Equal(StatusCodes.Status400BadRequest, context.Response.StatusCode);
-        Assert.Equal(0, store.Calls);
+        Assert.Equal(0, persistence.Accesses);
     }
 
-    [Fact]
-    public async Task Bootstrap_WhenStoreThrows_SanitizesInternalErrorReturnedByHandler()
-    {
-        var store = new BootstrapStoreStub { Failure = new InvalidOperationException("sensitive-account-details") };
-        await using var app = CreateApplication(store);
-        var context = CreateContext(app.Services, ValidRequest);
-
-        await GetEndpoint(app).RequestDelegate!(context);
-
-        Assert.Equal(StatusCodes.Status500InternalServerError, context.Response.StatusCode);
-        var response = await ReadResponseAsync(context);
-        Assert.DoesNotContain("sensitive-account-details", response.GetRawText(), StringComparison.Ordinal);
-        Assert.DoesNotContain("ValidPassword123!", response.GetRawText(), StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public async Task Bootstrap_WhenStoreCancels_PropagatesCancellation()
-    {
-        var store = new BootstrapStoreStub { Cancel = true };
-        await using var app = CreateApplication(store);
-        var context = CreateContext(app.Services, ValidRequest);
-
-        var exception = await Assert.ThrowsAsync<OperationCanceledException>(
-            () => GetEndpoint(app).RequestDelegate!(context));
-
-        Assert.Equal(TestContext.Current.CancellationToken, exception.CancellationToken);
-    }
-
-    private static WebApplication CreateApplication(BootstrapStoreStub store)
+    private static WebApplication CreateApplication(UnexpectedAuthDbContext persistence)
     {
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions { Args = [] });
-        builder.Services.AddSingleton<IAdminBootstrapStore>(store);
-        builder.Services.AddSingleton<BootstrapAdminHandler>();
+        builder.Services.AddSingleton(BootstrapAdminTests.CreateHandler(persistence));
         var app = builder.Build();
         new BootstrapController().Add(app);
         return app;
@@ -162,14 +97,6 @@ public class BootstrapEndpointTests
         }
 
         return context;
-    }
-
-    private static async Task<JsonElement> ReadResponseAsync(HttpContext context)
-    {
-        context.Response.Body.Position = 0;
-        using var document = await JsonDocument.ParseAsync(context.Response.Body,
-            cancellationToken: TestContext.Current.CancellationToken);
-        return document.RootElement.Clone();
     }
 
     private sealed class BodyDetectionFeature(bool canHaveBody) : IHttpRequestBodyDetectionFeature

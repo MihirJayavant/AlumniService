@@ -15,6 +15,7 @@ public static class ConfigureServices
             services.AddScoped<IApplicationContext>(provider => provider.GetRequiredService<ApplicationContext>());
             services.AddScoped<IStudentDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
             services.AddScoped<IFacultyDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
+            services.AddScoped<IAuthDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
 
             services.AddIdentityCore<AuthUser>(options =>
             {

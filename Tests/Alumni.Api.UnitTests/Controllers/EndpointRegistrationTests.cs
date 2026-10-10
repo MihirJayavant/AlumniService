@@ -1,4 +1,5 @@
 using Alumni.Api.Controllers;
+using Alumni.Auth;
 using Alumni.Faculty;
 using Alumni.Student;
 using Alumni.Student.FurtherStudy;
@@ -30,7 +31,7 @@ public class EndpointRegistrationTests
             "GET /company/{studentId:guid}", "POST /company/",
             "GET /exam/{studentId:guid}", "POST /exam/",
             "GET /further-studies/{studentId:guid}", "POST /further-studies/",
-            "POST /auth/invitations/accept", "POST /auth/bootstrap"
+            "POST /auth/bootstrap"
         ];
 
         Assert.Equal(expected.Order(StringComparer.Ordinal), routes);
@@ -55,6 +56,7 @@ public class EndpointRegistrationTests
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions { Args = [] });
         builder.Services.AddScoped<IStudentDbContext>(_ => throw new InvalidOperationException("Database must not be accessed."));
         builder.Services.AddScoped<IFacultyDbContext>(_ => throw new InvalidOperationException("Database must not be accessed."));
+        builder.Services.AddScoped<BootstrapAdminHandler>(_ => throw new InvalidOperationException("Handler must not be invoked during route inspection."));
         return builder.Build();
     }
 
