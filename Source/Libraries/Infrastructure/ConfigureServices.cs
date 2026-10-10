@@ -1,9 +1,5 @@
-using System.Text;
-using Infrastructure.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Infrastructure;
 
@@ -13,45 +9,37 @@ public static class ConfigureServices
     {
         public IServiceCollection AddInfrastructureServices(ISettingService setting)
         {
-            services.AddDbContext<IApplicationContext, ApplicationContext>(options =>
+            services.AddDbContext<ApplicationContext>(options =>
                options.UseNpgsql(setting.DatabaseSetting.Connection, b => b.MigrationsAssembly("Alumni.Api")));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                    .AddEntityFrameworkStores<ApplicationContext>();
-
+            services.AddScoped<IApplicationContext>(provider => provider.GetRequiredService<ApplicationContext>());
             services.AddScoped<IStudentDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
             services.AddScoped<IFacultyDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
+            services.AddScoped<IAuthDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
 
-            services.AddAuthentication(x =>
+            services.AddIdentityCore<AuthUser>(options =>
             {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(x =>
-            {
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(setting.AuthSetting.Secret)),
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    RequireExpirationTime = true,
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromMinutes(1),
-                    ValidAudience = setting.AuthSetting.ValidAudience,
-                    ValidIssuer = setting.AuthSetting.ValidIssuer
-                };
+                options.User.RequireUniqueEmail = true;
+                options.Password.RequiredLength = 8;
+            }).AddRoles<AuthRole>().AddEntityFrameworkStores<ApplicationContext>();
 
-            });
-
-            services.AddAuthorizationBuilder()
-                .AddPolicy("StudentAccess", policy => policy.RequireRole("Students"))
-                .AddPolicy("AdminAccess", policy => policy.RequireRole("Admin"))
-                .AddPolicy("SuperAdminAccess", policy => policy.RequireRole("SuperAdmin"));
-
+            services.TryAddSingleton(TimeProvider.System);
             services.AddHealthChecks().AddCheck<DatabaseHealthCheck>("Postgres");
+
+            services.AddScoped<BootstrapAdminHandler>();
+            services.AddScoped<GetAllStudentHandler>();
+            services.AddScoped<GetStudentHandler>();
+            services.AddScoped<AddStudentHandler>();
+            services.AddScoped<GetAllFacultiesHandler>();
+            services.AddScoped<GetFacultyHandler>();
+            services.AddScoped<AddFacultyHandler>();
+            services.AddScoped<DeleteFacultyHandler>();
+            services.AddScoped<GetCompanyHandler>();
+            services.AddScoped<AddCompanyHandler>();
+            services.AddScoped<GetExamHandler>();
+            services.AddScoped<AddExamHandler>();
+            services.AddScoped<GetFurtherStudyHandler>();
+            services.AddScoped<AddFurtherStudyHandler>();
 
             return services;
         }

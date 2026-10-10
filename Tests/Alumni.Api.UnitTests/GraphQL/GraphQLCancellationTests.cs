@@ -15,7 +15,7 @@ public class GraphQLCancellationTests
         var context = new RejectingFacultyContext();
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
-            new FacultyQuery().GetFacultyAsync(Guid.NewGuid(), context, cancellation.Token));
+            new FacultyQuery().GetFacultyAsync(Guid.NewGuid(), new GetFacultyHandler(context), cancellation.Token));
 
         Assert.Equal(0, context.AccessCount);
     }
@@ -28,7 +28,7 @@ public class GraphQLCancellationTests
         var context = new RejectingFacultyContext();
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
-            new FacultyMutation().DeleteFacultyAsync(Guid.NewGuid(), context, cancellation.Token));
+            new FacultyMutation().DeleteFacultyAsync(Guid.NewGuid(), new DeleteFacultyHandler(context), cancellation.Token));
 
         Assert.Equal(0, context.AccessCount);
     }

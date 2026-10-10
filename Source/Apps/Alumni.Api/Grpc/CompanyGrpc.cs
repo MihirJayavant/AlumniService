@@ -2,12 +2,14 @@ using Grpc.Core;
 
 namespace Alumni.Api.Grpc;
 
-public sealed class CompanyGrpc(IStudentDbContext database) : Contracts.CompanyService.CompanyServiceBase
+public sealed class CompanyGrpc(
+    GetCompanyHandler getCompanyHandler,
+    AddCompanyHandler addCompanyHandler) : Contracts.CompanyService.CompanyServiceBase
 {
     public override async Task<Contracts.CompanyListReply> ListByStudent(Contracts.StudentIdRequest request, ServerCallContext context)
     {
         var query = new GetCompany { StudentId = GrpcInput.Guid(request.StudentId, "student_id") };
-        var result = await new GetCompanyHandler(database).Execute(query, context.CancellationToken);
+        var result = await getCompanyHandler.Execute(query, context.CancellationToken);
         return GrpcResult.Map(result, page =>
         {
             var reply = new Contracts.CompanyListReply { Pagination = GrpcMapping.Pagination(page) };
@@ -27,7 +29,7 @@ public sealed class CompanyGrpc(IStudentDbContext database) : Contracts.CompanyS
             YearOfJoining = request.YearOfJoining,
             AnnualSalary = request.AnnualSalary,
         };
-        var result = await new AddCompanyHandler(database).Execute(command, context.CancellationToken);
+        var result = await addCompanyHandler.Execute(command, context.CancellationToken);
         return GrpcResult.Map(result, Map);
     }
 

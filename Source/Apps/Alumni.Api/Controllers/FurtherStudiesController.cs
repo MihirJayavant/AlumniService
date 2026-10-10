@@ -11,16 +11,16 @@ public sealed class FurtherStudiesController : IEndpoint
         api.MapPost("/", PostAsync).Produces<FurtherStudyResponse>();
     }
 
-    private static async Task<IResult> GetAsync(Guid studentId, IStudentDbContext context, CancellationToken token)
+    private static async Task<IResult> GetAsync(Guid studentId, GetFurtherStudyHandler handler, CancellationToken token)
     {
         var query = new GetFurtherStudy { StudentId = studentId };
-        var result = await new GetFurtherStudyHandler(context).Execute(query, token);
+        var result = await handler.Execute(query, token);
         return result.ToServerResult();
     }
 
-    private static async Task<IResult> PostAsync(AddFurtherStudy study, IStudentDbContext context, CancellationToken token)
+    private static async Task<IResult> PostAsync(AddFurtherStudy study, AddFurtherStudyHandler handler, CancellationToken token)
     {
-        var result = await new AddFurtherStudyHandler(context).Execute(study, token);
+        var result = await handler.Execute(study, token);
         return result.ToServerResult();
     }
 

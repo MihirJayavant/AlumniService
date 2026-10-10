@@ -9,16 +9,16 @@ public sealed class ExamController : IEndpoint
         api.MapPost("/", PostAsync).Produces<ExamResponse>();
     }
 
-    private static async Task<IResult> GetAsync(Guid studentId, IStudentDbContext context, CancellationToken cancellationToken)
+    private static async Task<IResult> GetAsync(Guid studentId, GetExamHandler handler, CancellationToken cancellationToken)
     {
         var query = new GetExam { StudentId = studentId };
-        var result = await new GetExamHandler(context).Execute(query, cancellationToken);
+        var result = await handler.Execute(query, cancellationToken);
         return result.ToServerResult();
     }
 
-    private static async Task<IResult> PostAsync(AddExam exam, IStudentDbContext context, CancellationToken cancellationToken)
+    private static async Task<IResult> PostAsync(AddExam exam, AddExamHandler handler, CancellationToken cancellationToken)
     {
-        var response = await new AddExamHandler(context).Execute(exam, cancellationToken);
+        var response = await handler.Execute(exam, cancellationToken);
         return response.ToServerResult();
     }
 }

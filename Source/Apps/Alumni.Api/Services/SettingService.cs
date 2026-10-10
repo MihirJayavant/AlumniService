@@ -4,7 +4,6 @@ public sealed class SettingService : ISettingService
 {
     public string Environment { get; init; }
     public DatabaseSetting DatabaseSetting { get; init; }
-    public AuthSetting AuthSetting { get; init; }
 
     public bool IsDevelopment => Environment == "Development";
 
@@ -25,11 +24,5 @@ public sealed class SettingService : ISettingService
             Password = pass ?? ""
         };
 
-        AuthSetting = new()
-        {
-            Secret = configuration["Authentication:Secret"] ?? "",
-            ValidAudience = configuration["Authentication:ValidAudience"] ?? "",
-            ValidIssuer = configuration["Authentication:ValidIssuer"] ?? ""
-        };
     }
 }

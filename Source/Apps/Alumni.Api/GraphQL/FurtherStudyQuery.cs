@@ -6,10 +6,10 @@ public sealed class FurtherStudyQuery
     [GraphQLName("furtherStudies")]
     public async Task<PaginatedList<FurtherStudyResponse>?> GetFurtherStudyAsync(
         Guid studentId,
-        [Service] IStudentDbContext context,
+        [Service] GetFurtherStudyHandler handler,
         CancellationToken cancellationToken)
     {
-        var result = await new GetFurtherStudyHandler(context).Execute(
+        var result = await handler.Execute(
             new GetFurtherStudy { StudentId = studentId }, cancellationToken);
         return GraphQLResult.Unwrap(result);
     }

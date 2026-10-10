@@ -39,7 +39,7 @@ This restores the solution, builds the record-view generator in Debug for the fo
 
 ## Run with Aspire
 
-First set the API environment variables in [Authentication configuration](#authentication-configuration) below. Then configure local PostgreSQL credentials through the file-based AppHost's user secrets:
+Configure local PostgreSQL credentials through the file-based AppHost's user secrets:
 
 ```sh
 dotnet user-secrets set "Parameters:pg-user" "alumni-service" --file apphost.cs
@@ -55,23 +55,13 @@ PostgreSQL uses the fixed host port `5432`; this port must be available when sta
 
 Start an existing PostgreSQL database and configure a complete connection string using the environment variable `ConnectionStrings__alumni-db`. If absent, the API falls back to `Database:Connection`, replacing its `{0}` placeholder with `Database:Password` in development or `DATABASE_PASSWORD` otherwise.
 
-Configure `Authentication:Secret`, `Authentication:ValidAudience`, and `Authentication:ValidIssuer` using local configuration or their double-underscore environment variable equivalents. Keep credentials and JWT secrets out of committed files.
-
 ```sh
 dotnet run --project Source/Apps/Alumni.Api
 ```
 
 ## Authentication configuration
 
-JWT validation and Identity storage are registered, but the current feature endpoints do not attach authorization requirements. Configure the JWT secret even for local startup because the signing key is constructed during service registration. This repository does not currently expose a working token-issuance endpoint.
-
-The API project does not currently declare a `UserSecretsId`. Set its local authentication values in the shell that starts Aspire or the API:
-
-```sh
-export Authentication__Secret='<local-signing-secret>'
-export Authentication__ValidAudience='<local-audience>'
-export Authentication__ValidIssuer='<local-issuer>'
-```
+The legacy Identity/JWT runtime setup has been removed. `Alumni.Auth` defines database storage only; login, invitations, token issuance and authorization enforcement will be added separately. Authentication configuration is not currently required for startup. Feature endpoints remain unprotected.
 
 The host environment controls development-only API documentation. Separately, `SettingService` reads a configuration key named `Environment`, defaulting to `Development`, to select the fallback database password source. Do not assume `ASPNETCORE_ENVIRONMENT` alone selects that fallback. Prefer a complete `ConnectionStrings:alumni-db` value.
 
@@ -108,7 +98,6 @@ There is no `Run-Local` target in the current build script. Use `dotnet run --fi
 | Aspire cannot start containers | Start the Docker-compatible runtime |
 | Resource ports are occupied | Check ports 5432, 18888, 18889 and 18891 |
 | Database rejects new credentials | An existing persistent volume retains its initialized credentials |
-| API fails while configuring JWT | Set the three `Authentication` values locally |
 | Endpoint fails on missing tables | Apply migrations as described in [Persistence and Migrations](Persistence-and-Migrations.md) |
 
 ## Source references
@@ -116,4 +105,4 @@ There is no `Run-Local` target in the current build script. Use `dotnet run --fi
 - [Build targets](../build.cs)
 - [Aspire resources](../apphost.cs) and [dashboard launch configuration](../apphost.run.json)
 - [Configuration precedence](../Source/Apps/Alumni.Api/Services/SettingService.cs)
-- [Infrastructure and authentication registration](../Source/Libraries/Infrastructure/ConfigureServices.cs)
+- [Infrastructure registration](../Source/Libraries/Infrastructure/ConfigureServices.cs)

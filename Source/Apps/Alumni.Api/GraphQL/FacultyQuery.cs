@@ -7,22 +7,22 @@ public sealed class FacultyQuery
     public async Task<PaginatedList<FacultyResponse>?> GetFacultiesAsync(
         int pageNumber,
         int pageSize,
-        [Service] IFacultyDbContext context,
+        [Service] GetAllFacultiesHandler handler,
         CancellationToken cancellationToken)
     {
         var query = new GetAllFaculties { PageNumber = pageNumber, PageSize = pageSize };
-        var result = await new GetAllFacultiesHandler(context).Execute(query, cancellationToken);
+        var result = await handler.Execute(query, cancellationToken);
         return GraphQLResult.Unwrap(result);
     }
 
     [GraphQLName("faculty")]
     public async Task<FacultyResponse?> GetFacultyAsync(
         Guid facultyId,
-        [Service] IFacultyDbContext context,
+        [Service] GetFacultyHandler handler,
         CancellationToken cancellationToken)
     {
         var query = new GetFaculty { FacultyId = facultyId };
-        var result = await new GetFacultyHandler(context).Execute(query, cancellationToken);
+        var result = await handler.Execute(query, cancellationToken);
         return GraphQLResult.Unwrap(result);
     }
 }

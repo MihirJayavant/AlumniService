@@ -6,10 +6,10 @@ public sealed class CompanyMutation
     [GraphQLName("addCompany")]
     public async Task<CompanyResponse?> AddCompanyAsync(
         AddCompany input,
-        [Service] IStudentDbContext context,
+        [Service] AddCompanyHandler handler,
         CancellationToken cancellationToken)
     {
-        var result = await new AddCompanyHandler(context).Execute(input, cancellationToken);
+        var result = await handler.Execute(input, cancellationToken);
         return GraphQLResult.Unwrap(result);
     }
 }

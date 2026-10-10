@@ -71,7 +71,6 @@ Task("Doctor")
     }
 
     Information("Configure AppHost Parameters:pg-user and Parameters:pg-password in user secrets.");
-    Information("Configure API Authentication:Secret, Authentication:ValidAudience, and Authentication:ValidIssuer locally.");
     Information("Secret values are not inspected. See README.md for setup.");
 });
 

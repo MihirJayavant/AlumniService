@@ -13,23 +13,23 @@ public sealed class StudentController : IEndpoint
         api.MapPost("/", PostAsync).Produces<StudentResponse>();
     }
 
-    private static async Task<IResult> GetAllAsync(int pageNumber, int pageSize, IStudentDbContext context, CancellationToken token)
+    private static async Task<IResult> GetAllAsync(int pageNumber, int pageSize, GetAllStudentHandler handler, CancellationToken token)
     {
         var query = new GetAllStudent { PageNumber = pageNumber, PageSize = pageSize };
-        var response = await new GetAllStudentHandler(context).Execute(query, token);
+        var response = await handler.Execute(query, token);
         return response.ToServerResult();
     }
 
-    private static async Task<IResult> GetByEmail(Guid id, IStudentDbContext context, CancellationToken token)
+    private static async Task<IResult> GetByEmail(Guid id, GetStudentHandler handler, CancellationToken token)
     {
         var query = new GetStudent { Id = id };
-        var response = await new GetStudentHandler(context).Execute(query, token);
+        var response = await handler.Execute(query, token);
         return response.ToServerResult();
     }
 
-    private static async Task<IResult> PostAsync(AddStudent student, IStudentDbContext context, CancellationToken token)
+    private static async Task<IResult> PostAsync(AddStudent student, AddStudentHandler handler, CancellationToken token)
     {
-        var response = await new AddStudentHandler(context).Execute(student, token);
+        var response = await handler.Execute(student, token);
         return response.ToServerResult();
     }
 

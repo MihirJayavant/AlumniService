@@ -9,6 +9,7 @@
     <Project Path="Source/Apps/Alumni.Api/Alumni.Api.csproj" />
   </Folder>
   <Folder Name="/Source/Libraries/">
+    <Project Path="Source/Libraries/Alumni.Auth/Alumni.Auth.csproj" />
     <Project Path="Source/Libraries/Core/Core.csproj" />
     <Project Path="Source/Libraries/Infrastructure/Infrastructure.csproj" />
     <Project Path="Source/Libraries/Alumni.Student/Alumni.Student.csproj" />

@@ -6,10 +6,10 @@ public sealed class StudentMutation
     [GraphQLName("addStudent")]
     public async Task<StudentResponse?> AddStudentAsync(
         AddStudent input,
-        [Service] IStudentDbContext context,
+        [Service] AddStudentHandler handler,
         CancellationToken cancellationToken)
     {
-        var result = await new AddStudentHandler(context).Execute(input, cancellationToken);
+        var result = await handler.Execute(input, cancellationToken);
         return GraphQLResult.Unwrap(result);
     }
 }

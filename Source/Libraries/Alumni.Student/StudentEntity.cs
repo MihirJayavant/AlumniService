@@ -8,6 +8,8 @@ namespace Alumni.Student;
 public partial record StudentEntity : IAuditableEntity
 {
     public int Id { get; init; }
+    // External account identifier; no navigation or foreign-key constraint.
+    public string? AuthUserId { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public bool IsDeleted { get; set; }

@@ -1,6 +1,6 @@
 namespace Alumni.Faculty;
 
-[RecordView(typeof(Faculty), nameof(Faculty.Id), nameof(Faculty.IsDeleted))]
+[RecordView(typeof(Faculty), nameof(Faculty.AuthUserId), nameof(Faculty.Id), nameof(Faculty.IsDeleted))]
 public sealed partial record FacultyResponse
 {
 

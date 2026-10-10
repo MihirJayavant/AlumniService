@@ -6,10 +6,10 @@ public sealed class ExamQuery
     [GraphQLName("exams")]
     public async Task<PaginatedList<ExamResponse>?> GetExamAsync(
         Guid studentId,
-        [Service] IStudentDbContext context,
+        [Service] GetExamHandler handler,
         CancellationToken cancellationToken)
     {
-        var result = await new GetExamHandler(context).Execute(
+        var result = await handler.Execute(
             new GetExam { StudentId = studentId }, cancellationToken);
         return GraphQLResult.Unwrap(result);
     }

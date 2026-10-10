@@ -8,6 +8,9 @@ public class FacultyConfiguration : IEntityTypeConfiguration<Faculty>
     {
         builder.ToTable("faculties", "Faculty");
 
+        builder.Property(s => s.AuthUserId);
+        builder.HasIndex(s => s.AuthUserId).IsUnique();
+
         builder.HasKey(s => s.Id);
 
         builder.Property(s => s.Id).ValueGeneratedOnAdd();
