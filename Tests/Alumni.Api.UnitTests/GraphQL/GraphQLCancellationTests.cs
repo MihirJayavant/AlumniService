@@ -1,7 +1,5 @@
 using Alumni.Api.GraphQL;
-using Alumni.Faculty;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 
 namespace Alumni.Api.UnitTests.GraphQL;
 

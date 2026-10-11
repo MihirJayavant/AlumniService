@@ -1,9 +1,5 @@
 using System.Text.Json.Serialization;
-using Alumni.Api.ExtensionService;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Xunit;
 
 namespace Alumni.Api.UnitTests.ExtensionService;
 

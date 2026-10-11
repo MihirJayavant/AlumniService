@@ -1,11 +1,3 @@
-using Alumni.Auth;
-using Alumni.Faculty;
-using Alumni.Student;
-using Alumni.Student.Company;
-using Alumni.Student.Exam;
-using Alumni.Student.FurtherStudy;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Alumni.Api.UnitTests;
 
 internal static class HandlerTestRegistration

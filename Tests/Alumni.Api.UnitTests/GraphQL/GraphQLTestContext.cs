@@ -1,15 +1,8 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
-using Alumni.Api.ExtensionService;
-using Alumni.Faculty;
-using Alumni.Student;
-using Alumni.Student.Company;
-using Alumni.Student.Exam;
-using Alumni.Student.FurtherStudy;
 using HotChocolate;
 using HotChocolate.Execution;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Alumni.Api.UnitTests.GraphQL;
 

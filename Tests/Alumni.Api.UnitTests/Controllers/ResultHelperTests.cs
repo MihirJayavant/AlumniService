@@ -1,11 +1,7 @@
 using System.Text.Json;
-using Alumni.Api.Controllers;
-using Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
 using OneOf;
-using Xunit;
 
 namespace Alumni.Api.UnitTests.Controllers;
 
