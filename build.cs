@@ -21,13 +21,19 @@ void RequireDotNet(string arguments)
     }
 }
 
-void RunTests() => DotNetTest(solution, new DotNetTestSettings
+void RunTests()
 {
-    PathType = DotNetTestPathType.Solution,
-    Configuration = configuration,
-    NoBuild = true,
-    NoRestore = true,
-});
+    foreach (var project in GetFiles("./Tests/*.UnitTests/*.csproj"))
+    {
+        DotNetTest(project.FullPath, new DotNetTestSettings
+        {
+            PathType = DotNetTestPathType.Project,
+            Configuration = configuration,
+            NoBuild = true,
+            NoRestore = true,
+        });
+    }
+}
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -104,6 +110,16 @@ Task("Build-Format-Generator")
 Task("Test")
     .IsDependentOn("Build")
     .Does(RunTests);
+
+Task("Integration-Test")
+    .IsDependentOn("Build")
+    .Does(() => DotNetTest("./Tests/Alumni.IntegrationTests/Alumni.IntegrationTests.csproj", new DotNetTestSettings
+    {
+        PathType = DotNetTestPathType.Project,
+        Configuration = configuration,
+        NoBuild = true,
+        NoRestore = true,
+    }));
 
 Task("Format")
     .IsDependentOn("Build-Format-Generator")

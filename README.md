@@ -105,6 +105,7 @@ Source/
     Infrastructure/   PostgreSQL context and registration
     Generators/       Record-view source generator
 Tests/                Five isolated unit-test projects
+                      PostgreSQL integration tests (Faculty)
 docs/                 Wiki-style documentation
 apphost.cs            File-based Aspire host
 build.cs              Cake build targets
@@ -117,8 +118,9 @@ Start with [Architecture](docs/Architecture.md), follow a request in [Patterns a
 ```sh
 dotnet build.cs -- --target=Test
 dotnet build.cs -- --target=CI
+dotnet build.cs -- --target=Integration-Test
 ```
 
-`Test` builds and runs the solution tests. `CI` also verifies formatting, code style and analyzer diagnostics, then builds with warnings treated as errors. Unit tests cover Core, source generation, domain validation/mapping, HTTP registration/results, configuration and GraphQL. Successful persistence and database queries need separate integration checks.
+`Test` builds the solution and runs unit tests. `CI` also verifies formatting, code style and analyzer diagnostics, then builds with warnings treated as errors. `Integration-Test` runs the PostgreSQL integration suite and requires a running Docker-compatible container runtime. Unit tests cover Core, source generation, domain validation/mapping, HTTP registration/results, configuration and GraphQL. Faculty integration tests cover current-model persistence and queries; migration and API runtime coverage remain separate.
 
 See [Testing and CI](docs/Testing-and-CI.md) for suite-specific commands and coverage boundaries. Read [repository guidance](AGENTS.md) and scoped instructions before contributing. Keep package versions in [Directory.Packages.props](Directory.Packages.props), preserve unrelated changes, and keep secrets out of commits.
