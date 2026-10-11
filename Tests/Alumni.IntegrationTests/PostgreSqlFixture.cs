@@ -1,10 +1,7 @@
 using Infrastructure;
-using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using Respawn;
 using Respawn.Graph;
 using Testcontainers.PostgreSql;
-using Xunit;
 
 namespace Alumni.IntegrationTests;
 

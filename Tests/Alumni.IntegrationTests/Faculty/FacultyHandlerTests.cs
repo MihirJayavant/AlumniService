@@ -1,8 +1,4 @@
 using Alumni.Faculty;
-using Core;
-using Microsoft.EntityFrameworkCore;
-using Npgsql;
-using Xunit;
 using FacultyEntity = Alumni.Faculty.Faculty;
 
 namespace Alumni.IntegrationTests.Faculty;

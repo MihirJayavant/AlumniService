@@ -46,7 +46,7 @@ After a Release build, run all solution tests (including integration tests, requ
 dotnet test --solution AlumniService.slnx --configuration Release --no-build --no-restore
 ```
 
-`HandlerExtensions.Execute` returns `BadRequest` for validation failures, preserves handler-returned errors, propagates cancellation, and converts other exceptions to `InternalError`. EF-backed `PaginationQuery.Paginate` needs separate PostgreSQL integration tests; those are deferred. Pagination input validation has dedicated Core and domain tests.
+`HandlerExtensions.Execute` returns `BadRequest` for validation failures, preserves handler-returned errors, propagates cancellation, and converts other exceptions to `InternalError`. EF-backed `PaginationQuery.Paginate` is exercised through Faculty and Student PostgreSQL integration tests. Pagination input validation has dedicated Core and domain tests.
 
 ## GraphQL coverage
 
@@ -66,6 +66,8 @@ The Cake dependency chain restores packages, builds the generator in Debug for t
 
 `Tests/Alumni.IntegrationTests` uses the existing xUnit/Microsoft.Testing.Platform runner, Testcontainers.PostgreSql and Respawn. Faculty tests exercise real handlers and `ApplicationContext` against a disposable PostgreSQL 17.6 container, with fresh contexts for persistence assertions. Coverage includes normalized creation, duplicate-email conflicts, retrieval, physical deletion, missing records, ordered pagination and the database's unique email constraint.
 
+Student tests use the same fixture and exercise normalized creation, both owned addresses, audit timestamps, duplicate-email conflicts, retrieval, missing records, ordered pagination and PostgreSQL email uniqueness. Company, Exam and FurtherStudy tests cover normalized persistence, student foreign keys/navigation properties, query isolation between students, empty results, missing-student results and PostgreSQL rejection of orphan records. Child-list tests do not assume ordering because those handlers currently have no explicit sort.
+
 Run from the repository root with a running Docker-compatible container runtime:
 
 ```sh
@@ -82,7 +84,7 @@ The collection shares one container and resets application tables before each te
 
 **Schema limitation:** the fixture deliberately uses `EnsureCreatedAsync` with the current production EF model. The checked-in migration snapshot predates auth model changes and Faculty's `AuthUserId` property. This suite does not validate migrations; it must not be used as evidence that a migrated deployment matches the current model. Add migration coverage after the migration history is brought up to date.
 
-Cake `Test` and `CI` execute only `*.UnitTests` projects. The separate `Integration-Test` target and GitHub Actions integration job execute the database suite. Student, auth workflows and API transport integration coverage remain deferred.
+Cake `Test` and `CI` execute only `*.UnitTests` projects. The separate `Integration-Test` target and GitHub Actions integration job execute the database suite. Auth workflows and API transport integration coverage remain deferred.
 
 Unit tests do not replace checks of PostgreSQL queries, migrations, constraints, relationships, successful CRUD, or actual pagination contents. HTTP request binding, serialization and middleware also need runtime integration checks. Run database-dependent checks separately with deliberate local configuration.
 
