@@ -2,6 +2,7 @@ global using Alumni.Student;
 global using Alumni.Student.Company;
 global using Alumni.Student.Exam;
 global using Alumni.Student.FurtherStudy;
+global using Alumni.Faculty;
 global using Core;
 global using Microsoft.EntityFrameworkCore;
 global using Npgsql;

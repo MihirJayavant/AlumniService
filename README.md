@@ -113,6 +113,16 @@ build.cs              Cake build targets
 
 Start with [Architecture](docs/Architecture.md), follow a request in [Patterns and Request Lifecycle](docs/Patterns-and-Request-Lifecycle.md), then explore the [Data Model](docs/Domain-and-Data-Model.md) and [Source Generation](docs/Source-Generation.md).
 
+## Agents in VS Code
+
+Open the repository root in VS Code with GitHub Copilot enabled. In Chat, open the agent dropdown and choose `explorer`, `feature-worker`, `persistence-worker`, `test-worker`, or `reviewer`. The workspace definitions live in [.github/agents](.github/agents); the existing Codex definitions remain in [.codex/agents](.codex/agents).
+
+Explorer maps code paths and reviewer reports actionable findings; both use read/search tools. The other roles implement assigned features, persistence changes, or tests. Select your preferred model in VS Code. When using a worker directly, include the task scope and owned files in your prompt.
+
+All roles follow [AGENTS.md](AGENTS.md), scoped repository instructions, and the shared [.agents/skills](.agents/skills) workflows. VS Code supports this skills location without duplicating the skills. Workspace settings enable root and nested AGENTS.md discovery for Local sessions; the roles also explicitly require reading scoped instructions. Tool restrictions depend on the selected harness and do not replace its permission controls.
+
+If a role is missing, run **Chat: Configure Custom Agents** and check the workspace definitions and selected harness. See the [VS Code custom agent documentation](https://code.visualstudio.com/docs/agent-customization/custom-agents) for supported versions and discovery behavior.
+
 ## Build, test and contribute
 
 ```sh

@@ -1,4 +1,6 @@
 {
+  "chat.useAgentsMdFile": true,
+  "chat.useNestedAgentsMdFiles": true,
   "editor.formatOnSave": true,
   "dotnet.defaultSolution": "AlumniService.slnx",
   "dotnet.codeLens.enableReferencesCodeLens": false,

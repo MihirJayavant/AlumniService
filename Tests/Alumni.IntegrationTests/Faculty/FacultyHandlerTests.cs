@@ -1,6 +1,4 @@
-using Alumni.Faculty;
 using FacultyEntity = Alumni.Faculty.Faculty;
-
 namespace Alumni.IntegrationTests.Faculty;
 
 [Collection("PostgreSQL")]
