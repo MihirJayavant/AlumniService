@@ -40,13 +40,13 @@ dotnet build Tests/Alumni.Student.UnitTests/Alumni.Student.UnitTests.csproj --co
 dotnet Tests/Alumni.Student.UnitTests/bin/Release/net10.0/Alumni.Student.UnitTests.dll
 ```
 
-After a Release build, run all solution tests without rebuilding:
+After a Release build, run all solution tests (including integration tests, requiring Docker) without rebuilding:
 
 ```sh
 dotnet test --solution AlumniService.slnx --configuration Release --no-build --no-restore
 ```
 
-`HandlerExtensions.Execute` returns `BadRequest` for validation failures, preserves handler-returned errors, propagates cancellation, and converts other exceptions to `InternalError`. EF-backed `PaginationQuery.Paginate` needs separate PostgreSQL integration tests; those are deferred. Pagination input validation has dedicated Core and domain tests.
+`HandlerExtensions.Execute` returns `BadRequest` for validation failures, preserves handler-returned errors, propagates cancellation, and converts other exceptions to `InternalError`. EF-backed `PaginationQuery.Paginate` is exercised through Faculty and Student PostgreSQL integration tests. Pagination input validation has dedicated Core and domain tests.
 
 ## GraphQL coverage
 
@@ -64,6 +64,28 @@ The Cake dependency chain restores packages, builds the generator in Debug for t
 
 ## Integration boundaries
 
+`Tests/Alumni.IntegrationTests` uses the existing xUnit/Microsoft.Testing.Platform runner, Testcontainers.PostgreSql and Respawn. Faculty tests exercise real handlers and `ApplicationContext` against a disposable PostgreSQL 17.6 container, with fresh contexts for persistence assertions. Coverage includes normalized creation, duplicate-email conflicts, retrieval, physical deletion, missing records, ordered pagination and the database's unique email constraint.
+
+Student tests use the same fixture and exercise normalized creation, both owned addresses, audit timestamps, duplicate-email conflicts, retrieval, missing records, ordered pagination and PostgreSQL email uniqueness. Company, Exam and FurtherStudy tests cover normalized persistence, student foreign keys/navigation properties, query isolation between students, empty results, missing-student results and PostgreSQL rejection of orphan records. Child-list tests do not assume ordering because those handlers currently have no explicit sort.
+
+Run from the repository root with a running Docker-compatible container runtime:
+
+```sh
+dotnet build.cs -- --target=Integration-Test
+```
+
+Or run only the integration project directly:
+
+```sh
+dotnet test --project Tests/Alumni.IntegrationTests/Alumni.IntegrationTests.csproj --configuration Release
+```
+
+The collection shares one container and resets application tables before each test. Tests sharing that database run sequentially. Credentials and ports belong to the disposable container; local development databases and secrets are not used. Assertions do not depend on identity sequences resetting.
+
+**Schema limitation:** the fixture deliberately uses `EnsureCreatedAsync` with the current production EF model. The checked-in migration snapshot predates auth model changes and Faculty's `AuthUserId` property. This suite does not validate migrations; it must not be used as evidence that a migrated deployment matches the current model. Add migration coverage after the migration history is brought up to date.
+
+Cake `Test` and `CI` execute only `*.UnitTests` projects. The separate `Integration-Test` target and GitHub Actions integration job execute the database suite. Auth workflows and API transport integration coverage remain deferred.
+
 Unit tests do not replace checks of PostgreSQL queries, migrations, constraints, relationships, successful CRUD, or actual pagination contents. HTTP request binding, serialization and middleware also need runtime integration checks. Run database-dependent checks separately with deliberate local configuration.
 
 ## Contribution workflow
@@ -79,4 +101,5 @@ For feature work, follow [Patterns and Request Lifecycle](Patterns-and-Request-L
 - [Student tests](../Tests/Alumni.Student.UnitTests)
 - [Faculty tests](../Tests/Alumni.Faculty.UnitTests)
 - [API and GraphQL tests](../Tests/Alumni.Api.UnitTests)
+- [PostgreSQL integration tests](../Tests/Alumni.IntegrationTests)
 - [Build targets](../build.cs)

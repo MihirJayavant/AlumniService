@@ -1,8 +1,6 @@
 using Alumni.Api.GraphQL;
-using Core;
 using HotChocolate;
 using OneOf;
-using Xunit;
 
 namespace Alumni.Api.UnitTests.GraphQL;
 

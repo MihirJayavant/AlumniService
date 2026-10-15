@@ -1,0 +1,15 @@
+global using Alumni.Api.Controllers;
+global using Alumni.Api.ExtensionService;
+global using Alumni.Api.Services;
+global using Alumni.Auth;
+global using Alumni.Faculty;
+global using Alumni.Student;
+global using Alumni.Student.Company;
+global using Alumni.Student.Exam;
+global using Alumni.Student.FurtherStudy;
+global using Core;
+global using Microsoft.AspNetCore.Builder;
+global using Microsoft.AspNetCore.Http.Metadata;
+global using Microsoft.AspNetCore.Routing;
+global using Microsoft.Extensions.DependencyInjection;
+global using Xunit;

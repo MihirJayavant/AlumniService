@@ -1,6 +1,4 @@
-using Alumni.Api.Services;
 using Microsoft.Extensions.Configuration;
-using Xunit;
 
 namespace Alumni.Api.UnitTests.Services;
 

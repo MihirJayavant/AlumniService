@@ -1,11 +1,3 @@
-using Alumni.Api.Controllers;
-using Alumni.Student.FurtherStudy;
-using Core;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http.Metadata;
-using Microsoft.AspNetCore.Routing;
-using Xunit;
-
 namespace Alumni.Api.UnitTests.Controllers;
 
 public class EndpointRegistrationTests

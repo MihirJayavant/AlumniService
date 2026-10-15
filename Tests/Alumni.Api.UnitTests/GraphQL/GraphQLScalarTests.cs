@@ -1,5 +1,4 @@
 using HotChocolate.Types;
-using Xunit;
 
 namespace Alumni.Api.UnitTests.GraphQL;
 

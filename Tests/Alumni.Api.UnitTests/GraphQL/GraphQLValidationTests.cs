@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Xunit;
 
 namespace Alumni.Api.UnitTests.GraphQL;
 

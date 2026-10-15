@@ -1,9 +1,5 @@
-using Alumni.Api.ExtensionService;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Template;
-using Xunit;
 
 namespace Alumni.Api.UnitTests.GraphQL;
 
