@@ -1,4 +1,5 @@
 #:sdk Cake.Sdk
+#:package System.Security.Cryptography.Pkcs
 
 var target = Argument("target", "Build");
 var configuration = Argument("configuration", "Release");
