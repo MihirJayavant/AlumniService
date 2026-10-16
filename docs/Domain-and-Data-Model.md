@@ -2,7 +2,7 @@
 
 [Home](Home.md) · [Architecture](Architecture.md) · [Persistence and migrations](Persistence-and-Migrations.md)
 
-AlumniService groups student profiles and their employment, exam and further-study records in `Alumni.Student`. Faculty records live in `Alumni.Faculty`. The domain libraries contain request records, validators, handlers, response mappers and EF configuration for their own features.
+AlumniService groups student profiles and their employment, exam and further-study records in `Alumni.Student`. Staff profiles live in the `Alumni.Staff` namespace within the `Alumni.Staff` project. The domain libraries contain request records, validators, handlers, response mappers and EF configuration for their own features.
 
 ## Relationships at a glance
 
@@ -63,7 +63,7 @@ The committed [model snapshot](../Source/Apps/Alumni.Api/Migrations/ApplicationC
 | Company | `Company` | `CompanyEntity` | `CompanyId` |
 | Exam | `Exam` | `ExamEntity` | `ExamId` |
 | Further study | `FurtherStudy` | `FurtherStudyEntity` | `FurtherStudyId` |
-| Faculty | `Faculty` | `Faculty` | `FacultyId` |
+| Staff | `StaffMember` | `StaffMemberEntity` | `FacultyId` |
 
 Database `Id` values are generated integers. Public identifiers are GUIDs with unique indexes; clients use these identifiers for lookups. Student, company, exam and further-study creation generates version 7 GUIDs. Faculty creation uses `Guid.NewGuid()`. Creation requests generated from student-related models can expose public identifier properties, but handlers generate the persisted identifiers themselves.
 
@@ -119,7 +119,7 @@ Company and exam lists use fixed page 1, size 10; further-study lists use page 1
 
 - [Student model](../Source/Libraries/Alumni.Student/Student.cs), [entity](../Source/Libraries/Alumni.Student/StudentEntity.cs), [creation handler and mapper](../Source/Libraries/Alumni.Student/AddStudentHandler.cs)
 - [Company slice](../Source/Libraries/Alumni.Student/Company/AddCompanyHandler.cs), [exam slice](../Source/Libraries/Alumni.Student/Exam/AddExamHandler.cs), [further-study slice](../Source/Libraries/Alumni.Student/FurtherStudy/AddFurtherStudyHandler.cs)
-- [Faculty model](../Source/Libraries/Alumni.Faculty/Faculty.cs), [creation](../Source/Libraries/Alumni.Faculty/AddFacultyCommand.cs), [deletion](../Source/Libraries/Alumni.Faculty/DeleteFacultyHandler.cs)
+- [Staff model](../Source/Libraries/Alumni.Staff/StaffMember.cs), [persisted entity](../Source/Libraries/Alumni.Staff/StaffMemberEntity.cs), [creation](../Source/Libraries/Alumni.Staff/AddStaffMemberHandler.cs), [deletion](../Source/Libraries/Alumni.Staff/DeleteStaffMemberHandler.cs)
 
 ---
 

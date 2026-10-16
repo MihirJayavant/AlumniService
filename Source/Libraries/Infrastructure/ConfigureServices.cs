@@ -14,7 +14,7 @@ public static class ConfigureServices
 
             services.AddScoped<IApplicationContext>(provider => provider.GetRequiredService<ApplicationContext>());
             services.AddScoped<IStudentDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
-            services.AddScoped<IFacultyDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
+            services.AddScoped<IStaffDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
             services.AddScoped<IAuthDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
 
             services.AddIdentityCore<AuthUser>(options =>
@@ -30,10 +30,10 @@ public static class ConfigureServices
             services.AddScoped<GetAllStudentHandler>();
             services.AddScoped<GetStudentHandler>();
             services.AddScoped<AddStudentHandler>();
-            services.AddScoped<GetAllFacultiesHandler>();
-            services.AddScoped<GetFacultyHandler>();
-            services.AddScoped<AddFacultyHandler>();
-            services.AddScoped<DeleteFacultyHandler>();
+            services.AddScoped<GetStaffMembersHandler>();
+            services.AddScoped<GetStaffMemberHandler>();
+            services.AddScoped<AddStaffMemberHandler>();
+            services.AddScoped<DeleteStaffMemberHandler>();
             services.AddScoped<GetCompanyHandler>();
             services.AddScoped<AddCompanyHandler>();
             services.AddScoped<GetExamHandler>();

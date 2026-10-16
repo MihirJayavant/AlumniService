@@ -1,7 +1,7 @@
 using Core;
 using Xunit;
 
-namespace Alumni.Faculty.UnitTests;
+namespace Alumni.Staff.UnitTests;
 
 public sealed class AddFacultyValidationTests
 {
@@ -20,10 +20,10 @@ public sealed class AddFacultyValidationTests
     {
         var request = FacultyTestData.ValidAddFaculty() with { Email = email! };
 
-        var result = new AddFacultyHandler(new RejectingFacultyDbContext()).Validator.Validate(request);
+        var result = new AddStaffMemberHandler(new RejectingFacultyDbContext()).Validator.Validate(request);
 
         Assert.False(result.IsValid);
-        Assert.Equal(nameof(AddFaculty.Email), Assert.Single(result.Errors).PropertyName);
+        Assert.Equal(nameof(AddStaffMember.Email), Assert.Single(result.Errors).PropertyName);
     }
 
     [Theory]
@@ -35,7 +35,7 @@ public sealed class AddFacultyValidationTests
     {
         var request = FacultyTestData.ValidAddFaculty() with { Email = email };
 
-        var result = new AddFacultyHandler(new RejectingFacultyDbContext()).Validator.Validate(request);
+        var result = new AddStaffMemberHandler(new RejectingFacultyDbContext()).Validator.Validate(request);
 
         Assert.True(result.IsValid);
         Assert.Empty(result.Errors);
@@ -54,63 +54,63 @@ public sealed class AddFacultyValidationTests
         _ = new Email(email);
         var request = FacultyTestData.ValidAddFaculty() with { Email = padded ? $"  {email} \t" : email };
 
-        var result = new AddFacultyHandler(new RejectingFacultyDbContext()).Validator.Validate(request);
+        var result = new AddStaffMemberHandler(new RejectingFacultyDbContext()).Validator.Validate(request);
 
         Assert.Equal(valid, result.IsValid);
         if (!valid)
         {
             var error = Assert.Single(result.Errors);
-            Assert.Equal(nameof(AddFaculty.Email), error.PropertyName);
+            Assert.Equal(nameof(AddStaffMember.Email), error.PropertyName);
             Assert.Equal("Email must be at most 100 characters.", error.ErrorMessage);
         }
     }
 
     [Theory]
-    [InlineData(nameof(AddFaculty.FirstName), null)]
-    [InlineData(nameof(AddFaculty.FirstName), "")]
-    [InlineData(nameof(AddFaculty.FirstName), " \t\r\n ")]
-    [InlineData(nameof(AddFaculty.LastName), null)]
-    [InlineData(nameof(AddFaculty.LastName), "")]
-    [InlineData(nameof(AddFaculty.LastName), " \t\r\n ")]
-    [InlineData(nameof(AddFaculty.Extension), null)]
-    [InlineData(nameof(AddFaculty.Extension), "")]
-    [InlineData(nameof(AddFaculty.Extension), " \t\r\n ")]
+    [InlineData(nameof(AddStaffMember.FirstName), null)]
+    [InlineData(nameof(AddStaffMember.FirstName), "")]
+    [InlineData(nameof(AddStaffMember.FirstName), " \t\r\n ")]
+    [InlineData(nameof(AddStaffMember.LastName), null)]
+    [InlineData(nameof(AddStaffMember.LastName), "")]
+    [InlineData(nameof(AddStaffMember.LastName), " \t\r\n ")]
+    [InlineData(nameof(AddStaffMember.Extension), null)]
+    [InlineData(nameof(AddStaffMember.Extension), "")]
+    [InlineData(nameof(AddStaffMember.Extension), " \t\r\n ")]
     public void Validate_WhenRequiredTextIsMissing_RejectsOnlyThatField(string property, string? value)
     {
         var request = WithText(FacultyTestData.ValidAddFaculty(), property, value!);
 
-        var result = new AddFacultyHandler(new RejectingFacultyDbContext()).Validator.Validate(request);
+        var result = new AddStaffMemberHandler(new RejectingFacultyDbContext()).Validator.Validate(request);
 
         Assert.False(result.IsValid);
         Assert.Equal(property, Assert.Single(result.Errors).PropertyName);
     }
 
     [Theory]
-    [InlineData(nameof(AddFaculty.FirstName), 100, false, true)]
-    [InlineData(nameof(AddFaculty.FirstName), 100, true, true)]
-    [InlineData(nameof(AddFaculty.FirstName), 101, false, false)]
-    [InlineData(nameof(AddFaculty.FirstName), 101, true, false)]
-    [InlineData(nameof(AddFaculty.LastName), 100, false, true)]
-    [InlineData(nameof(AddFaculty.LastName), 100, true, true)]
-    [InlineData(nameof(AddFaculty.LastName), 101, false, false)]
-    [InlineData(nameof(AddFaculty.LastName), 101, true, false)]
-    [InlineData(nameof(AddFaculty.Extension), 10, false, true)]
-    [InlineData(nameof(AddFaculty.Extension), 10, true, true)]
-    [InlineData(nameof(AddFaculty.Extension), 11, false, false)]
-    [InlineData(nameof(AddFaculty.Extension), 11, true, false)]
+    [InlineData(nameof(AddStaffMember.FirstName), 100, false, true)]
+    [InlineData(nameof(AddStaffMember.FirstName), 100, true, true)]
+    [InlineData(nameof(AddStaffMember.FirstName), 101, false, false)]
+    [InlineData(nameof(AddStaffMember.FirstName), 101, true, false)]
+    [InlineData(nameof(AddStaffMember.LastName), 100, false, true)]
+    [InlineData(nameof(AddStaffMember.LastName), 100, true, true)]
+    [InlineData(nameof(AddStaffMember.LastName), 101, false, false)]
+    [InlineData(nameof(AddStaffMember.LastName), 101, true, false)]
+    [InlineData(nameof(AddStaffMember.Extension), 10, false, true)]
+    [InlineData(nameof(AddStaffMember.Extension), 10, true, true)]
+    [InlineData(nameof(AddStaffMember.Extension), 11, false, false)]
+    [InlineData(nameof(AddStaffMember.Extension), 11, true, false)]
     public void Validate_WhenTextLengthIsAtBoundary_UsesTrimmedLength(string property, int length, bool padded, bool valid)
     {
         var value = new string('a', length);
         var request = WithText(FacultyTestData.ValidAddFaculty(), property, padded ? $" \t{value}  " : value);
 
-        var result = new AddFacultyHandler(new RejectingFacultyDbContext()).Validator.Validate(request);
+        var result = new AddStaffMemberHandler(new RejectingFacultyDbContext()).Validator.Validate(request);
 
         Assert.Equal(valid, result.IsValid);
         if (!valid)
         {
             var error = Assert.Single(result.Errors);
             Assert.Equal(property, error.PropertyName);
-            var maximumLength = property == nameof(AddFaculty.Extension) ? 10 : 100;
+            var maximumLength = property == nameof(AddStaffMember.Extension) ? 10 : 100;
             Assert.Equal($"{property} must be at most {maximumLength} characters.", error.ErrorMessage);
         }
     }
@@ -124,7 +124,7 @@ public sealed class AddFacultyValidationTests
     {
         var request = FacultyTestData.ValidAddFaculty() with { FirstName = firstName, LastName = lastName };
 
-        var result = new AddFacultyHandler(new RejectingFacultyDbContext()).Validator.Validate(request);
+        var result = new AddStaffMemberHandler(new RejectingFacultyDbContext()).Validator.Validate(request);
 
         Assert.True(result.IsValid);
         Assert.Empty(result.Errors);
@@ -140,10 +140,10 @@ public sealed class AddFacultyValidationTests
     {
         var request = FacultyTestData.ValidAddFaculty() with { MobileNo = mobileNo };
 
-        var result = new AddFacultyHandler(new RejectingFacultyDbContext()).Validator.Validate(request);
+        var result = new AddStaffMemberHandler(new RejectingFacultyDbContext()).Validator.Validate(request);
 
         Assert.False(result.IsValid);
-        Assert.Equal(nameof(AddFaculty.MobileNo), Assert.Single(result.Errors).PropertyName);
+        Assert.Equal(nameof(AddStaffMember.MobileNo), Assert.Single(result.Errors).PropertyName);
     }
 
     [Theory]
@@ -154,23 +154,23 @@ public sealed class AddFacultyValidationTests
     {
         var request = FacultyTestData.ValidAddFaculty() with { MobileNo = mobileNo };
 
-        var result = new AddFacultyHandler(new RejectingFacultyDbContext()).Validator.Validate(request);
+        var result = new AddStaffMemberHandler(new RejectingFacultyDbContext()).Validator.Validate(request);
 
         Assert.True(result.IsValid);
         Assert.Empty(result.Errors);
     }
 
     [Theory]
-    [InlineData(nameof(AddFaculty.Email), "not-an-email", "Email must be a valid email address.")]
-    [InlineData(nameof(AddFaculty.FirstName), null, "FirstName must be at most 100 characters.")]
-    [InlineData(nameof(AddFaculty.LastName), null, "LastName must be at most 100 characters.")]
-    [InlineData(nameof(AddFaculty.Extension), null, "Extension must be at most 10 characters.")]
+    [InlineData(nameof(AddStaffMember.Email), "not-an-email", "Email must be a valid email address.")]
+    [InlineData(nameof(AddStaffMember.FirstName), null, "FirstName must be at most 100 characters.")]
+    [InlineData(nameof(AddStaffMember.LastName), null, "LastName must be at most 100 characters.")]
+    [InlineData(nameof(AddStaffMember.Extension), null, "Extension must be at most 10 characters.")]
     public async Task Execute_WhenRequestIsInvalid_ReturnsBadRequestWithoutDatabaseAccess(string property, string? value, string expectedMessage)
     {
-        var invalidValue = value ?? new string('a', property == nameof(AddFaculty.Extension) ? 11 : 101);
+        var invalidValue = value ?? new string('a', property == nameof(AddStaffMember.Extension) ? 11 : 101);
         var request = WithText(FacultyTestData.ValidAddFaculty(), property, invalidValue);
         var context = new RejectingFacultyDbContext();
-        var handler = new AddFacultyHandler(context);
+        var handler = new AddStaffMemberHandler(context);
 
         var result = await handler.Execute(request, TestContext.Current.CancellationToken);
 
@@ -181,12 +181,12 @@ public sealed class AddFacultyValidationTests
         Assert.Equal(0, context.SaveChangesCount);
     }
 
-    private static AddFaculty WithText(AddFaculty request, string property, string value) => property switch
+    private static AddStaffMember WithText(AddStaffMember request, string property, string value) => property switch
     {
-        nameof(AddFaculty.Email) => request with { Email = value },
-        nameof(AddFaculty.FirstName) => request with { FirstName = value },
-        nameof(AddFaculty.LastName) => request with { LastName = value },
-        nameof(AddFaculty.Extension) => request with { Extension = value },
+        nameof(AddStaffMember.Email) => request with { Email = value },
+        nameof(AddStaffMember.FirstName) => request with { FirstName = value },
+        nameof(AddStaffMember.LastName) => request with { LastName = value },
+        nameof(AddStaffMember.Extension) => request with { Extension = value },
         _ => throw new ArgumentOutOfRangeException(nameof(property), property, "Unsupported Faculty text property.")
     };
 }

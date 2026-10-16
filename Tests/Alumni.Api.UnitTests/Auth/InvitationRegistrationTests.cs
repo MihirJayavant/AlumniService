@@ -1,6 +1,6 @@
 using Alumni.Api.Services;
 using Alumni.Auth;
-using Alumni.Faculty;
+using Alumni.Staff;
 using Alumni.Student;
 using Infrastructure;
 using Microsoft.AspNetCore.Identity;
@@ -23,7 +23,7 @@ public class InvitationRegistrationTests
 
         Assert.Same(context, services.GetRequiredService<IApplicationContext>());
         Assert.Same(context, services.GetRequiredService<IStudentDbContext>());
-        Assert.Same(context, services.GetRequiredService<IFacultyDbContext>());
+        Assert.Same(context, services.GetRequiredService<IStaffDbContext>());
         Assert.Same(context, services.GetRequiredService<IAuthDbContext>());
         Assert.NotNull(services.GetRequiredService<UserManager<AuthUser>>());
         Assert.Same(services.GetRequiredService<BootstrapAdminHandler>(),

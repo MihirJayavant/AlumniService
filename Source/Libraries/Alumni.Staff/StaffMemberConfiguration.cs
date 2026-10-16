@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Alumni.Faculty;
+namespace Alumni.Staff;
 
-public class FacultyConfiguration : IEntityTypeConfiguration<Faculty>
+public class StaffMemberConfiguration : IEntityTypeConfiguration<StaffMemberEntity>
 {
-    public void Configure(EntityTypeBuilder<Faculty> builder)
+    public void Configure(EntityTypeBuilder<StaffMemberEntity> builder)
     {
-        builder.ToTable("faculties", "Faculty");
+        builder.ToTable("staff_members", "Staff");
 
         builder.Property(s => s.AuthUserId);
         builder.HasIndex(s => s.AuthUserId).IsUnique();

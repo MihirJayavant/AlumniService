@@ -12,7 +12,7 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options)
     public DbSet<CompanyEntity> Companies { get; set; } = null!;
     public DbSet<ExamEntity> Exams { get; set; } = null!;
     public DbSet<FurtherStudyEntity> FurtherStudies { get; set; } = null!;
-    public DbSet<Faculty> Faculties { get; set; } = null!;
+    public DbSet<StaffMemberEntity> StaffMembers { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -22,8 +22,8 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options)
         builder.ApplyConfiguration(new ExamConfiguration());
         builder.ApplyConfiguration(new CompanyConfiguration());
         builder.ApplyConfiguration(new FurtherStudyConfiguration());
-        builder.ApplyConfiguration(new FacultyConfiguration());
+        builder.ApplyConfiguration(new StaffMemberConfiguration());
     }
 }
 
-public interface IApplicationContext : IStudentDbContext, IFacultyDbContext, IAuthDbContext;
+public interface IApplicationContext : IStudentDbContext, IStaffDbContext, IAuthDbContext;

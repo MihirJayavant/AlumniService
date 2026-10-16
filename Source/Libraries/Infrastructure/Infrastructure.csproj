@@ -7,7 +7,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Alumni.Auth\Alumni.Auth.csproj" />
-    <ProjectReference Include="..\Alumni.Faculty\Alumni.Faculty.csproj" />
+    <ProjectReference Include="..\Alumni.Staff\Alumni.Staff.csproj" />
     <ProjectReference Include="..\Alumni.Student\Alumni.Student.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>

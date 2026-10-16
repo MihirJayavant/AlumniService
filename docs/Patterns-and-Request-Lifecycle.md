@@ -64,7 +64,7 @@ The [Email value](../Source/Libraries/Core/Email.cs) trims surrounding whitespac
 
 ## Shared persistence interface
 
-Handlers depend on [IStudentDbContext](../Source/Libraries/Alumni.Student/IStudentDbContext.cs) or [IFacultyDbContext](../Source/Libraries/Alumni.Faculty/IFacultyDbContext.cs). These interfaces expose EF `DbSet` queries and saving; there is no generic repository layer. [ApplicationContext](../Source/Libraries/Infrastructure/ApplicationContext.cs) implements both through `IApplicationContext`.
+Handlers depend on [IStudentDbContext](../Source/Libraries/Alumni.Student/IStudentDbContext.cs) or [IStaffDbContext](../Source/Libraries/Alumni.Staff/IStaffDbContext.cs). These interfaces expose EF `DbSet` queries and saving; there is no generic repository layer. [ApplicationContext](../Source/Libraries/Infrastructure/ApplicationContext.cs) implements both through `IApplicationContext`.
 
 ## Transport-specific results
 

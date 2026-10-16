@@ -99,7 +99,7 @@ For feature work, follow [Patterns and Request Lifecycle](Patterns-and-Request-L
 - [Core tests](../Tests/Core.UnitTests)
 - [Generator tests](../Tests/Generators.UnitTests)
 - [Student tests](../Tests/Alumni.Student.UnitTests)
-- [Faculty tests](../Tests/Alumni.Faculty.UnitTests)
+- [Faculty tests](../Tests/Alumni.Staff.UnitTests)
 - [API and GraphQL tests](../Tests/Alumni.Api.UnitTests)
 - [PostgreSQL integration tests](../Tests/Alumni.IntegrationTests)
 - [Build targets](../build.cs)

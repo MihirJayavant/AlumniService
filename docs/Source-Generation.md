@@ -42,16 +42,18 @@ This is a shared property shape, not inheritance from `Student`. `AddStudent` cu
 
 ## Excluding properties
 
-[FacultyResponse](../Source/Libraries/Alumni.Faculty/FacultyResponse.cs) omits the internal database identifier and deletion flag:
+[AddStaffMember](../Source/Libraries/Alumni.Staff/AddStaffMemberHandler.cs) excludes the public identifier because its handler generates that value:
 
 ```csharp
-[RecordView(typeof(Faculty), nameof(Faculty.Id), nameof(Faculty.IsDeleted))]
-public sealed partial record FacultyResponse
+[RecordView(typeof(StaffMember), nameof(StaffMember.FacultyId))]
+public sealed partial record AddStaffMember
 {
 }
 ```
 
 Exclusions compare property names. Keep them explicit and review exposure when the source model gains a property.
+
+`StaffMemberEntity` copies the business properties from `StaffMember` and adds persistence and audit fields. `StaffMemberResponse` also copies `StaffMember`, then explicitly declares its two public audit timestamps. It does not copy the generated entity: generators cannot consume one another's output in the same compilation.
 
 ## Current generator behavior
 

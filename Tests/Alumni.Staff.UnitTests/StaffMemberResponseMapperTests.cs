@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace Alumni.Faculty.UnitTests;
+namespace Alumni.Staff.UnitTests;
 
 public sealed class FacultyResponseMapperTests
 {
@@ -10,7 +10,7 @@ public sealed class FacultyResponseMapperTests
     public void ToFacultyResponse_WhenFacultyHasAuditValues_PreservesAllExposedFields(bool hasUpdatedAt)
     {
         var createdAt = new DateTime(2026, 10, 1, 9, 0, 0, DateTimeKind.Utc);
-        var faculty = new Faculty
+        var faculty = new StaffMemberEntity
         {
             Id = 42,
             FacultyId = Guid.Parse("b1da6b5b-dc83-45ca-af05-9bf98b0b99d1"),
@@ -24,7 +24,7 @@ public sealed class FacultyResponseMapperTests
             IsDeleted = true
         };
 
-        var response = faculty.ToFacultyResponse();
+        var response = faculty.ToStaffMemberResponse();
 
         Assert.Equal(faculty.FacultyId, response.FacultyId);
         Assert.Equal(faculty.Email, response.Email);

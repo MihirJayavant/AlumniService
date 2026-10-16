@@ -13,14 +13,14 @@
     <Project Path="Source/Libraries/Core/Core.csproj" />
     <Project Path="Source/Libraries/Infrastructure/Infrastructure.csproj" />
     <Project Path="Source/Libraries/Alumni.Student/Alumni.Student.csproj" />
-    <Project Path="Source/Libraries/Alumni.Faculty/Alumni.Faculty.csproj" />
+    <Project Path="Source/Libraries/Alumni.Staff/Alumni.Staff.csproj" />
     <Project Path="Source/Libraries/Generators/Generators.csproj" />
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="Tests/Alumni.IntegrationTests/Alumni.IntegrationTests.csproj" />
     <Project Path="Tests/Alumni.Api.UnitTests/Alumni.Api.UnitTests.csproj" />
     <Project Path="Tests/Alumni.Student.UnitTests/Alumni.Student.UnitTests.csproj" />
-    <Project Path="Tests/Alumni.Faculty.UnitTests/Alumni.Faculty.UnitTests.csproj" />
+    <Project Path="Tests/Alumni.Staff.UnitTests/Alumni.Staff.UnitTests.csproj" />
     <Project Path="Tests/Core.UnitTests/Core.UnitTests.csproj" />
     <Project Path="Tests/Generators.UnitTests/Generators.UnitTests.csproj" />
   </Folder>

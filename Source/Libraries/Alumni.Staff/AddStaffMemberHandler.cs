@@ -1,14 +1,14 @@
-namespace Alumni.Faculty;
+namespace Alumni.Staff;
 
-[RecordView(typeof(Faculty), nameof(Faculty.AuthUserId), nameof(Faculty.Id), nameof(Faculty.FacultyId), nameof(Faculty.IsDeleted), nameof(Faculty.CreatedAt), nameof(Faculty.UpdatedAt))]
-public sealed partial record AddFaculty
+[RecordView(typeof(StaffMember), nameof(StaffMember.FacultyId))]
+public sealed partial record AddStaffMember
 {
 
 }
 
-file sealed class AddFacultyValidator : AbstractValidator<AddFaculty>
+file sealed class AddStaffMemberValidator : AbstractValidator<AddStaffMember>
 {
-    public AddFacultyValidator()
+    public AddStaffMemberValidator()
     {
         RuleFor(x => x.Email).ValidEmail(maximumLength: 100);
 
@@ -20,14 +20,14 @@ file sealed class AddFacultyValidator : AbstractValidator<AddFaculty>
     }
 }
 
-public class AddFacultyHandler(IFacultyDbContext context) : IHandler<AddFaculty, FacultyResponse>
+public class AddStaffMemberHandler(IStaffDbContext context) : IHandler<AddStaffMember, StaffMemberResponse>
 {
-    public AbstractValidator<AddFaculty> Validator { get; } = new AddFacultyValidator();
+    public AbstractValidator<AddStaffMember> Validator { get; } = new AddStaffMemberValidator();
 
-    public async Task<OneOf<FacultyResponse, ErrorType>> Handle(AddFaculty request, CancellationToken cancellationToken)
+    public async Task<OneOf<StaffMemberResponse, ErrorType>> Handle(AddStaffMember request, CancellationToken cancellationToken)
     {
         var email = new Email(request.Email).Value;
-        var found = await context.Faculties
+        var found = await context.StaffMembers
                     .FirstOrDefaultAsync(s => s.Email == email, cancellationToken);
 
         if (found is not null)
@@ -40,7 +40,7 @@ public class AddFacultyHandler(IFacultyDbContext context) : IHandler<AddFaculty,
         }
 
         var createdAt = DateTime.UtcNow;
-        var faculty = new Faculty()
+        var staffMember = new StaffMemberEntity()
         {
             Id = 0,
             FacultyId = Guid.NewGuid(),
@@ -52,10 +52,10 @@ public class AddFacultyHandler(IFacultyDbContext context) : IHandler<AddFaculty,
             CreatedAt = createdAt,
             UpdatedAt = createdAt
         };
-        context.Faculties.Add(faculty);
+        context.StaffMembers.Add(staffMember);
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return faculty.ToFacultyResponse();
+        return staffMember.ToStaffMemberResponse();
     }
 }

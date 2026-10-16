@@ -1,27 +1,27 @@
 namespace Alumni.Api.GraphQL;
 
 [ExtendObjectType("Query")]
-public sealed class FacultyQuery
+public sealed class StaffQuery
 {
     [GraphQLName("faculties")]
-    public async Task<PaginatedList<FacultyResponse>?> GetFacultiesAsync(
+    public async Task<PaginatedList<StaffMemberResponse>?> GetFacultiesAsync(
         int pageNumber,
         int pageSize,
-        [Service] GetAllFacultiesHandler handler,
+        [Service] GetStaffMembersHandler handler,
         CancellationToken cancellationToken)
     {
-        var query = new GetAllFaculties { PageNumber = pageNumber, PageSize = pageSize };
+        var query = new GetStaffMembers { PageNumber = pageNumber, PageSize = pageSize };
         var result = await handler.Execute(query, cancellationToken);
         return GraphQLResult.Unwrap(result);
     }
 
     [GraphQLName("faculty")]
-    public async Task<FacultyResponse?> GetFacultyAsync(
+    public async Task<StaffMemberResponse?> GetFacultyAsync(
         Guid facultyId,
-        [Service] GetFacultyHandler handler,
+        [Service] GetStaffMemberHandler handler,
         CancellationToken cancellationToken)
     {
-        var query = new GetFaculty { FacultyId = facultyId };
+        var query = new GetStaffMember { FacultyId = facultyId };
         var result = await handler.Execute(query, cancellationToken);
         return GraphQLResult.Unwrap(result);
     }

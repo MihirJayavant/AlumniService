@@ -13,6 +13,21 @@ namespace Alumni.Api.UnitTests.Auth;
 public sealed class AuthModelTests
 {
     [Fact]
+    public void Model_WhenStaffEntityIsMapped_UsesStaffTableAndUniqueIdentifier()
+    {
+        using var context = CreateContext();
+        var staff = Entity(context.Model, typeof(StaffMemberEntity));
+
+        Assert.Equal("Staff", staff.GetSchema());
+        Assert.Equal("staff_members", staff.GetTableName());
+        Assert.Equal("Id", Assert.Single(staff.FindPrimaryKey()!.Properties).Name);
+        Assert.True(Assert.Single(staff.GetIndexes(), index =>
+            index.Properties.Select(property => property.Name)
+                .SequenceEqual([nameof(StaffMemberEntity.FacultyId)])).IsUnique);
+        Assert.Null(context.Model.FindEntityType(typeof(StaffMember)));
+    }
+
+    [Fact]
     public void Model_WhenConstructed_KeepsAuthTablesSeparateFromDomainSchemas()
     {
         using var context = CreateContext();
@@ -30,7 +45,7 @@ public sealed class AuthModelTests
 
         Assert.All(authTypes, type => Assert.Equal("Auth", Entity(model, type).GetSchema()));
         Assert.Equal("Student", Entity(model, typeof(StudentEntity)).GetSchema());
-        Assert.Equal("Faculty", Entity(model, typeof(Alumni.Faculty.Faculty)).GetSchema());
+        Assert.Equal("Staff", Entity(model, typeof(Alumni.Staff.StaffMemberEntity)).GetSchema());
         Assert.NotEmpty(model.GetRelationalModel().Tables);
     }
 
@@ -49,7 +64,7 @@ public sealed class AuthModelTests
 
     [Theory]
     [InlineData(typeof(StudentEntity))]
-    [InlineData(typeof(Alumni.Faculty.Faculty))]
+    [InlineData(typeof(Alumni.Staff.StaffMemberEntity))]
     public void Model_WhenProfileReferencesAnAccount_UsesUniqueIdentifierWithoutForeignKey(Type profileType)
     {
         using var context = CreateContext();

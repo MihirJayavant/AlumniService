@@ -9,7 +9,7 @@ AlumniService uses Entity Framework Core with the Npgsql PostgreSQL provider. On
 ```mermaid
 flowchart TD
     SH[Student feature handlers] --> SI[IStudentDbContext]
-    FH[Faculty feature handlers] --> FI[IFacultyDbContext]
+    FH[Faculty feature handlers] --> FI[IStaffDbContext]
     SI --> AC[ApplicationContext]
     FI --> AC
     ID[ASP.NET Core Identity stores] --> AC
@@ -18,7 +18,7 @@ flowchart TD
     MG[Alumni.Api migrations] --> PG
 ```
 
-[ApplicationContext](../Source/Libraries/Infrastructure/ApplicationContext.cs) derives from `IdentityDbContext<AuthUser, AuthRole, string>` and implements `IApplicationContext`, which combines [IStudentDbContext](../Source/Libraries/Alumni.Student/IStudentDbContext.cs) and [IFacultyDbContext](../Source/Libraries/Alumni.Faculty/IFacultyDbContext.cs). These interfaces expose feature `DbSet` properties and `SaveChangesAsync`; they are direct EF abstractions rather than repository interfaces.
+[ApplicationContext](../Source/Libraries/Infrastructure/ApplicationContext.cs) derives from `IdentityDbContext<AuthUser, AuthRole, string>` and implements `IApplicationContext`, which combines [IStudentDbContext](../Source/Libraries/Alumni.Student/IStudentDbContext.cs) and [IStaffDbContext](../Source/Libraries/Alumni.Staff/IStaffDbContext.cs). These interfaces expose feature `DbSet` properties and `SaveChangesAsync`; they are direct EF abstractions rather than repository interfaces.
 
 [Infrastructure registration](../Source/Libraries/Infrastructure/ConfigureServices.cs) registers the context as scoped, then resolves both domain interfaces from that same scoped context. It selects PostgreSQL and `MigrationsAssembly("Alumni.Api")`. Each write handler calls `SaveChangesAsync` at its own save boundary. The context applies Identity's base configuration first, then auth and domain configurations. It does not override save methods for audit stamping or apply a global soft-delete filter.
 
@@ -30,7 +30,7 @@ flowchart TD
 | `Student.companies` | Generated integer primary key; unique company GUID; required student foreign key |
 | `Student.exams` | Generated integer primary key; unique exam GUID; exam-name index; required student foreign key |
 | `Student.further_studies` | Base/derived further-study records share one table with a discriminator; unique public GUID; derived student foreign key (nullable table column for base rows) |
-| `Faculty.faculties` | Generated integer primary key; unique faculty GUID and email |
+| `Staff.staff_members` | Generated integer primary key; unique faculty GUID and email |
 | `Auth.AspNetUsers`, `AspNetRoles`, `AspNetUserRoles`, `AspNetUserClaims`, `AspNetUserLogins`, `AspNetUserTokens`, `AspNetRoleClaims` | Identity account and role storage; unique normalized email and explicit PendingActivation/Active/Disabled status |
 | `Auth.Invitations`, `Sessions` | Hashed invitation secrets targeting pre-created accounts, invitation lifecycle and device sessions with concurrency tokens |
 | `Auth.Applications`, `Authorizations`, `Scopes`, `Tokens` | OpenIddict protocol storage; token runtime integration is deferred |
@@ -97,7 +97,7 @@ For the Aspire database, PostgreSQL binds host port `5432`. Its persistent volum
 
 - [Student configuration](../Source/Libraries/Alumni.Student/StudentConfiguration.cs)
 - [Company configuration](../Source/Libraries/Alumni.Student/Company/CompanyConfiguration.cs), [exam configuration](../Source/Libraries/Alumni.Student/Exam/ExamConfiguration.cs), [further-study configuration](../Source/Libraries/Alumni.Student/FurtherStudy/FurtherStudyConfiguration.cs)
-- [Faculty configuration](../Source/Libraries/Alumni.Faculty/FacultyConfiguration.cs)
+- [Faculty configuration](../Source/Libraries/Alumni.Staff/StaffMemberConfiguration.cs)
 - [Auth model](../Source/Libraries/Alumni.Auth/AuthModelConfiguration.cs) and [database health check](../Source/Libraries/Infrastructure/HealthCheck.cs)
 
 ---

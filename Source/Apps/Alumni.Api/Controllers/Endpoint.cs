@@ -13,7 +13,7 @@ public static class EndpointExtension
         {
             new CompanyController().Add(app);
             new ExamController().Add(app);
-            new FacultyController().Add(app);
+            new StaffController().Add(app);
             new FurtherStudiesController().Add(app);
             new StudentController().Add(app);
             new BootstrapController().Add(app);

@@ -1,13 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Alumni.Faculty.UnitTests;
+namespace Alumni.Staff.UnitTests;
 
-internal sealed class RejectingFacultyDbContext : IFacultyDbContext
+internal sealed class RejectingFacultyDbContext : IStaffDbContext
 {
     public int QueryAccessCount { get; private set; }
     public int SaveChangesCount { get; private set; }
 
-    public DbSet<Faculty> Faculties
+    public DbSet<StaffMemberEntity> StaffMembers
     {
         get
         {

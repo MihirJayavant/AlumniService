@@ -3,15 +3,15 @@ using Grpc.Core;
 
 namespace Alumni.Api.Grpc;
 
-public sealed class FacultyGrpc(
-    GetAllFacultiesHandler getAllFacultiesHandler,
-    GetFacultyHandler getFacultyHandler,
-    AddFacultyHandler addFacultyHandler,
-    DeleteFacultyHandler deleteFacultyHandler) : Contracts.FacultyService.FacultyServiceBase
+public sealed class StaffGrpc(
+    GetStaffMembersHandler getAllFacultiesHandler,
+    GetStaffMemberHandler getFacultyHandler,
+    AddStaffMemberHandler addFacultyHandler,
+    DeleteStaffMemberHandler deleteFacultyHandler) : Contracts.FacultyService.FacultyServiceBase
 {
     public override async Task<Contracts.FacultyListReply> List(Contracts.PaginationRequest request, ServerCallContext context)
     {
-        var query = new GetAllFaculties
+        var query = new GetStaffMembers
         {
             PageNumber = request.HasPageNumber ? request.PageNumber : 1,
             PageSize = request.HasPageSize ? request.PageSize : 10
@@ -27,14 +27,14 @@ public sealed class FacultyGrpc(
 
     public override async Task<Contracts.FacultyReply> Get(Contracts.FacultyIdRequest request, ServerCallContext context)
     {
-        var query = new GetFaculty { FacultyId = GrpcInput.Guid(request.FacultyId, "faculty_id") };
+        var query = new GetStaffMember { FacultyId = GrpcInput.Guid(request.FacultyId, "faculty_id") };
         var result = await getFacultyHandler.Execute(query, context.CancellationToken);
         return GrpcResult.Map(result, ToReply);
     }
 
     public override async Task<Contracts.FacultyReply> Add(Contracts.AddFacultyRequest request, ServerCallContext context)
     {
-        var command = new AddFaculty
+        var command = new AddStaffMember
         {
             Email = request.Email,
             FirstName = request.FirstName,
@@ -48,12 +48,12 @@ public sealed class FacultyGrpc(
 
     public override async Task<Contracts.FacultyReply> Delete(Contracts.FacultyIdRequest request, ServerCallContext context)
     {
-        var command = new DeleteFaculty { FacultyId = GrpcInput.Guid(request.FacultyId, "faculty_id") };
+        var command = new DeleteStaffMember { FacultyId = GrpcInput.Guid(request.FacultyId, "faculty_id") };
         var result = await deleteFacultyHandler.Execute(command, context.CancellationToken);
         return GrpcResult.Map(result, ToReply);
     }
 
-    private static Contracts.FacultyReply ToReply(FacultyResponse faculty)
+    private static Contracts.FacultyReply ToReply(StaffMemberResponse faculty)
     {
         var reply = new Contracts.FacultyReply
         {

@@ -1,7 +1,7 @@
 using Core;
 using Xunit;
 
-namespace Alumni.Faculty.UnitTests;
+namespace Alumni.Staff.UnitTests;
 
 public sealed class FacultyPaginationValidationTests
 {
@@ -13,8 +13,8 @@ public sealed class FacultyPaginationValidationTests
     [InlineData(21474837, 100)]
     public void Validate_WhenPaginationIsWithinLimits_AcceptsRequest(int pageNumber, int pageSize)
     {
-        var result = new GetAllFacultyValidator().Validate(
-            new GetAllFaculties { PageNumber = pageNumber, PageSize = pageSize });
+        var result = new GetStaffMembersValidator().Validate(
+            new GetStaffMembers { PageNumber = pageNumber, PageSize = pageSize });
 
         Assert.True(result.IsValid);
         Assert.Empty(result.Errors);
@@ -31,8 +31,8 @@ public sealed class FacultyPaginationValidationTests
     public void Validate_WhenPaginationIsOutsideLimits_RejectsRelevantField(
         int pageNumber, int pageSize, string propertyName)
     {
-        var result = new GetAllFacultyValidator().Validate(
-            new GetAllFaculties { PageNumber = pageNumber, PageSize = pageSize });
+        var result = new GetStaffMembersValidator().Validate(
+            new GetStaffMembers { PageNumber = pageNumber, PageSize = pageSize });
 
         Assert.False(result.IsValid);
         Assert.Equal(propertyName, Assert.Single(result.Errors).PropertyName);
@@ -43,11 +43,11 @@ public sealed class FacultyPaginationValidationTests
     [InlineData(int.MaxValue, 2)]
     public void Validate_WhenPageOffsetWouldOverflow_RejectsRequest(int pageNumber, int pageSize)
     {
-        var result = new GetAllFacultyValidator().Validate(
-            new GetAllFaculties { PageNumber = pageNumber, PageSize = pageSize });
+        var result = new GetStaffMembersValidator().Validate(
+            new GetStaffMembers { PageNumber = pageNumber, PageSize = pageSize });
 
         var error = Assert.Single(result.Errors);
-        Assert.Equal(nameof(GetAllFaculties.PageNumber), error.PropertyName);
+        Assert.Equal(nameof(GetStaffMembers.PageNumber), error.PropertyName);
         Assert.Equal("The requested page offset is too large.", error.ErrorMessage);
     }
 
@@ -59,8 +59,8 @@ public sealed class FacultyPaginationValidationTests
         int pageNumber, int pageSize)
     {
         var context = new RejectingFacultyDbContext();
-        var handler = new GetAllFacultiesHandler(context);
-        var request = new GetAllFaculties { PageNumber = pageNumber, PageSize = pageSize };
+        var handler = new GetStaffMembersHandler(context);
+        var request = new GetStaffMembers { PageNumber = pageNumber, PageSize = pageSize };
 
         var result = await handler.Execute(request, TestContext.Current.CancellationToken);
 

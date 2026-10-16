@@ -4,12 +4,12 @@ using HotChocolate.Types;
 namespace Alumni.Api.GraphQL;
 
 [ExtendObjectType("Mutation")]
-public sealed class FacultyMutation
+public sealed class StaffMutation
 {
     [GraphQLName("addFaculty")]
-    public async Task<FacultyResponse?> AddFacultyAsync(
-        AddFaculty input,
-        [Service] AddFacultyHandler handler,
+    public async Task<StaffMemberResponse?> AddFacultyAsync(
+        AddStaffMember input,
+        [Service] AddStaffMemberHandler handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.Execute(input, cancellationToken);
@@ -17,12 +17,12 @@ public sealed class FacultyMutation
     }
 
     [GraphQLName("deleteFaculty")]
-    public async Task<FacultyResponse?> DeleteFacultyAsync(
+    public async Task<StaffMemberResponse?> DeleteFacultyAsync(
         Guid facultyId,
-        [Service] DeleteFacultyHandler handler,
+        [Service] DeleteStaffMemberHandler handler,
         CancellationToken cancellationToken)
     {
-        var command = new DeleteFaculty { FacultyId = facultyId };
+        var command = new DeleteStaffMember { FacultyId = facultyId };
         var result = await handler.Execute(command, cancellationToken);
         return GraphQLResult.Unwrap(result);
     }

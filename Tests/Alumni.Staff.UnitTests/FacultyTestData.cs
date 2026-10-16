@@ -1,8 +1,8 @@
-namespace Alumni.Faculty.UnitTests;
+namespace Alumni.Staff.UnitTests;
 
 internal static class FacultyTestData
 {
-    public static AddFaculty ValidAddFaculty() => new()
+    public static AddStaffMember ValidAddFaculty() => new()
     {
         Email = "alice@example.com",
         FirstName = "Alice",

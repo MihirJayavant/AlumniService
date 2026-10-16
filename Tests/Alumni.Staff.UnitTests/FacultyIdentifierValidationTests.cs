@@ -1,7 +1,7 @@
 using Core;
 using Xunit;
 
-namespace Alumni.Faculty.UnitTests;
+namespace Alumni.Staff.UnitTests;
 
 public sealed class FacultyIdentifierValidationTests
 {
@@ -13,8 +13,8 @@ public sealed class FacultyIdentifierValidationTests
         var facultyId = Guid.Parse(identifier);
         var context = new RejectingFacultyDbContext();
 
-        var getResult = new GetFacultyHandler(context).Validator.Validate(new GetFaculty { FacultyId = facultyId });
-        var deleteResult = new DeleteFacultyHandler(context).Validator.Validate(new DeleteFaculty { FacultyId = facultyId });
+        var getResult = new GetStaffMemberHandler(context).Validator.Validate(new GetStaffMember { FacultyId = facultyId });
+        var deleteResult = new DeleteStaffMemberHandler(context).Validator.Validate(new DeleteStaffMember { FacultyId = facultyId });
 
         Assert.True(getResult.IsValid);
         Assert.True(deleteResult.IsValid);
@@ -25,13 +25,13 @@ public sealed class FacultyIdentifierValidationTests
     public async Task Execute_WhenGetFacultyIdIsEmpty_ReturnsBadRequestWithoutDatabaseAccess()
     {
         var context = new RejectingFacultyDbContext();
-        var handler = new GetFacultyHandler(context);
-        var request = new GetFaculty { FacultyId = Guid.Empty };
+        var handler = new GetStaffMemberHandler(context);
+        var request = new GetStaffMember { FacultyId = Guid.Empty };
 
         var validation = handler.Validator.Validate(request);
         var result = await handler.Execute(request, TestContext.Current.CancellationToken);
 
-        Assert.Equal(nameof(GetFaculty.FacultyId), Assert.Single(validation.Errors).PropertyName);
+        Assert.Equal(nameof(GetStaffMember.FacultyId), Assert.Single(validation.Errors).PropertyName);
         Assert.True(result.IsT1);
         Assert.Equal(ResponseStatus.BadRequest, result.AsT1.Status);
         Assert.Equal(validation.Errors[0].ErrorMessage, result.AsT1.Message);
@@ -43,13 +43,13 @@ public sealed class FacultyIdentifierValidationTests
     public async Task Execute_WhenDeleteFacultyIdIsEmpty_ReturnsBadRequestWithoutDatabaseAccess()
     {
         var context = new RejectingFacultyDbContext();
-        var handler = new DeleteFacultyHandler(context);
-        var request = new DeleteFaculty { FacultyId = Guid.Empty };
+        var handler = new DeleteStaffMemberHandler(context);
+        var request = new DeleteStaffMember { FacultyId = Guid.Empty };
 
         var validation = handler.Validator.Validate(request);
         var result = await handler.Execute(request, TestContext.Current.CancellationToken);
 
-        Assert.Equal(nameof(DeleteFaculty.FacultyId), Assert.Single(validation.Errors).PropertyName);
+        Assert.Equal(nameof(DeleteStaffMember.FacultyId), Assert.Single(validation.Errors).PropertyName);
         Assert.True(result.IsT1);
         Assert.Equal(ResponseStatus.BadRequest, result.AsT1.Status);
         Assert.Equal(validation.Errors[0].ErrorMessage, result.AsT1.Message);

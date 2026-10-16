@@ -17,7 +17,7 @@ public static class GrpcExtension
         public void MapApplicationGrpc()
         {
             app.MapGrpcService<StudentGrpc>();
-            app.MapGrpcService<FacultyGrpc>();
+            app.MapGrpcService<StaffGrpc>();
             app.MapGrpcService<CompanyGrpc>();
             app.MapGrpcService<ExamGrpc>();
             app.MapGrpcService<FurtherStudyGrpc>();

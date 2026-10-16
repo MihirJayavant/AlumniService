@@ -13,7 +13,7 @@ public class GraphQLCancellationTests
         var context = new RejectingFacultyContext();
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
-            new FacultyQuery().GetFacultyAsync(Guid.NewGuid(), new GetFacultyHandler(context), cancellation.Token));
+            new StaffQuery().GetFacultyAsync(Guid.NewGuid(), new GetStaffMemberHandler(context), cancellation.Token));
 
         Assert.Equal(0, context.AccessCount);
     }
@@ -26,16 +26,16 @@ public class GraphQLCancellationTests
         var context = new RejectingFacultyContext();
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
-            new FacultyMutation().DeleteFacultyAsync(Guid.NewGuid(), new DeleteFacultyHandler(context), cancellation.Token));
+            new StaffMutation().DeleteFacultyAsync(Guid.NewGuid(), new DeleteStaffMemberHandler(context), cancellation.Token));
 
         Assert.Equal(0, context.AccessCount);
     }
 
-    private sealed class RejectingFacultyContext : IFacultyDbContext
+    private sealed class RejectingFacultyContext : IStaffDbContext
     {
         public int AccessCount { get; private set; }
 
-        public DbSet<Alumni.Faculty.Faculty> Faculties
+        public DbSet<Alumni.Staff.StaffMemberEntity> StaffMembers
         {
             get
             {

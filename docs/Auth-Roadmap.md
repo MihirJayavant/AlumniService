@@ -120,7 +120,7 @@ In the sandbox, the Cake build wrapper stalled and `dotnet test` could not bind 
 dotnet build AlumniService.slnx --no-restore --disable-build-servers -m:1
 DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false dotnet Tests/Alumni.Api.UnitTests/bin/Debug/net10.0/Alumni.Api.UnitTests.dll
 dotnet Tests/Alumni.Student.UnitTests/bin/Debug/net10.0/Alumni.Student.UnitTests.dll
-dotnet Tests/Alumni.Faculty.UnitTests/bin/Debug/net10.0/Alumni.Faculty.UnitTests.dll
+dotnet Tests/Alumni.Staff.UnitTests/bin/Debug/net10.0/Alumni.Staff.UnitTests.dll
 dotnet Tests/Core.UnitTests/bin/Debug/net10.0/Core.UnitTests.dll
 dotnet Tests/Generators.UnitTests/bin/Debug/net10.0/Generators.UnitTests.dll
 ```

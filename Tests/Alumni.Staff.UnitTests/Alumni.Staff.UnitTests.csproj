@@ -6,6 +6,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="xunit.v3.mtp-v2" />
-    <ProjectReference Include="../../Source/Libraries/Alumni.Faculty/Alumni.Faculty.csproj" />
+    <ProjectReference Include="../../Source/Libraries/Alumni.Staff/Alumni.Staff.csproj" />
   </ItemGroup>
 </Project>

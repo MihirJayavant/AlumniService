@@ -80,7 +80,7 @@ Variables: `{"pageNumber": 1, "pageSize": 10}`. Send an HTTP POST to `/graphql` 
 Example mutation:
 
 ```graphql
-mutation AddFaculty($input: AddFacultyInput!) {
+mutation AddStaffMember($input: AddFacultyInput!) {
   addFaculty(input: $input) {
     facultyId
     email

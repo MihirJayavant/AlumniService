@@ -2,7 +2,7 @@ global using Alumni.Api.Controllers;
 global using Alumni.Api.ExtensionService;
 global using Alumni.Api.Services;
 global using Alumni.Auth;
-global using Alumni.Faculty;
+global using Alumni.Staff;
 global using Alumni.Student;
 global using Alumni.Student.Company;
 global using Alumni.Student.Exam;

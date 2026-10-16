@@ -10,7 +10,7 @@ AlumniService is a modular ASP.NET Core API organized into domain features. HTTP
 | --- | --- |
 | `Alumni.Api` | Startup, transport adapters, OpenAPI, settings and EF migrations |
 | `Alumni.Student` | Student, company, exam and further-study use cases, validators, mapping and EF configuration |
-| `Alumni.Faculty` | Faculty use cases, validators, mapping and EF configuration |
+| `Alumni.Staff` | Faculty use cases, validators, mapping and EF configuration |
 | `Core` | Handler execution, results, validation helpers, pagination, email value and record-view attribute |
 | `Alumni.Auth` | Identity account/role entities, invitations, sessions, auth EF mappings and shared permission policies |
 | `Infrastructure` | PostgreSQL DbContext, independent domain/auth model composition and database health checks |
@@ -25,7 +25,7 @@ flowchart TD
     API[Alumni.Api] --> Infra[Infrastructure]
     Infra --> Auth[Alumni.Auth]
     Infra --> Student[Alumni.Student]
-    Infra --> Faculty[Alumni.Faculty]
+    Infra --> Faculty[Alumni.Staff]
     Infra --> Core[Core]
     Student --> Core
     Faculty --> Core

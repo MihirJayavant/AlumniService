@@ -99,7 +99,7 @@ Source/
     Alumni.Api/       HTTP, GraphQL, gRPC and EF migrations
   Libraries/
     Alumni.Student/   Student, Company, Exam and FurtherStudy slices
-    Alumni.Faculty/   Faculty slice
+    Alumni.Staff/     Staff profiles and faculty API use cases
     Core/             Handlers, validation, value and result types
     Alumni.Auth/      Auth entities, roles, permission policies and EF configuration
     Infrastructure/   PostgreSQL context and registration

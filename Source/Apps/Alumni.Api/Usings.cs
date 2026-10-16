@@ -1,5 +1,5 @@
 global using Alumni.Auth;
-global using Alumni.Faculty;
+global using Alumni.Staff;
 global using Alumni.Student;
 global using Alumni.Student.Company;
 global using Alumni.Student.Exam;
