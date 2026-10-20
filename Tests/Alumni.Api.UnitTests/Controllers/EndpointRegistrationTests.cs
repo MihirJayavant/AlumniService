@@ -14,11 +14,11 @@ public class EndpointRegistrationTests
             .Order(StringComparer.Ordinal).ToArray();
         string[] expected =
         [
-            "GET /student/", "GET /student/{id:guid}", "POST /student/",
+            "GET /members/", "GET /members/{id:guid}", "POST /members/",
             "GET /faculty/", "GET /faculty/{facultyId:guid}", "POST /faculty/", "DELETE /faculty/{facultyId:guid}",
-            "GET /company/{studentId:guid}", "POST /company/",
-            "GET /exam/{studentId:guid}", "POST /exam/",
-            "GET /further-studies/{studentId:guid}", "POST /further-studies/",
+            "GET /company/{memberId:guid}", "POST /company/",
+            "GET /exam/{memberId:guid}", "POST /exam/",
+            "GET /further-studies/{memberId:guid}", "POST /further-studies/",
             "POST /auth/bootstrap"
         ];
 

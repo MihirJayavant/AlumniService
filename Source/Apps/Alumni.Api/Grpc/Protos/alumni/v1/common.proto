@@ -4,8 +4,8 @@ option csharp_namespace = "Alumni.Api.Grpc.Contracts";
 
 package alumni.v1;
 
-message StudentIdRequest {
-  string student_id = 1;
+message MemberIdRequest {
+  string member_id = 1;
 }
 
 message PaginationRequest {

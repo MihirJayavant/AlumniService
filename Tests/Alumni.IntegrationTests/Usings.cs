@@ -1,7 +1,7 @@
-global using Alumni.Student;
-global using Alumni.Student.Company;
-global using Alumni.Student.Exam;
-global using Alumni.Student.FurtherStudy;
+global using Alumni.Network;
+global using Alumni.Network.Companies;
+global using Alumni.Network.Exams;
+global using Alumni.Network.FurtherStudies;
 global using Alumni.Staff;
 global using Core;
 global using Microsoft.EntityFrameworkCore;

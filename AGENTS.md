@@ -2,7 +2,7 @@
 
 ## Project Structure & Modules
 
-This is a .NET solution organized under `Source/`. `Source/Apps/Alumni.Apithe HTTP, GraphQL, and gRPC API, controllers, and EF Core migrations. `apphost.cs` configures the .NET Aspire development environment. Reusable code is in `Source/Libraries/`: domain slices such as `Alumni.Student` and `Alumni.Staff`, plus `Core`, `Infrastructure`, and `Generators`. Keep features grouped by domain and their use cases rather than adding unrelated shared code to the API project. Core unit tests live in `Tests/Core.UnitTests`.
+This is a .NET solution organized under `Source/`. `Source/Apps/Alumni.Apithe HTTP, GraphQL, and gRPC API, controllers, and EF Core migrations. `apphost.cs` configures the .NET Aspire development environment. Reusable code is in `Source/Libraries/`: domain slices such as `Alumni.Network` and `Alumni.Staff`, plus `Core`, `Infrastructure`, and `Generators`. Keep features grouped by domain and their use cases rather than adding unrelated shared code to the API project. Core unit tests live in `Tests/Core.UnitTests`.
 
 ## Build & Run
 
@@ -17,7 +17,7 @@ The required SDK is pinned in `global.json` (currently .NET SDK `10.0.401`). Fro
 
 ## Style & Naming
 
-Follow the existing C# conventions: four-space indentation, braces on separate lines, PascalCase for types and public members, and descriptive domain-oriented names. Keep a feature's handlers, models, and persistence configuration near that feature (for example, `Alumni.Student/Company`). Match existing `.csproj` and namespace conventions. Pin dependency versions through `Directory.Packages.props` rather than adding scattered versions.
+Follow the existing C# conventions: four-space indentation, braces on separate lines, PascalCase for types and public members, and descriptive domain-oriented names. Keep a feature's handlers, models, and persistence configuration near that feature (for example, `Alumni.Network/Companies`). Match existing `.csproj` and namespace conventions. Pin dependency versions through `Directory.Packages.props` rather than adding scattered versions.
 
 ## Testing
 
@@ -42,7 +42,7 @@ Perform repository work within the configured sandbox. Do not request elevated a
 If a required command or file change needs access outside the sandbox, the user will perform it manually. Provide the exact, human-readable command or replacement text, the working directory or file path, and clear instructions explaining its purpose and which output to share. Wait for the user's output before continuing work that depends on that action; continue independent sandbox work when possible. Do not ask the user to share secrets.
 
 - `build.cs` provides Build, Bootstrap, Doctor, Run-Local, and Add-Migration targets. Run commands from the repository root.
-- Domain behavior belongs in `Source/Libraries/Alumni.Student` or `Alumni.Staff`; transport wiring belongs in `Source/Apps/Alumni.Api
+- Domain behavior belongs in `Source/Libraries/Alumni.Network` or `Alumni.Staff`; transport wiring belongs in `Source/Apps/Alumni.Api
 - Trace a feature from its endpoint through `IHandler.Execute`, validation, mapping, persistence, and HTTP result conversion before changing it.
 - `[RecordView]` produces properties at compile time. Edit the source model or generator rather than generated files in `obj/`.
 - GraphQL implementation files exist, but GraphQL wiring is currently disabled in `Program.cs`.

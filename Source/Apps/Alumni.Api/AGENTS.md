@@ -1,6 +1,6 @@
 # API Integration
 
-Classes under `Controllers` implement `IEndpoint` and register minimal API routes. `Controllers/Endpoint.cs` explicitly registers them; adding a class alone does not expose a route. Use `StudentController.cs` and `ResultHelper.cs` to trace handler execution and HTTP result conversion.
+Classes under `Controllers` implement `IEndpoint` and register minimal API routes. `Controllers/Endpoint.cs` explicitly registers them; adding a class alone does not expose a route. Use `MembersController.cs` and `ResultHelper.cs` to trace handler execution and HTTP result conversion.
 
 `Program.cs` and `ExtensionService` own service registration and middleware. GraphQL wiring is currently commented out; do not assume GraphQL files represent live endpoints or enable it incidentally. gRPC uses `Grpc/Protos/Identity.proto` and `IdentityGrpc.cs`; consider client compatibility when changing the contract.
 

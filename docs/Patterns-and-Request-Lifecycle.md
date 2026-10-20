@@ -2,7 +2,7 @@
 
 [Home](Home.md) · [Architecture](Architecture.md) · [API transports](API-Transports.md)
 
-Features are grouped around use cases. A slice commonly contains a request record, FluentValidation validator, handler and mapper; model and EF configuration files remain near the owning domain. [AddStudentHandler.cs](../Source/Libraries/Alumni.Student/AddStudentHandler.cs) is a complete write example.
+Features are grouped around use cases. A slice commonly contains a request record, FluentValidation validator, handler and mapper; model and EF configuration files remain near the owning domain. [AddMemberHandler.cs](../Source/Libraries/Alumni.Network/AddMemberHandler.cs) is a complete write example.
 
 ## Direct handler execution
 
@@ -39,20 +39,20 @@ sequenceDiagram
 
 `Execute` returns the first validation error as `BadRequest`, preserves handler-returned errors, and converts non-cancellation exceptions into an `ErrorType` whose default status is `InternalError`. `OperationCanceledException` propagates. Transport result adapters determine how those results become HTTP, GraphQL or gRPC responses.
 
-## Write example: add a student
+## Write example: add a member
 
-1. [StudentController](../Source/Apps/Alumni.Api/Controllers/StudentController.cs) binds the HTTP request, constructs `AddStudentHandler` and calls `Execute`.
+1. [MembersController](../Source/Apps/Alumni.Api/Controllers/MembersController.cs) binds the HTTP request, constructs `AddMemberHandler` and calls `Execute`.
 2. The validator checks names, email, phone, gender, branch, birth date, year chronology and nested addresses before any persistence logic runs.
-3. `Handle` normalizes the email and queries for an existing student. A match returns `Conflict`.
-4. `ToStudent` creates a persistence entity with a new version-7 GUID, trims text, normalizes email and gender, and sets UTC audit timestamps. The client-supplied creation ID is not used as the persisted ID.
-5. The handler adds the entity, calls `SaveChangesAsync`, and maps it to `StudentResponse`.
+3. `Handle` normalizes the email and queries for an existing member. A match returns `Conflict`.
+4. `ToMember` creates a persistence entity with a new version-7 GUID, trims text, normalizes email and gender, and sets UTC audit timestamps. The client-supplied creation ID is not used as the persisted ID.
+5. The handler adds the entity, calls `SaveChangesAsync`, and maps it to `MemberResponse`.
 6. [ResultHelper](../Source/Apps/Alumni.Api/Controllers/ResultHelper.cs) returns HTTP 200 for success or converts `ErrorType` to an HTTP error result.
 
 Each write handler owns its save boundary. The duplicate-email check is application behavior; it should not be interpreted as a guarantee against simultaneous competing requests without examining database constraints.
 
-## Read example: list students
+## Read example: list members
 
-[GetAllStudentHandler](../Source/Libraries/Alumni.Student/GetAllStudentHandler.cs) validates pagination, orders by the internal `Id`, and invokes [Paginate](../Source/Libraries/Core/PaginationQuery.cs). That helper executes a count and then a `Skip`/`Take` query. `WithItems` maps entities to responses while preserving pagination metadata.
+[GetMembersHandler](../Source/Libraries/Alumni.Network/GetMembersHandler.cs) validates pagination, orders by the internal `Id`, and invokes [Paginate](../Source/Libraries/Core/PaginationQuery.cs). That helper executes a count and then a `Skip`/`Take` query. `WithItems` maps entities to responses while preserving pagination metadata.
 
 Pagination is offset-based. Ordering belongs to the caller; `Paginate` does not add ordering. Related-record handlers choose their own fixed page sizes, described in [API transports](API-Transports.md).
 
@@ -64,7 +64,7 @@ The [Email value](../Source/Libraries/Core/Email.cs) trims surrounding whitespac
 
 ## Shared persistence interface
 
-Handlers depend on [IStudentDbContext](../Source/Libraries/Alumni.Student/IStudentDbContext.cs) or [IStaffDbContext](../Source/Libraries/Alumni.Staff/IStaffDbContext.cs). These interfaces expose EF `DbSet` queries and saving; there is no generic repository layer. [ApplicationContext](../Source/Libraries/Infrastructure/ApplicationContext.cs) implements both through `IApplicationContext`.
+Handlers depend on [IMemberDbContext](../Source/Libraries/Alumni.Network/IMemberDbContext.cs) or [IStaffDbContext](../Source/Libraries/Alumni.Staff/IStaffDbContext.cs). These interfaces expose EF `DbSet` queries and saving; there is no generic repository layer. [ApplicationContext](../Source/Libraries/Infrastructure/ApplicationContext.cs) implements both through `IApplicationContext`.
 
 ## Transport-specific results
 

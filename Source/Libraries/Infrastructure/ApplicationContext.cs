@@ -1,4 +1,3 @@
-using Alumni.Auth;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Infrastructure;
@@ -8,7 +7,7 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options)
 {
     public DbSet<Invitation> Invitations { get; set; } = null!;
     public DbSet<AuthSession> AuthSessions { get; set; } = null!;
-    public DbSet<StudentEntity> Students { get; set; } = null!;
+    public DbSet<MemberEntity> Members { get; set; } = null!;
     public DbSet<CompanyEntity> Companies { get; set; } = null!;
     public DbSet<ExamEntity> Exams { get; set; } = null!;
     public DbSet<FurtherStudyEntity> FurtherStudies { get; set; } = null!;
@@ -18,7 +17,7 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options)
     {
         base.OnModelCreating(builder);
         builder.ConfigureAuthModel();
-        builder.ApplyConfiguration(new StudentConfiguration());
+        builder.ApplyConfiguration(new MemberConfiguration());
         builder.ApplyConfiguration(new ExamConfiguration());
         builder.ApplyConfiguration(new CompanyConfiguration());
         builder.ApplyConfiguration(new FurtherStudyConfiguration());
@@ -26,4 +25,4 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options)
     }
 }
 
-public interface IApplicationContext : IStudentDbContext, IStaffDbContext, IAuthDbContext;
+public interface IApplicationContext : IMemberDbContext, IStaffDbContext, IAuthDbContext;

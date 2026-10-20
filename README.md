@@ -2,7 +2,7 @@
 
 **One set of alumni features, three API transports.**
 
-AlumniService is an ASP.NET Core application for student and faculty records, employment, exams and further studies. HTTP, GraphQL and gRPC share domain handlers, validation and PostgreSQL persistence. Features are grouped into vertical slices so their requests, rules, mappings and database configuration stay close together.
+AlumniService is an ASP.NET Core application for member and faculty records, employment, exams and further studies. HTTP, GraphQL and gRPC share domain handlers, validation and PostgreSQL persistence. Features are grouped into vertical slices so their requests, rules, mappings and database configuration stay close together.
 
 [Explore the docs](docs/Home.md) · [Architecture](docs/Architecture.md) · [API guide](docs/API-Transports.md) · [Local development](docs/Local-Development.md)
 
@@ -13,7 +13,7 @@ flowchart LR
     Client[API clients] --> HTTP[HTTP minimal APIs]
     Client --> GraphQL[GraphQL]
     Client --> GRPC[gRPC]
-    HTTP --> Features[Student and Faculty handlers]
+    HTTP --> Features[Member and Faculty handlers]
     GraphQL --> Features
     GRPC --> Features
     Features --> Rules[Core validation and result types]
@@ -71,7 +71,7 @@ For direct API startup and troubleshooting, see [Local Development](docs/Local-D
 
 | Transport | Entry point | Details |
 |---|---|---|
-| HTTP | `/student/`, `/faculty/`, `/company/`, `/exam/`, `/further-studies/` | 13 operations; student/faculty lists accept page parameters |
+| HTTP | `/members/`, `/faculty/`, `/company/`, `/exam/`, `/further-studies/` | 13 operations; member/faculty lists accept page parameters |
 | GraphQL | `/graphql` | Queries and mutations over the same feature handlers |
 | gRPC | Five `alumni.v1` services | Unary methods; HTTPS with HTTP/2 |
 | API reference | `/swagger`, `/scalar`, `/openapi/v1.json` | Available in development |
@@ -81,8 +81,8 @@ For example, send this query to `/graphql` using the API URL:
 
 ```graphql
 query {
-  students(pageNumber: 1, pageSize: 10) {
-    items { studentId firstName lastName }
+  members(pageNumber: 1, pageSize: 10) {
+    items { memberId firstName lastName }
     totalCount
     hasNextPage
   }
@@ -98,14 +98,14 @@ Source/
   Apps/
     Alumni.Api/       HTTP, GraphQL, gRPC and EF migrations
   Libraries/
-    Alumni.Student/   Student, Company, Exam and FurtherStudy slices
+    Alumni.Network/   Member, Company, Exam and FurtherStudy slices
     Alumni.Staff/     Staff profiles and faculty API use cases
     Core/             Handlers, validation, value and result types
     Alumni.Auth/      Auth entities, roles, permission policies and EF configuration
     Infrastructure/   PostgreSQL context and registration
     Generators/       Record-view source generator
 Tests/                Five isolated unit-test projects
-                      PostgreSQL integration tests (Faculty and Student)
+                      PostgreSQL integration tests (Faculty and Member)
 docs/                 Wiki-style documentation
 apphost.cs            File-based Aspire host
 build.cs              Cake build targets
@@ -131,6 +131,6 @@ dotnet build.cs -- --target=CI
 dotnet build.cs -- --target=Integration-Test
 ```
 
-`Test` builds the solution and runs unit tests. `CI` also verifies formatting, code style and analyzer diagnostics, then builds with warnings treated as errors. `Integration-Test` runs the PostgreSQL integration suite and requires a running Docker-compatible container runtime. Unit tests cover Core, source generation, domain validation/mapping, HTTP registration/results, configuration and GraphQL. Faculty and Student integration tests cover current-model persistence and queries, including Company, Exam and FurtherStudy relationships; migration and API runtime coverage remain separate.
+`Test` builds the solution and runs unit tests. `CI` also verifies formatting, code style and analyzer diagnostics, then builds with warnings treated as errors. `Integration-Test` runs the PostgreSQL integration suite and requires a running Docker-compatible container runtime. Unit tests cover Core, source generation, domain validation/mapping, HTTP registration/results, configuration and GraphQL. Faculty and Member integration tests cover current-model persistence and queries, including Company, Exam and FurtherStudy relationships; migration and API runtime coverage remain separate.
 
 See [Testing and CI](docs/Testing-and-CI.md) for suite-specific commands and coverage boundaries. Read [repository guidance](AGENTS.md) and scoped instructions before contributing. Keep package versions in [Directory.Packages.props](Directory.Packages.props), preserve unrelated changes, and keep secrets out of commits.

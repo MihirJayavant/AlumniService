@@ -6,9 +6,9 @@ public sealed class FurtherStudyGrpc(
     GetFurtherStudyHandler getFurtherStudyHandler,
     AddFurtherStudyHandler addFurtherStudyHandler) : Contracts.FurtherStudyService.FurtherStudyServiceBase
 {
-    public override async Task<Contracts.FurtherStudyListReply> ListByStudent(Contracts.StudentIdRequest request, ServerCallContext context)
+    public override async Task<Contracts.FurtherStudyListReply> ListByMember(Contracts.MemberIdRequest request, ServerCallContext context)
     {
-        var query = new GetFurtherStudy { StudentId = GrpcInput.Guid(request.StudentId, "student_id") };
+        var query = new GetFurtherStudy { MemberId = GrpcInput.Guid(request.MemberId, "member_id") };
         var result = await getFurtherStudyHandler.Execute(query, context.CancellationToken);
         return GrpcResult.Map(result, page =>
         {
@@ -22,7 +22,7 @@ public sealed class FurtherStudyGrpc(
     {
         var command = new AddFurtherStudy
         {
-            StudentId = GrpcInput.Guid(request.StudentId, "student_id"),
+            MemberId = GrpcInput.Guid(request.MemberId, "member_id"),
             FurtherStudyId = GrpcInput.OptionalGuid(request.FurtherStudyId, "further_study_id"),
             InstituteName = request.InstituteName,
             Degree = request.Degree,

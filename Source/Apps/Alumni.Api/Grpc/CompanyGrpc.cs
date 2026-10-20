@@ -6,9 +6,9 @@ public sealed class CompanyGrpc(
     GetCompanyHandler getCompanyHandler,
     AddCompanyHandler addCompanyHandler) : Contracts.CompanyService.CompanyServiceBase
 {
-    public override async Task<Contracts.CompanyListReply> ListByStudent(Contracts.StudentIdRequest request, ServerCallContext context)
+    public override async Task<Contracts.CompanyListReply> ListByMember(Contracts.MemberIdRequest request, ServerCallContext context)
     {
-        var query = new GetCompany { StudentId = GrpcInput.Guid(request.StudentId, "student_id") };
+        var query = new GetCompany { MemberId = GrpcInput.Guid(request.MemberId, "member_id") };
         var result = await getCompanyHandler.Execute(query, context.CancellationToken);
         return GrpcResult.Map(result, page =>
         {
@@ -22,7 +22,7 @@ public sealed class CompanyGrpc(
     {
         var command = new AddCompany
         {
-            StudentId = GrpcInput.Guid(request.StudentId, "student_id"),
+            MemberId = GrpcInput.Guid(request.MemberId, "member_id"),
             CompanyId = GrpcInput.OptionalGuid(request.CompanyId, "company_id"),
             CompanyName = request.CompanyName,
             Designation = request.Designation,

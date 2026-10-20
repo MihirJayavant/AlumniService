@@ -20,13 +20,13 @@ flowchart LR
 
 Both domain projects reference Generators as an analyzer using `OutputItemType="Analyzer"` and `ReferenceOutputAssembly="false"`. The generator targets `netstandard2.0`; application projects target `net10.0`. It is build tooling, not a runtime service.
 
-## Student example
+## Member example
 
-[Student](../Source/Libraries/Alumni.Student/Student.cs) declares the source properties. [AddStudent](../Source/Libraries/Alumni.Student/AddStudentHandler.cs) and [StudentResponse](../Source/Libraries/Alumni.Student/StudentResponse.cs) both select all of those properties:
+[Member](../Source/Libraries/Alumni.Network/Member.cs) declares the source properties. [AddMember](../Source/Libraries/Alumni.Network/AddMemberHandler.cs) and [MemberResponse](../Source/Libraries/Alumni.Network/MemberResponse.cs) both select all of those properties:
 
 ```csharp
-[RecordView(typeof(Student))]
-public sealed partial record AddStudent
+[RecordView(typeof(Member))]
+public sealed partial record AddMember
 {
 }
 ```
@@ -34,11 +34,11 @@ public sealed partial record AddStudent
 The generator contributes declarations such as:
 
 ```csharp
-public required global::System.Guid StudentId { get; init; }
+public required global::System.Guid MemberId { get; init; }
 public required string FirstName { get; init; }
 ```
 
-This is a shared property shape, not inheritance from `Student`. `AddStudent` currently includes `StudentId` because it is not excluded; its mapper still generates the persisted ID itself.
+This is a shared property shape, not inheritance from `Member`. `AddMember` currently includes `MemberId` because it is not excluded; its mapper still generates the persisted ID itself.
 
 ## Excluding properties
 
@@ -67,7 +67,7 @@ Required properties enforce initialization in ordinary C# construction. They do 
 
 ## What remains handwritten
 
-The generator does not create validators, mappers, handlers, EF mappings or transport adapters. [StudentResponseMapper](../Source/Libraries/Alumni.Student/StudentResponse.cs) explicitly selects values, while [AddStudentMapper](../Source/Libraries/Alumni.Student/AddStudentHandler.cs) performs normalization and creates persistence metadata.
+The generator does not create validators, mappers, handlers, EF mappings or transport adapters. [MemberResponseMapper](../Source/Libraries/Alumni.Network/MemberResponse.cs) explicitly selects values, while [AddMemberMapper](../Source/Libraries/Alumni.Network/AddMemberHandler.cs) performs normalization and creates persistence metadata.
 
 When changing a source model:
 

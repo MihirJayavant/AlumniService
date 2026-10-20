@@ -1,5 +1,5 @@
 using Alumni.Auth;
-using Alumni.Student;
+using Alumni.Network;
 using Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +12,44 @@ namespace Alumni.Api.UnitTests.Auth;
 
 public sealed class AuthModelTests
 {
+    [Fact]
+    public void Model_WhenNetworkIsMapped_UsesMemberIdentifiersAndRelationships()
+    {
+        using var context = CreateContext();
+        var member = Entity(context.Model, typeof(MemberEntity));
+
+        Assert.Equal("Network", member.GetSchema());
+        Assert.Equal("members", member.GetTableName());
+        Assert.Equal(typeof(Guid), member.FindProperty(nameof(MemberEntity.MemberId))!.ClrType);
+        Assert.Null(member.FindProperty("StudentId"));
+        Assert.True(Assert.Single(member.GetIndexes(), index =>
+            index.Properties.Select(property => property.Name)
+                .SequenceEqual([nameof(MemberEntity.MemberId)])).IsUnique);
+
+        foreach (var type in new[] { typeof(CompanyEntity), typeof(ExamEntity), typeof(FurtherStudyEntity) })
+        {
+            var related = Entity(context.Model, type);
+            Assert.Equal("Network", related.GetSchema());
+            var reference = Assert.Single(related.GetForeignKeys(), foreignKey =>
+                foreignKey.PrincipalEntityType.ClrType == typeof(MemberEntity));
+            Assert.Equal("MemberId", Assert.Single(reference.Properties).Name);
+            Assert.True(reference.IsRequired);
+            Assert.Equal(DeleteBehavior.Cascade, reference.DeleteBehavior);
+        }
+    }
+
+    [Fact]
+    public void Model_WhenStudentRoleIsRenamed_PreservesItsExistingSeedKey()
+    {
+        using var context = CreateContext();
+        var model = context.GetService<IDesignTimeModel>().Model;
+        var role = Assert.Single(Entity(model, typeof(AuthRole)).GetSeedData(),
+            role => (string)role[nameof(AuthRole.Name)]! == AuthRoles.Member);
+
+        Assert.Equal("Student", role[nameof(AuthRole.Id)]);
+        Assert.Equal("MEMBER", role[nameof(AuthRole.NormalizedName)]);
+    }
+
     [Fact]
     public void Model_WhenStaffEntityIsMapped_UsesStaffTableAndUniqueIdentifier()
     {
@@ -44,7 +82,7 @@ public sealed class AuthModelTests
         ];
 
         Assert.All(authTypes, type => Assert.Equal("Auth", Entity(model, type).GetSchema()));
-        Assert.Equal("Student", Entity(model, typeof(StudentEntity)).GetSchema());
+        Assert.Equal("Network", Entity(model, typeof(MemberEntity)).GetSchema());
         Assert.Equal("Staff", Entity(model, typeof(Alumni.Staff.StaffMemberEntity)).GetSchema());
         Assert.NotEmpty(model.GetRelationalModel().Tables);
     }
@@ -63,7 +101,7 @@ public sealed class AuthModelTests
     }
 
     [Theory]
-    [InlineData(typeof(StudentEntity))]
+    [InlineData(typeof(MemberEntity))]
     [InlineData(typeof(Alumni.Staff.StaffMemberEntity))]
     public void Model_WhenProfileReferencesAnAccount_UsesUniqueIdentifierWithoutForeignKey(Type profileType)
     {
@@ -106,7 +144,7 @@ public sealed class AuthModelTests
         using var context = CreateContext();
         var model = context.GetService<IDesignTimeModel>().Model;
         var roles = Entity(model, typeof(AuthRole)).GetSeedData().ToArray();
-        string[] expectedRoles = ["Student", "FacultyReader", "FacultyEditor", "FacultyAdmin"];
+        string[] expectedRoles = ["Member", "FacultyReader", "FacultyEditor", "FacultyAdmin"];
 
         Assert.Equal(expectedRoles.Order(), roles.Select(role => (string)role[nameof(AuthRole.Name)]!).Order());
         Assert.All(roles, role =>

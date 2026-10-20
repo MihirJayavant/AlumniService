@@ -12,13 +12,13 @@ public class RecordViewGeneratorTests
     {
         var (result, compilation) = Generate("""
             namespace Models;
-            public record Student(int Id, string Name);
-            [Core.RecordView(typeof(Student))]
-            public partial record StudentView;
+            public record Member(int Id, string Name);
+            [Core.RecordView(typeof(Member))]
+            public partial record MemberView;
             """);
 
         Assert.Single(result.GeneratedTrees);
-        var view = GetView(compilation, "Models.StudentView");
+        var view = GetView(compilation, "Models.MemberView");
         Assert.Equal(["Id", "Name"], GetProperties(view).Select(p => p.Name));
         Assert.All(GetProperties(view), p =>
         {
@@ -30,25 +30,25 @@ public class RecordViewGeneratorTests
     }
 
     [Theory]
-    [InlineData("nameof(Student.Id)", new[] { "Name" })]
-    [InlineData("nameof(Student.Id), nameof(Student.Name)", new string[0])]
+    [InlineData("nameof(Member.Id)", new[] { "Name" })]
+    [InlineData("nameof(Member.Id), nameof(Member.Name)", new string[0])]
     [InlineData("\"Missing\"", new[] { "Id", "Name" })]
     public void Generate_WhenPropertiesAreExcluded_OmitsMatchingProperties(string exclusions, string[] expected)
     {
         var (_, compilation) = Generate($$"""
-            public record Student(int Id, string Name);
-            [Core.RecordView(typeof(Student), {{exclusions}})]
-            public partial record StudentView;
+            public record Member(int Id, string Name);
+            [Core.RecordView(typeof(Member), {{exclusions}})]
+            public partial record MemberView;
             """);
 
-        Assert.Equal(expected, GetProperties(GetView(compilation, "StudentView")).Select(p => p.Name));
+        Assert.Equal(expected, GetProperties(GetView(compilation, "MemberView")).Select(p => p.Name));
     }
 
     [Fact]
     public void Generate_WhenSourceHasOtherMembers_OnlyCopiesPublicProperties()
     {
         var (_, compilation) = Generate("""
-            public record Student
+            public record Member
             {
                 public int Id { get; init; }
                 private int PrivateValue { get; init; }
@@ -57,11 +57,11 @@ public class RecordViewGeneratorTests
                 public int Field;
                 public int GetValue() => 1;
             }
-            [Core.RecordView(typeof(Student))]
-            public partial record StudentView;
+            [Core.RecordView(typeof(Member))]
+            public partial record MemberView;
             """);
 
-        Assert.Equal("Id", Assert.Single(GetProperties(GetView(compilation, "StudentView"))).Name);
+        Assert.Equal("Id", Assert.Single(GetProperties(GetView(compilation, "MemberView"))).Name);
     }
 
     [Fact]
@@ -71,13 +71,13 @@ public class RecordViewGeneratorTests
             #nullable enable
             namespace Models;
             public record Address(string City);
-            public record Student(string? Name, int? Age, System.Collections.Generic.List<Address?> Addresses);
-            [Core.RecordView(typeof(Student))]
-            public partial record StudentView;
+            public record Member(string? Name, int? Age, System.Collections.Generic.List<Address?> Addresses);
+            [Core.RecordView(typeof(Member))]
+            public partial record MemberView;
             """);
 
-        var sourceProperties = GetProperties(GetView(compilation, "Models.Student"));
-        var viewProperties = GetProperties(GetView(compilation, "Models.StudentView"));
+        var sourceProperties = GetProperties(GetView(compilation, "Models.Member"));
+        var viewProperties = GetProperties(GetView(compilation, "Models.MemberView"));
         Assert.Equal(sourceProperties.Length, viewProperties.Length);
         foreach (var source in sourceProperties)
         {
@@ -88,16 +88,16 @@ public class RecordViewGeneratorTests
     }
 
     [Theory]
-    [InlineData("", "StudentView")]
-    [InlineData("namespace Models;", "Models.StudentView")]
-    [InlineData("namespace School.Models;", "School.Models.StudentView")]
+    [InlineData("", "MemberView")]
+    [InlineData("namespace Models;", "Models.MemberView")]
+    [InlineData("namespace School.Models;", "School.Models.MemberView")]
     public void Generate_WhenTargetHasNamespace_UsesTargetNamespace(string declaration, string metadataName)
     {
         var (_, compilation) = Generate($$"""
             {{declaration}}
-            public record Student(int Id);
-            [Core.RecordView(typeof(Student))]
-            public partial record StudentView;
+            public record Member(int Id);
+            [Core.RecordView(typeof(Member))]
+            public partial record MemberView;
             """);
 
         Assert.Equal("Id", Assert.Single(GetProperties(GetView(compilation, metadataName))).Name);
@@ -106,7 +106,7 @@ public class RecordViewGeneratorTests
     [Fact]
     public void Generate_WhenAttributeIsAbsent_ProducesNoOutput()
     {
-        var (result, _) = Generate("public record Student(int Id);");
+        var (result, _) = Generate("public record Member(int Id);");
 
         Assert.Empty(result.GeneratedTrees);
     }
@@ -115,16 +115,16 @@ public class RecordViewGeneratorTests
     public void Generate_WhenMultipleTargetsExist_GeneratesEachViewIndependently()
     {
         var (result, compilation) = Generate("""
-            public record Student(int Id, string Name);
-            [Core.RecordView(typeof(Student))]
-            public partial record StudentView;
-            [Core.RecordView(typeof(Student), nameof(Student.Id))]
-            public partial record StudentCommand;
+            public record Member(int Id, string Name);
+            [Core.RecordView(typeof(Member))]
+            public partial record MemberView;
+            [Core.RecordView(typeof(Member), nameof(Member.Id))]
+            public partial record MemberCommand;
             """);
 
         Assert.Equal(2, result.GeneratedTrees.Length);
-        Assert.Equal(["Id", "Name"], GetProperties(GetView(compilation, "StudentView")).Select(p => p.Name));
-        Assert.Equal("Name", Assert.Single(GetProperties(GetView(compilation, "StudentCommand"))).Name);
+        Assert.Equal(["Id", "Name"], GetProperties(GetView(compilation, "MemberView")).Select(p => p.Name));
+        Assert.Equal("Name", Assert.Single(GetProperties(GetView(compilation, "MemberCommand"))).Name);
     }
 
     private static (GeneratorDriverRunResult Result, Compilation Compilation) Generate(string source)

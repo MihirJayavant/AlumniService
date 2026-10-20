@@ -5,13 +5,13 @@ public sealed class ExamController : IEndpoint
     public void Add(IEndpointRouteBuilder app)
     {
         var api = app.MapGroup("/exam").WithTags(["Exam"]);
-        api.MapGet("/{studentId:guid}", GetAsync).Produces<PaginatedList<ExamResponse>>();
+        api.MapGet("/{memberId:guid}", GetAsync).Produces<PaginatedList<ExamResponse>>();
         api.MapPost("/", PostAsync).Produces<ExamResponse>();
     }
 
-    private static async Task<IResult> GetAsync(Guid studentId, GetExamHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> GetAsync(Guid memberId, GetExamHandler handler, CancellationToken cancellationToken)
     {
-        var query = new GetExam { StudentId = studentId };
+        var query = new GetExam { MemberId = memberId };
         var result = await handler.Execute(query, cancellationToken);
         return result.ToServerResult();
     }

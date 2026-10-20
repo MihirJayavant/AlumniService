@@ -7,12 +7,12 @@ import "alumni/v1/common.proto";
 option csharp_namespace = "Alumni.Api.Grpc.Contracts";
 
 service CompanyService {
-  rpc ListByStudent(StudentIdRequest) returns (CompanyListReply);
+  rpc ListByMember(MemberIdRequest) returns (CompanyListReply);
   rpc Add(AddCompanyRequest) returns (CompanyReply);
 }
 
 message AddCompanyRequest {
-  string student_id = 1;
+  string member_id = 1;
   string company_id = 2;
   string company_name = 3;
   string designation = 4;

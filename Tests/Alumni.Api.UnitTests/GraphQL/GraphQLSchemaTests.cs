@@ -5,9 +5,9 @@ namespace Alumni.Api.UnitTests.GraphQL;
 public class GraphQLSchemaTests
 {
     private static readonly string[] QueryOperations =
-        ["companies", "exams", "faculties", "faculty", "furtherStudies", "student", "students"];
+        ["companies", "exams", "faculties", "faculty", "furtherStudies", "member", "members"];
     private static readonly string[] MutationOperations =
-        ["addCompany", "addExam", "addFaculty", "addFurtherStudy", "addStudent", "deleteFaculty"];
+        ["addCompany", "addExam", "addFaculty", "addFurtherStudy", "addMember", "deleteFaculty"];
 
     [Fact]
     public async Task Schema_WhenBuilt_ExposesDomainScalarAndInputContracts()
@@ -15,10 +15,10 @@ public class GraphQLSchemaTests
         await using var context = new GraphQLTestContext();
         var schema = (await context.GetExecutorAsync()).Schema;
 
-        var student = schema.Types.GetType<ObjectType>("StudentResponse");
-        Assert.Equal("UUID", student.Fields["studentId"].Type.NamedType().Name);
-        Assert.Equal("LocalDate", student.Fields["dateOfBirth"].Type.NamedType().Name);
-        Assert.Equal("String", student.Fields["mobileNo"].Type.NamedType().Name);
+        var member = schema.Types.GetType<ObjectType>("MemberResponse");
+        Assert.Equal("UUID", member.Fields["memberId"].Type.NamedType().Name);
+        Assert.Equal("LocalDate", member.Fields["dateOfBirth"].Type.NamedType().Name);
+        Assert.Equal("String", member.Fields["mobileNo"].Type.NamedType().Name);
         var company = schema.Types.GetType<ObjectType>("CompanyResponse");
         Assert.Equal("Long", company.Fields["annualSalary"].Type.NamedType().Name);
         var faculty = schema.Types.GetType<ObjectType>("FacultyResponse");
@@ -31,9 +31,9 @@ public class GraphQLSchemaTests
         var input = schema.Types.GetType<InputObjectType>("AddFacultyInput");
         Assert.Equal("Long", input.Fields["mobileNo"].Type.NamedType().Name);
         Assert.Equal("AddFacultyInput", schema.MutationType!.Fields["addFaculty"].Arguments["input"].Type.NamedType().Name);
-        var studentInput = schema.Types.GetType<InputObjectType>("AddStudentInput");
-        Assert.Equal("LocalDate", studentInput.Fields["dateOfBirth"].Type.NamedType().Name);
-        Assert.Equal("AddressInput", studentInput.Fields["currentAddress"].Type.NamedType().Name);
+        var memberInput = schema.Types.GetType<InputObjectType>("AddMemberInput");
+        Assert.Equal("LocalDate", memberInput.Fields["dateOfBirth"].Type.NamedType().Name);
+        Assert.Equal("AddressInput", memberInput.Fields["currentAddress"].Type.NamedType().Name);
         Assert.Empty(context.Accesses);
     }
 
@@ -62,7 +62,7 @@ public class GraphQLSchemaTests
     }
 
     [Theory]
-    [InlineData("students")]
+    [InlineData("members")]
     [InlineData("faculties")]
     public async Task Execute_WhenListPaginationIsOmitted_RejectsDocumentWithoutDatabaseAccess(string field)
     {
@@ -75,7 +75,7 @@ public class GraphQLSchemaTests
     }
 
     [Theory]
-    [InlineData("{ student(id: \"not-a-guid\") { studentId } }")]
+    [InlineData("{ member(id: \"not-a-guid\") { memberId } }")]
     [InlineData("{ faculty(facultyId: \"not-a-guid\") { facultyId } }")]
     public async Task Execute_WhenGuidCannotBeCoerced_RejectsDocumentWithoutDatabaseAccess(string document)
     {
@@ -93,7 +93,7 @@ public class GraphQLSchemaTests
         await using var context = new GraphQLTestContext();
 
         var result = await context.ExecuteAsync(
-            "{ __typename invalid: student(id: \"" + GraphQLTestContext.EmptyId + "\") { studentId } }");
+            "{ __typename invalid: member(id: \"" + GraphQLTestContext.EmptyId + "\") { memberId } }");
 
         Assert.Equal("Query", result.GetProperty("data").GetProperty("__typename").GetString());
         Assert.Equal(System.Text.Json.JsonValueKind.Null, result.GetProperty("data").GetProperty("invalid").ValueKind);
@@ -109,7 +109,7 @@ public class GraphQLSchemaTests
         await using var context = new GraphQLTestContext();
 
         var result = await context.ExecuteAsync(
-            "{ student(id: \"" + GraphQLTestContext.ValidId + "\") { studentId } " +
+            "{ member(id: \"" + GraphQLTestContext.ValidId + "\") { memberId } " +
             "faculty(facultyId: \"" + GraphQLTestContext.ValidId + "\") { facultyId } }");
 
         Assert.Equal(2, context.Accesses.Count);

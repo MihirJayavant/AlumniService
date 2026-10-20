@@ -2,14 +2,14 @@
 
 [Home](Home.md) · [Technology stack](Technology-Stack.md) · [Request lifecycle](Patterns-and-Request-Lifecycle.md)
 
-AlumniService is a modular ASP.NET Core API organized into domain features. HTTP, GraphQL and gRPC adapters invoke the same Student and Faculty handlers; a shared EF Core context persists their data to PostgreSQL.
+AlumniService is a modular ASP.NET Core API organized into domain features. HTTP, GraphQL and gRPC adapters invoke the same Member and Faculty handlers; a shared EF Core context persists their data to PostgreSQL.
 
 ## Project boundaries
 
 | Project | Responsibility |
 | --- | --- |
 | `Alumni.Api` | Startup, transport adapters, OpenAPI, settings and EF migrations |
-| `Alumni.Student` | Student, company, exam and further-study use cases, validators, mapping and EF configuration |
+| `Alumni.Network` | Member, company, exam and further-study use cases, validators, mapping and EF configuration |
 | `Alumni.Staff` | Faculty use cases, validators, mapping and EF configuration |
 | `Core` | Handler execution, results, validation helpers, pagination, email value and record-view attribute |
 | `Alumni.Auth` | Identity account/role entities, invitations, sessions, auth EF mappings and shared permission policies |
@@ -24,16 +24,16 @@ Arrows below mean “references.” Solid arrows are ordinary project references
 flowchart TD
     API[Alumni.Api] --> Infra[Infrastructure]
     Infra --> Auth[Alumni.Auth]
-    Infra --> Student[Alumni.Student]
+    Infra --> Member[Alumni.Network]
     Infra --> Faculty[Alumni.Staff]
     Infra --> Core[Core]
-    Student --> Core
+    Member --> Core
     Faculty --> Core
-    Student -. analyzer .-> Gen[Generators]
+    Member -. analyzer .-> Gen[Generators]
     Faculty -. analyzer .-> Gen
 ```
 
-The API references Infrastructure directly and receives the domain projects through transitive project references. See the [API project](../Source/Apps/Alumni.Api/Alumni.Api.csproj), [Infrastructure project](../Source/Libraries/Infrastructure/Infrastructure.csproj) and [Student project](../Source/Libraries/Alumni.Student/Alumni.Student.csproj).
+The API references Infrastructure directly and receives the domain projects through transitive project references. See the [API project](../Source/Apps/Alumni.Api/Alumni.Api.csproj), [Infrastructure project](../Source/Libraries/Infrastructure/Infrastructure.csproj) and [Member project](../Source/Libraries/Alumni.Network/Alumni.Network.csproj).
 
 ## Runtime topology
 
@@ -59,7 +59,7 @@ flowchart LR
 
 [ICurrentActor](../Source/Libraries/Core/ICurrentActor.cs) exposes authentication state and the account ID without referencing any transport. The API registers a scoped [CurrentActor](../Source/Apps/Alumni.Api/Services/CurrentActor.cs), reading the `sub` claim from authenticated identities through `IHttpContextAccessor`. REST, GraphQL resolver scopes and gRPC calls share this request principal. Missing contexts or subjects yield a null account ID; use cases must reject operations requiring an account when it is unavailable.
 
-[AuthPermissions](../Source/Libraries/Alumni.Auth/AuthPermissions.cs) names the shared ASP.NET Core policies. `Students.Read` admits all four known roles; `Students.ReadAll` admits all faculty roles; `Students.Write` admits faculty editors and admins; `Students.SelfService` admits students; `Faculty.Manage` and `Invitations.Manage` admit faculty admins. Every policy requires an authenticated caller. These are operation eligibility checks: student reads and self-service still require ownership checks, and self-service commands must restrict editable fields. Registering these policies does not protect endpoints or handlers. Authentication schemes, resource checks and transport enforcement will be added in subsequent steps.
+[AuthPermissions](../Source/Libraries/Alumni.Auth/AuthPermissions.cs) names the shared ASP.NET Core policies. `Members.Read` admits all four known roles; `Members.ReadAll` admits all faculty roles; `Members.Write` admits faculty editors and admins; `Members.SelfService` admits members; `Faculty.Manage` and `Invitations.Manage` admit faculty admins. Every policy requires an authenticated caller. These are operation eligibility checks: member reads and self-service still require ownership checks, and self-service commands must restrict editable fields. Registering these policies does not protect endpoints or handlers. Authentication schemes, resource checks and transport enforcement will be added in subsequent steps.
 
 The domain libraries depend on EF Core and expose `DbSet` properties through their context interfaces. These boundaries organize implementation and make handler dependencies explicit; they do not remove persistence technology from the domain libraries.
 
@@ -71,7 +71,7 @@ Each GraphQL resolver receives its own service scope, so parallel query fields d
 
 ## Where to make a change
 
-- Add domain behavior beside the relevant Student or Faculty use case.
+- Add domain behavior beside the relevant Member or Faculty use case.
 - Add transport exposure in the API adapter and its explicit registration.
 - Update Infrastructure when context composition or persistence registration changes.
 - Update source models, generated views and handwritten mappers together when contract properties change.

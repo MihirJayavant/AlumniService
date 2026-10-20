@@ -15,7 +15,7 @@ public static class EndpointExtension
             new ExamController().Add(app);
             new StaffController().Add(app);
             new FurtherStudiesController().Add(app);
-            new StudentController().Add(app);
+            new MembersController().Add(app);
             new BootstrapController().Add(app);
         }
     }

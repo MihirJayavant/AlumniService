@@ -19,7 +19,7 @@ internal sealed class GraphQLTestContext : IAsyncDisposable
         services.AddLogging();
         services.AddSingleton(Accesses);
         services.AddScoped<RejectingContext>();
-        services.AddScoped<IStudentDbContext>(provider => provider.GetRequiredService<RejectingContext>());
+        services.AddScoped<IMemberDbContext>(provider => provider.GetRequiredService<RejectingContext>());
         services.AddScoped<IStaffDbContext>(provider => provider.GetRequiredService<RejectingContext>());
         HandlerTestRegistration.AddDomainHandlers(services);
         services.AddApplicationGraphQL();
@@ -45,11 +45,11 @@ internal sealed class GraphQLTestContext : IAsyncDisposable
 
     public ValueTask DisposeAsync() => services.DisposeAsync();
 
-    private sealed class RejectingContext(ConcurrentQueue<Guid> accesses) : IStudentDbContext, IStaffDbContext
+    private sealed class RejectingContext(ConcurrentQueue<Guid> accesses) : IMemberDbContext, IStaffDbContext
     {
         private readonly Guid instanceId = Guid.NewGuid();
 
-        public DbSet<StudentEntity> Students => Reject<StudentEntity>();
+        public DbSet<MemberEntity> Members => Reject<MemberEntity>();
         public DbSet<CompanyEntity> Companies => Reject<CompanyEntity>();
         public DbSet<ExamEntity> Exams => Reject<ExamEntity>();
         public DbSet<FurtherStudyEntity> FurtherStudies => Reject<FurtherStudyEntity>();

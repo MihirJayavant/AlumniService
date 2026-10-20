@@ -6,9 +6,9 @@ public sealed class ExamGrpc(
     GetExamHandler getExamHandler,
     AddExamHandler addExamHandler) : Contracts.ExamService.ExamServiceBase
 {
-    public override async Task<Contracts.ExamListReply> ListByStudent(Contracts.StudentIdRequest request, ServerCallContext context)
+    public override async Task<Contracts.ExamListReply> ListByMember(Contracts.MemberIdRequest request, ServerCallContext context)
     {
-        var query = new GetExam { StudentId = GrpcInput.Guid(request.StudentId, "student_id") };
+        var query = new GetExam { MemberId = GrpcInput.Guid(request.MemberId, "member_id") };
         var result = await getExamHandler.Execute(query, context.CancellationToken);
         return GrpcResult.Map(result, page =>
         {
@@ -22,7 +22,7 @@ public sealed class ExamGrpc(
     {
         var command = new AddExam
         {
-            StudentId = GrpcInput.Guid(request.StudentId, "student_id"),
+            MemberId = GrpcInput.Guid(request.MemberId, "member_id"),
             ExamId = GrpcInput.OptionalGuid(request.ExamId, "exam_id"),
             ExamName = request.ExamName,
             Score = request.Score,

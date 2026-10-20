@@ -35,7 +35,8 @@ public static class AuthModelConfiguration
         builder.Entity<IdentityRoleClaim<string>>().ToTable("AspNetRoleClaims", Schema);
 
         builder.Entity<AuthRole>().HasData(
-            CreateRole(AuthRoles.Student),
+            // Keep the seed key stable so existing role assignments and invitations survive the rename.
+            CreateRole(AuthRoles.Member, "Student"),
             CreateRole(AuthRoles.FacultyReader),
             CreateRole(AuthRoles.FacultyEditor),
             CreateRole(AuthRoles.FacultyAdmin));
@@ -50,9 +51,9 @@ public static class AuthModelConfiguration
         builder.ApplyConfiguration(new AuthSessionConfiguration());
     }
 
-    private static AuthRole CreateRole(string name) => new()
+    private static AuthRole CreateRole(string name, string? id = null) => new()
     {
-        Id = name,
+        Id = id ?? name,
         Name = name,
         NormalizedName = name.ToUpperInvariant(),
         ConcurrencyStamp = name

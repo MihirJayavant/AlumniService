@@ -7,13 +7,13 @@ public sealed class FurtherStudiesController : IEndpoint
     {
         var api = app.MapGroup("/further-studies").WithTags(["FurtherStudies"]);
 
-        api.MapGet("/{studentId:guid}", GetAsync).Produces<PaginatedList<FurtherStudyResponse>>();
+        api.MapGet("/{memberId:guid}", GetAsync).Produces<PaginatedList<FurtherStudyResponse>>();
         api.MapPost("/", PostAsync).Produces<FurtherStudyResponse>();
     }
 
-    private static async Task<IResult> GetAsync(Guid studentId, GetFurtherStudyHandler handler, CancellationToken token)
+    private static async Task<IResult> GetAsync(Guid memberId, GetFurtherStudyHandler handler, CancellationToken token)
     {
-        var query = new GetFurtherStudy { StudentId = studentId };
+        var query = new GetFurtherStudy { MemberId = memberId };
         var result = await handler.Execute(query, token);
         return result.ToServerResult();
     }

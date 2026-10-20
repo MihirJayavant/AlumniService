@@ -8,21 +8,21 @@ public static class AuthAuthorizationExtensions
     {
         services.AddAuthorization(options =>
         {
-            options.AddPolicy(AuthPermissions.StudentsRead, policy => policy
+            options.AddPolicy(AuthPermissions.MembersRead, policy => policy
                 .RequireAuthenticatedUser()
-                .RequireRole(AuthRoles.Student, AuthRoles.FacultyReader, AuthRoles.FacultyEditor, AuthRoles.FacultyAdmin));
+                .RequireRole(AuthRoles.Member, AuthRoles.FacultyReader, AuthRoles.FacultyEditor, AuthRoles.FacultyAdmin));
 
-            options.AddPolicy(AuthPermissions.StudentsReadAll, policy => policy
+            options.AddPolicy(AuthPermissions.MembersReadAll, policy => policy
                 .RequireAuthenticatedUser()
                 .RequireRole(AuthRoles.FacultyReader, AuthRoles.FacultyEditor, AuthRoles.FacultyAdmin));
 
-            options.AddPolicy(AuthPermissions.StudentsWrite, policy => policy
+            options.AddPolicy(AuthPermissions.MembersWrite, policy => policy
                 .RequireAuthenticatedUser()
                 .RequireRole(AuthRoles.FacultyEditor, AuthRoles.FacultyAdmin));
 
-            options.AddPolicy(AuthPermissions.StudentsSelfService, policy => policy
+            options.AddPolicy(AuthPermissions.MembersSelfService, policy => policy
                 .RequireAuthenticatedUser()
-                .RequireRole(AuthRoles.Student));
+                .RequireRole(AuthRoles.Member));
 
             options.AddPolicy(AuthPermissions.FacultyManage, policy => policy
                 .RequireAuthenticatedUser()

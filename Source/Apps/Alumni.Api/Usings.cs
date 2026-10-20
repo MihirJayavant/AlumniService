@@ -1,9 +1,9 @@
 global using Alumni.Auth;
 global using Alumni.Staff;
-global using Alumni.Student;
-global using Alumni.Student.Company;
-global using Alumni.Student.Exam;
-global using Alumni.Student.FurtherStudy;
+global using Alumni.Network;
+global using Alumni.Network.Companies;
+global using Alumni.Network.Exams;
+global using Alumni.Network.FurtherStudies;
 global using Core;
 global using Infrastructure;
 global using OneOf;

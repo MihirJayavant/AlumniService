@@ -18,17 +18,17 @@ public sealed class AuthorizationFoundationTests
             var data = new TheoryData<string, string, bool>();
             (string Policy, string[] Roles)[] permissions =
             [
-                (AuthPermissions.StudentsRead, ["Student", "FacultyReader", "FacultyEditor", "FacultyAdmin"]),
-                (AuthPermissions.StudentsReadAll, ["FacultyReader", "FacultyEditor", "FacultyAdmin"]),
-                (AuthPermissions.StudentsWrite, ["FacultyEditor", "FacultyAdmin"]),
-                (AuthPermissions.StudentsSelfService, ["Student"]),
+                (AuthPermissions.MembersRead, ["Member", "FacultyReader", "FacultyEditor", "FacultyAdmin"]),
+                (AuthPermissions.MembersReadAll, ["FacultyReader", "FacultyEditor", "FacultyAdmin"]),
+                (AuthPermissions.MembersWrite, ["FacultyEditor", "FacultyAdmin"]),
+                (AuthPermissions.MembersSelfService, ["Member"]),
                 (AuthPermissions.FacultyManage, ["FacultyAdmin"]),
                 (AuthPermissions.InvitationsManage, ["FacultyAdmin"])
             ];
 
             foreach (var (policy, permittedRoles) in permissions)
             {
-                foreach (var role in new[] { "Student", "FacultyReader", "FacultyEditor", "FacultyAdmin", "Unknown", "" })
+                foreach (var role in new[] { "Member", "FacultyReader", "FacultyEditor", "FacultyAdmin", "Unknown", "" })
                 {
                     data.Add(policy, role, permittedRoles.Contains(role));
                 }
@@ -55,10 +55,10 @@ public sealed class AuthorizationFoundationTests
     }
 
     [Theory]
-    [InlineData(AuthPermissions.StudentsRead, "Student")]
-    [InlineData(AuthPermissions.StudentsReadAll, "FacultyReader")]
-    [InlineData(AuthPermissions.StudentsWrite, "FacultyEditor")]
-    [InlineData(AuthPermissions.StudentsSelfService, "Student")]
+    [InlineData(AuthPermissions.MembersRead, "Member")]
+    [InlineData(AuthPermissions.MembersReadAll, "FacultyReader")]
+    [InlineData(AuthPermissions.MembersWrite, "FacultyEditor")]
+    [InlineData(AuthPermissions.MembersSelfService, "Member")]
     [InlineData(AuthPermissions.FacultyManage, "FacultyAdmin")]
     [InlineData(AuthPermissions.InvitationsManage, "FacultyAdmin")]
     public async Task AuthorizeAsync_WhenAnonymousWithPermittedRole_RejectsCaller(string policy, string role)

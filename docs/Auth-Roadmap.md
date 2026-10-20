@@ -8,7 +8,7 @@ Handoff recorded on **2026-10-10**. Auth implementation is deferred while other 
 
 - `Alumni.Api` hosts REST, GraphQL and gRPC. All three call shared domain handlers.
 - `Alumni.Auth` contains Identity account/role entities, invitation/session entities, OpenIddict model mappings, shared permission policies and bootstrap/invitation contracts.
-- Auth tables are mapped to PostgreSQL's quoted `Auth` schema. Student/faculty profiles hold a nullable, unique scalar `AuthUserId`; there are no foreign keys between auth and domain profiles.
+- Auth tables are mapped to PostgreSQL's quoted `Auth` schema. Member/faculty profiles hold a nullable, unique scalar `AuthUserId`; there are no foreign keys between auth and domain profiles.
 - Accounts have `PendingActivation`, `Active` and `Disabled` states. Invited accounts initially have no password.
 - `ICurrentActor` and the API's `CurrentActor` expose authentication state and the account ID from the authenticated `sub` claim. They do not validate tokens.
 - Internal invitation services create account/profile/invitation together, accept invitations, resend and revoke. Tokens contain 256 random bits; only SHA-256 hashes are stored; expiry is 48 hours.
@@ -24,18 +24,18 @@ Keep authentication hosted in `Alumni.Api`, with reusable auth code in `Alumni.A
 
 Use ASP.NET Core Identity for password management, OpenIddict for JWT access tokens and refresh tokens, and shared ASP.NET Core authorization policies. The built-in Identity API bearer tokens do not satisfy the JWT requirement.
 
-Use one account/token system across REST, GraphQL and gRPC. Separate student and faculty login UIs must not determine permissions; the server uses the account's assigned roles. Invitation-only registration applies to students and faculty, with the first-admin bootstrap exception above.
+Use one account/token system across REST, GraphQL and gRPC. Separate member and faculty login UIs must not determine permissions; the server uses the account's assigned roles. Invitation-only registration applies to members and faculty, with the first-admin bootstrap exception above.
 
 | Role | Intended access |
 |---|---|
-| `Student` | Read own profile/related records; edit approved own fields only |
-| `FacultyReader` | Read all student data |
-| `FacultyEditor` | Read/write student data |
-| `FacultyAdmin` | Read/write student data, invite accounts, manage faculty roles/status |
+| `Member` | Read own profile/related records; edit approved own fields only |
+| `FacultyReader` | Read all member data |
+| `FacultyEditor` | Read/write member data |
+| `FacultyAdmin` | Read/write member data, invite accounts, manage faculty roles/status |
 
-Student self-editing covers approved contact/address, employment and further-study fields. Define the exact command fields before implementation. Academic/identity fields and exam edits must not become editable implicitly. In particular, distinguish profile contact-email changes from login-email changes.
+Member self-editing covers approved contact/address, employment and further-study fields. Define the exact command fields before implementation. Academic/identity fields and exam edits must not become editable implicitly. In particular, distinguish profile contact-email changes from login-email changes.
 
-Keep account/profile identifiers independent. Resolve ownership through `Student.AuthUserId == authenticated sub`; never treat a client-supplied profile/account ID as proof of ownership.
+Keep account/profile identifiers independent. Resolve ownership through `Member.AuthUserId == authenticated sub`; never treat a client-supplied profile/account ID as proof of ownership.
 
 ## 1. Establish the database and verification baseline
 
@@ -72,16 +72,16 @@ Use HTTP auth/token endpoints for clients of all three transports. Login and ref
 - [ ] Add HotChocolate authorization integration and policies on GraphQL queries/mutations. Preserve per-resolver DI scopes and access to the same authenticated actor.
 - [ ] Apply ASP.NET Core authorization to gRPC services/methods; clients send bearer tokens through `authorization` metadata.
 - [ ] Enforce resource ownership and business permissions inside shared use cases, beyond transport checks.
-- [ ] Restrict student lists to permitted faculty; students access only their own records.
-- [ ] Check the owning student for employment, exams and further-study operations, including writes using submitted IDs.
-- [ ] Add dedicated student self-edit commands containing only approved fields; keep general faculty editing separate.
-- [ ] Return consistent REST 401/403, GraphQL authorization errors and gRPC `Unauthenticated`/`PermissionDenied` outcomes without leaking other students' data.
+- [ ] Restrict member lists to permitted faculty; members access only their own records.
+- [ ] Check the owning member for employment, exams and further-study operations, including writes using submitted IDs.
+- [ ] Add dedicated member self-edit commands containing only approved fields; keep general faculty editing separate.
+- [ ] Return consistent REST 401/403, GraphQL authorization errors and gRPC `Unauthenticated`/`PermissionDenied` outcomes without leaking other members' data.
 
-Existing policies are eligibility checks: `Students.Read`, `Students.ReadAll`, `Students.Write`, `Students.SelfService`, `Faculty.Manage` and `Invitations.Manage`. Merely registering them does not enforce ownership or protect an endpoint.
+Existing policies are eligibility checks: `Members.Read`, `Members.ReadAll`, `Members.Write`, `Members.SelfService`, `Faculty.Manage` and `Invitations.Manage`. Merely registering them does not enforce ownership or protect an endpoint.
 
 ## 4. Expose authenticated administration
 
-- [ ] Add admin endpoints for student/faculty invitation creation, resend and revocation, using the existing internal services.
+- [ ] Add admin endpoints for member/faculty invitation creation, resend and revocation, using the existing internal services.
 - [ ] Add faculty role/status management, including session revocation and coordinated database locking.
 - [ ] Protect the last active faculty admin from being disabled, deleted or demoted.
 - [ ] Replace/restrict unrestricted profile creation paths so account provisioning cannot be bypassed.
@@ -93,13 +93,13 @@ Existing policies are eligibility checks: `Students.Read`, `Students.ReadAll`, `
 - [ ] Implement invitation email delivery and activation links, keeping raw secrets out of logs.
 - [ ] Add forgot/reset/change-password flows and invalidate affected sessions as appropriate.
 - [ ] Define login-email change/verification behavior separately from profile editing.
-- [ ] Implement the separate student/faculty login UIs against the shared account system when frontend work is in scope.
+- [ ] Implement the separate member/faculty login UIs against the shared account system when frontend work is in scope.
 
 ## 6. Verify and prepare deployment
 
-- [ ] Test all four roles across all three transports, including anonymous users and cross-student access.
+- [ ] Test all four roles across all three transports, including anonymous users and cross-member access.
 - [ ] Test malformed/expired/revoked tokens, pending/disabled accounts, refresh reuse and role changes.
-- [ ] Test student field restrictions and related-record ownership.
+- [ ] Test member field restrictions and related-record ownership.
 - [ ] Test actual rate-limit middleware behavior and configure trusted forwarded headers if deployed behind a proxy.
 - [ ] Configure HTTPS, CORS for intended clients, browser token/refresh handling and any required CSRF protections for cookie-backed flows.
 - [ ] Store production credentials/keys outside the repository and update API/client documentation for the final contracts.
@@ -119,7 +119,7 @@ In the sandbox, the Cake build wrapper stalled and `dotnet test` could not bind 
 ```sh
 dotnet build AlumniService.slnx --no-restore --disable-build-servers -m:1
 DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false dotnet Tests/Alumni.Api.UnitTests/bin/Debug/net10.0/Alumni.Api.UnitTests.dll
-dotnet Tests/Alumni.Student.UnitTests/bin/Debug/net10.0/Alumni.Student.UnitTests.dll
+dotnet Tests/Alumni.Network.UnitTests/bin/Debug/net10.0/Alumni.Network.UnitTests.dll
 dotnet Tests/Alumni.Staff.UnitTests/bin/Debug/net10.0/Alumni.Staff.UnitTests.dll
 dotnet Tests/Core.UnitTests/bin/Debug/net10.0/Core.UnitTests.dll
 dotnet Tests/Generators.UnitTests/bin/Debug/net10.0/Generators.UnitTests.dll

@@ -8,7 +8,7 @@ AlumniService uses Entity Framework Core with the Npgsql PostgreSQL provider. On
 
 ```mermaid
 flowchart TD
-    SH[Student feature handlers] --> SI[IStudentDbContext]
+    SH[Member feature handlers] --> SI[IMemberDbContext]
     FH[Faculty feature handlers] --> FI[IStaffDbContext]
     SI --> AC[ApplicationContext]
     FI --> AC
@@ -18,7 +18,7 @@ flowchart TD
     MG[Alumni.Api migrations] --> PG
 ```
 
-[ApplicationContext](../Source/Libraries/Infrastructure/ApplicationContext.cs) derives from `IdentityDbContext<AuthUser, AuthRole, string>` and implements `IApplicationContext`, which combines [IStudentDbContext](../Source/Libraries/Alumni.Student/IStudentDbContext.cs) and [IStaffDbContext](../Source/Libraries/Alumni.Staff/IStaffDbContext.cs). These interfaces expose feature `DbSet` properties and `SaveChangesAsync`; they are direct EF abstractions rather than repository interfaces.
+[ApplicationContext](../Source/Libraries/Infrastructure/ApplicationContext.cs) derives from `IdentityDbContext<AuthUser, AuthRole, string>` and implements `IApplicationContext`, which combines [IMemberDbContext](../Source/Libraries/Alumni.Network/IMemberDbContext.cs) and [IStaffDbContext](../Source/Libraries/Alumni.Staff/IStaffDbContext.cs). These interfaces expose feature `DbSet` properties and `SaveChangesAsync`; they are direct EF abstractions rather than repository interfaces.
 
 [Infrastructure registration](../Source/Libraries/Infrastructure/ConfigureServices.cs) registers the context as scoped, then resolves both domain interfaces from that same scoped context. It selects PostgreSQL and `MigrationsAssembly("Alumni.Api")`. Each write handler calls `SaveChangesAsync` at its own save boundary. The context applies Identity's base configuration first, then auth and domain configurations. It does not override save methods for audit stamping or apply a global soft-delete filter.
 
@@ -26,22 +26,22 @@ flowchart TD
 
 | Database object | Mapping |
 |---|---|
-| `Student.students` | Generated integer primary key; unique student GUID and email; two owned addresses in the same table |
-| `Student.companies` | Generated integer primary key; unique company GUID; required student foreign key |
-| `Student.exams` | Generated integer primary key; unique exam GUID; exam-name index; required student foreign key |
-| `Student.further_studies` | Base/derived further-study records share one table with a discriminator; unique public GUID; derived student foreign key (nullable table column for base rows) |
+| `Network.members` | Generated integer primary key; unique member GUID and email; two owned addresses in the same table |
+| `Network.companies` | Generated integer primary key; unique company GUID; required member foreign key |
+| `Network.exams` | Generated integer primary key; unique exam GUID; exam-name index; required member foreign key |
+| `Network.further_studies` | Base/derived further-study records share one table with a discriminator; unique public GUID; derived member foreign key (nullable table column for base rows) |
 | `Staff.staff_members` | Generated integer primary key; unique faculty GUID and email |
 | `Auth.AspNetUsers`, `AspNetRoles`, `AspNetUserRoles`, `AspNetUserClaims`, `AspNetUserLogins`, `AspNetUserTokens`, `AspNetRoleClaims` | Identity account and role storage; unique normalized email and explicit PendingActivation/Active/Disabled status |
 | `Auth.Invitations`, `Sessions` | Hashed invitation secrets targeting pre-created accounts, invitation lifecycle and device sessions with concurrency tokens |
 | `Auth.Applications`, `Authorizations`, `Scopes`, `Tokens` | OpenIddict protocol storage; token runtime integration is deferred |
 
-Student and faculty profiles store a nullable, unique `AuthUserId` scalar. No EF relationship or database foreign key crosses between the domain and auth schemas. Null accommodates existing records and the legacy profile creation endpoints; invitation provisioning creates both the account and profile and supplies the identifier immediately. Auth accounts and invitations contain no student/faculty IDs.
+Member and faculty profiles store a nullable, unique `AuthUserId` scalar. No EF relationship or database foreign key crosses between the domain and auth schemas. Null accommodates existing records and the legacy profile creation endpoints; invitation provisioning creates both the account and profile and supplies the identifier immediately. Auth accounts and invitations contain no member/faculty IDs.
 
 Invited accounts start in `PendingActivation` with a null Identity `PasswordHash`. A check constraint prevents setting `Active` without a nonempty password hash. [Invitation acceptance](Invitations.md) sets the password and activates the account atomically; disabled accounts remain a separate state. Runtime login enforcement is still deferred.
 
-Year fields and exam scores use PostgreSQL `SMALLINT`; salaries and faculty mobile numbers use `bigint`. Student mobile numbers and postal codes remain text. Birth dates use `date`, and audit timestamps use `timestamp with time zone`. Current student/faculty configuration requires `UpdatedAt` in the database even though the CLR property is nullable.
+Year fields and exam scores use PostgreSQL `SMALLINT`; salaries and faculty mobile numbers use `bigint`. Member mobile numbers and postal codes remain text. Birth dates use `date`, and audit timestamps use `timestamp with time zone`. Current member/faculty configuration requires `UpdatedAt` in the database even though the CLR property is nullable.
 
-The [committed snapshot](../Source/Apps/Alumni.Api/Migrations/ApplicationContextModelSnapshot.cs) records cascade deletion for student-related entities. `CurrentAddress` and `CorrespondenceAddress` are required owned navigations, stored as prefixed columns on `Student.students`. Further study uses table-per-hierarchy inheritance: the relationship is required for `FurtherStudyEntity`, but the physical `StudentId` column is nullable to accommodate base-type rows. Consult the snapshot and [initial migration](../Source/Apps/Alumni.Api/Migrations/20261003093524_InitialCreate.cs) when reviewing generated schema changes.
+The [committed snapshot](../Source/Apps/Alumni.Api/Migrations/ApplicationContextModelSnapshot.cs) records cascade deletion for member-related entities. `CurrentAddress` and `CorrespondenceAddress` are required owned navigations, stored as prefixed columns on `Network.members`. Further study uses table-per-hierarchy inheritance: the relationship is required for `FurtherStudyEntity`, but the physical `MemberId` column is nullable to accommodate base-type rows. Consult the snapshot and [initial migration](../Source/Apps/Alumni.Api/Migrations/20261003093524_InitialCreate.cs) when reviewing generated schema changes.
 
 ## Connection configuration
 
@@ -65,13 +65,13 @@ Restore the repository tool and generate the migration:
 
 ```sh
 dotnet tool restore
-dotnet ef migrations add AddStudentField --project Source/Apps/Alumni.Api --startup-project Source/Apps/Alumni.Api -- --environment Development
+dotnet ef migrations add AddMemberField --project Source/Apps/Alumni.Api --startup-project Source/Apps/Alumni.Api -- --environment Development
 ```
 
-Replace `AddStudentField` with a descriptive migration name. The equivalent [Cake target](../build.cs) uses those same project paths and environment arguments:
+Replace `AddMemberField` with a descriptive migration name. The equivalent [Cake target](../build.cs) uses those same project paths and environment arguments:
 
 ```sh
-dotnet build.cs -- --target=Add-Migration --MigrationName=AddStudentField
+dotnet build.cs -- --target=Add-Migration --MigrationName=AddMemberField
 ```
 
 Migration generation writes source files and updates the model snapshot; it does not apply changes to a database. Keep one owner for generation and serialize builds and EF commands in a shared checkout.
@@ -85,6 +85,12 @@ Before accepting the generated migration:
 
 ## Apply migrations manually
 
+The `AlignExistingAuthAndStaffModel` migration captures previously un-migrated auth and Staff model changes. It moves Identity tables into `Auth`, adds the auth tables and constraints, and renames the staff table to `Staff.staff_members`. Existing accounts must satisfy the unique normalized-email constraint before applying this migration.
+
+The following `RenameStudentToNetworkMembers` migration moves the four former student-domain tables into `Network`, renames `students` to `members`, and renames public and relational identifiers to `MemberId`. Both forward and rollback operations retain the profile tables and their rows. It changes the seeded role's name to `Member` while retaining its historical `Student` primary key so role assignments and invitations remain valid. Client routes, GraphQL names, protobuf contracts, and authorization policy names now use Member terminology; clients must regenerate protobuf code and update requests.
+
+Both migrations must be applied to an older local database before using the renamed API. They are not applied by generating or reviewing them.
+
 AppHost and API startup do not automatically apply migrations. Once PostgreSQL is running and the API points to the intended local database, apply them explicitly:
 
 ```sh
@@ -95,8 +101,8 @@ For the Aspire database, PostgreSQL binds host port `5432`. Its persistent volum
 
 ## Source guide
 
-- [Student configuration](../Source/Libraries/Alumni.Student/StudentConfiguration.cs)
-- [Company configuration](../Source/Libraries/Alumni.Student/Company/CompanyConfiguration.cs), [exam configuration](../Source/Libraries/Alumni.Student/Exam/ExamConfiguration.cs), [further-study configuration](../Source/Libraries/Alumni.Student/FurtherStudy/FurtherStudyConfiguration.cs)
+- [Member configuration](../Source/Libraries/Alumni.Network/MemberConfiguration.cs)
+- [Company configuration](../Source/Libraries/Alumni.Network/Companies/CompanyConfiguration.cs), [exam configuration](../Source/Libraries/Alumni.Network/Exams/ExamConfiguration.cs), [further-study configuration](../Source/Libraries/Alumni.Network/FurtherStudies/FurtherStudyConfiguration.cs)
 - [Faculty configuration](../Source/Libraries/Alumni.Staff/StaffMemberConfiguration.cs)
 - [Auth model](../Source/Libraries/Alumni.Auth/AuthModelConfiguration.cs) and [database health check](../Source/Libraries/Infrastructure/HealthCheck.cs)
 

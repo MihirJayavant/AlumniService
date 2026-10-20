@@ -2,11 +2,11 @@
 
 [Home](Home.md) · [Architecture](Architecture.md) · [Persistence and migrations](Persistence-and-Migrations.md)
 
-Student and faculty accounts are provisioned by invitation. A profile and a pending auth account are created in one PostgreSQL transaction. The profile receives the account's `AuthUserId` scalar; no foreign key crosses between the domain and auth schemas. The account has no password and stays `PendingActivation` until the invitation is accepted. The first administrator uses the separate bootstrap API below.
+Member and faculty accounts are provisioned by invitation. A profile and a pending auth account are created in one PostgreSQL transaction. The profile receives the account's `AuthUserId` scalar; no foreign key crosses between the domain and auth schemas. The account has no password and stays `PendingActivation` until the invitation is accepted. The first administrator uses the separate bootstrap API below.
 
 ## Provisioning
 
-`Infrastructure.Auth.IInvitationProvisioningService` provides `InviteStudentAsync` and `InviteFacultyAsync`. Student/faculty profile inputs use the existing domain validation. The service rejects an email already used by any account or either kind of profile. Invitations require the initiating account to be an active faculty administrator; the role is checked in the database. Faculty invitations accept only `FacultyReader`, `FacultyEditor` or `FacultyAdmin`.
+`Infrastructure.Auth.IInvitationProvisioningService` provides `InviteMemberAsync` and `InviteFacultyAsync`. Member/faculty profile inputs use the existing domain validation. The service rejects an email already used by any account or either kind of profile. Invitations require the initiating account to be an active faculty administrator; the role is checked in the database. Faculty invitations accept only `FacultyReader`, `FacultyEditor` or `FacultyAdmin`.
 
 Issuance returns an `InvitationIssued` result to the trusted internal caller, including its one-time token for out-of-band delivery. No invitation-creation endpoint, email sender, GraphQL mutation or gRPC method is exposed yet. Admin HTTP endpoints will follow authentication setup. The existing domain creation endpoints are unchanged and still bypass account provisioning until authorization enforcement is implemented.
 

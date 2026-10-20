@@ -7,13 +7,13 @@ public sealed class CompanyController : IEndpoint
     {
         var api = app.MapGroup("/company").WithTags(["Company"]);
 
-        api.MapGet("/{studentId:guid}", GetByIdAsync).Produces<PaginatedList<CompanyResponse>>();
+        api.MapGet("/{memberId:guid}", GetByIdAsync).Produces<PaginatedList<CompanyResponse>>();
         api.MapPost("/", PostAsync).Produces<CompanyResponse>();
     }
 
-    private static async Task<IResult> GetByIdAsync(Guid studentId, GetCompanyHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> GetByIdAsync(Guid memberId, GetCompanyHandler handler, CancellationToken cancellationToken)
     {
-        var query = new GetCompany { StudentId = studentId };
+        var query = new GetCompany { MemberId = memberId };
         var response = await handler.Execute(query, cancellationToken);
         return response.ToServerResult();
     }

@@ -6,7 +6,7 @@ public class EmailTests
 {
     [Theory]
     [InlineData("alumni@example.com")]
-    [InlineData("alumni@students.example.com")]
+    [InlineData("alumni@members.example.com")]
     [InlineData("alumni+updates@example.com")]
     [InlineData("first.last@example.com")]
     [InlineData("o'connor@example.com")]
@@ -25,7 +25,7 @@ public class EmailTests
     [InlineData(" alumni@example.com", "alumni@example.com")]
     [InlineData("alumni@example.com ", "alumni@example.com")]
     [InlineData("\t ALUMNI@EXAMPLE.COM \r\n", "alumni@example.com")]
-    [InlineData("Alumni+Updates@Students.Example.Com", "alumni+updates@students.example.com")]
+    [InlineData("Alumni+Updates@Members.Example.Com", "alumni+updates@members.example.com")]
     public void Constructor_WhenAddressHasWhitespaceOrUppercase_NormalizesValue(string value, string expected)
     {
         var email = new Email(value);
@@ -43,13 +43,13 @@ public class EmailTests
     [InlineData("@example.com")]
     [InlineData("alumni@")]
     [InlineData("alumni@@example.com")]
-    [InlineData("alumni student@example.com")]
+    [InlineData("alumni member@example.com")]
     [InlineData("alumni@exam ple.com")]
     [InlineData(" invalid-address ")]
     [InlineData(" ALUMNI@EXAM PLE.COM ")]
     [InlineData(".alumni@example.com")]
     [InlineData("alumni.@example.com")]
-    [InlineData("alumni..student@example.com")]
+    [InlineData("alumni..member@example.com")]
     [InlineData("alumni@.example.com")]
     [InlineData("alumni@example..com")]
     [InlineData("alumni@example.com.")]
@@ -61,9 +61,9 @@ public class EmailTests
     [InlineData("alumni@example.com>")]
     [InlineData("alumni\0@example.com")]
     [InlineData("alumni@exam\0ple.com")]
-    [InlineData("alumni\nstudent@example.com")]
+    [InlineData("alumni\nmember@example.com")]
     [InlineData("alumni@exam\rple.com")]
-    [InlineData("alumni,student@example.com")]
+    [InlineData("alumni,member@example.com")]
     [InlineData("Alumni <alumni@example.com>")]
     [InlineData("alumni@example.com,faculty@example.com")]
     public void Constructor_WhenAddressIsInvalid_ThrowsArgumentExceptionForValue(string? value)

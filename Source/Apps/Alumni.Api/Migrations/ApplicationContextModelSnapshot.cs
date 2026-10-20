@@ -22,57 +22,270 @@ namespace Alumni.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Alumni.Faculty.Faculty", b =>
+            modelBuilder.Entity("Alumni.Auth.AuthRole", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("AspNetRoles", "Auth");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "Student",
+                            ConcurrencyStamp = "Member",
+                            Name = "Member",
+                            NormalizedName = "MEMBER"
+                        },
+                        new
+                        {
+                            Id = "FacultyReader",
+                            ConcurrencyStamp = "FacultyReader",
+                            Name = "FacultyReader",
+                            NormalizedName = "FACULTYREADER"
+                        },
+                        new
+                        {
+                            Id = "FacultyEditor",
+                            ConcurrencyStamp = "FacultyEditor",
+                            Name = "FacultyEditor",
+                            NormalizedName = "FACULTYEDITOR"
+                        },
+                        new
+                        {
+                            Id = "FacultyAdmin",
+                            ConcurrencyStamp = "FacultyAdmin",
+                            Name = "FacultyAdmin",
+                            NormalizedName = "FACULTYADMIN"
+                        });
+                });
+
+            modelBuilder.Entity("Alumni.Auth.AuthSession", b =>
+                {
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AuthorizationId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("LastSeenAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorizationId")
+                        .IsUnique();
+
+                    b.HasIndex("ExpiresAt");
+
+                    b.HasIndex("UserId", "RevokedAt");
+
+                    b.ToTable("Sessions", "Auth", t =>
+                        {
+                            t.HasCheckConstraint("CK_Sessions_Expiry", "\"ExpiresAt\" > \"CreatedAt\"");
+
+                            t.HasCheckConstraint("CK_Sessions_LastSeen", "\"LastSeenAt\" >= \"CreatedAt\"");
+                        });
+                });
+
+            modelBuilder.Entity("Alumni.Auth.AuthUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("varchar(100)");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
-                    b.Property<string>("Extension")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<Guid>("FacultyId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("varchar(100)");
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("boolean");
 
-                    b.Property<long>("MobileNo")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NormalizedEmail")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasDefaultValue("PendingActivation");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
+                    b.HasIndex("NormalizedEmail")
+                        .IsUnique()
+                        .HasDatabaseName("EmailIndex");
 
-                    b.HasIndex("FacultyId")
-                        .IsUnique();
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("faculties", "Faculty");
+                    b.ToTable("AspNetUsers", "Auth", t =>
+                        {
+                            t.HasCheckConstraint("CK_Users_ActivePassword", " \"Status\" <> 'Active' OR (\"PasswordHash\" IS NOT NULL AND length(\"PasswordHash\") > 0) ");
+
+                            t.HasCheckConstraint("CK_Users_Status", " \"Status\" IN ('PendingActivation', 'Active', 'Disabled') ");
+                        });
                 });
 
-            modelBuilder.Entity("Alumni.Student.Company.CompanyEntity", b =>
+            modelBuilder.Entity("Alumni.Auth.Invitation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("AcceptedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("InvitedByUserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NormalizedEmail")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTimeOffset?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpiresAt");
+
+                    b.HasIndex("InvitedByUserId");
+
+                    b.HasIndex("NormalizedEmail");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Invitations", "Auth", t =>
+                        {
+                            t.HasCheckConstraint("CK_Invitations_Acceptance", "\"AcceptedAt\" IS NULL OR \"RevokedAt\" IS NULL");
+
+                            t.HasCheckConstraint("CK_Invitations_Expiry", "\"ExpiresAt\" > \"CreatedAt\"");
+                        });
+                });
+
+            modelBuilder.Entity("Alumni.Network.Companies.CompanyEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -94,7 +307,7 @@ namespace Alumni.Api.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(30)");
 
-                    b.Property<int>("StudentId")
+                    b.Property<int>("MemberId")
                         .HasColumnType("integer");
 
                     b.Property<short>("YearOfJoining")
@@ -105,12 +318,12 @@ namespace Alumni.Api.Migrations
                     b.HasIndex("CompanyId")
                         .IsUnique();
 
-                    b.HasIndex("StudentId");
+                    b.HasIndex("MemberId");
 
-                    b.ToTable("companies", "Student");
+                    b.ToTable("companies", "Network");
                 });
 
-            modelBuilder.Entity("Alumni.Student.Exam.ExamEntity", b =>
+            modelBuilder.Entity("Alumni.Network.Exams.ExamEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -125,11 +338,11 @@ namespace Alumni.Api.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(100)");
 
+                    b.Property<int>("MemberId")
+                        .HasColumnType("integer");
+
                     b.Property<short>("Score")
                         .HasColumnType("SMALLINT");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("integer");
 
                     b.Property<short>("Year")
                         .HasColumnType("SMALLINT");
@@ -141,12 +354,12 @@ namespace Alumni.Api.Migrations
 
                     b.HasIndex("ExamName");
 
-                    b.HasIndex("StudentId");
+                    b.HasIndex("MemberId");
 
-                    b.ToTable("exams", "Student");
+                    b.ToTable("exams", "Network");
                 });
 
-            modelBuilder.Entity("Alumni.Student.FurtherStudy.FurtherStudy", b =>
+            modelBuilder.Entity("Alumni.Network.FurtherStudies.FurtherStudy", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -189,14 +402,14 @@ namespace Alumni.Api.Migrations
                     b.HasIndex("FurtherStudyId")
                         .IsUnique();
 
-                    b.ToTable("further_studies", "Student");
+                    b.ToTable("further_studies", "Network");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("FurtherStudy");
 
                     b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("Alumni.Student.StudentEntity", b =>
+            modelBuilder.Entity("Alumni.Network.MemberEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -206,6 +419,9 @@ namespace Alumni.Api.Migrations
 
                     b.Property<short>("AdmissionYear")
                         .HasColumnType("SMALLINT");
+
+                    b.Property<string>("AuthUserId")
+                        .HasColumnType("text");
 
                     b.Property<string>("Branch")
                         .IsRequired()
@@ -240,6 +456,9 @@ namespace Alumni.Api.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(100)");
 
+                    b.Property<Guid>("MemberId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("MobileNo")
                         .IsRequired()
                         .HasColumnType("text");
@@ -247,111 +466,77 @@ namespace Alumni.Api.Migrations
                     b.Property<short>("PassingYear")
                         .HasColumnType("SMALLINT");
 
-                    b.Property<Guid>("StudentId")
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthUserId")
+                        .IsUnique();
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("MemberId")
+                        .IsUnique();
+
+                    b.ToTable("members", "Network");
+                });
+
+            modelBuilder.Entity("Alumni.Staff.StaffMemberEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AuthUserId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("Extension")
+                        .IsRequired()
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<Guid>("FacultyId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<long>("MobileNo")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AuthUserId")
+                        .IsUnique();
+
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.HasIndex("StudentId")
+                    b.HasIndex("FacultyId")
                         .IsUnique();
 
-                    b.ToTable("students", "Student");
-                });
-
-            modelBuilder.Entity("Infrastructure.Identity.ApplicationUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
-
-                    b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
-
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("staff_members", "Staff");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -376,7 +561,7 @@ namespace Alumni.Api.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("AspNetRoleClaims", "Auth");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -401,7 +586,7 @@ namespace Alumni.Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
+                    b.ToTable("AspNetUserClaims", "Auth");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -423,7 +608,7 @@ namespace Alumni.Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("AspNetUserLogins", "Auth");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -438,7 +623,7 @@ namespace Alumni.Api.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("AspNetUserRoles", "Auth");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -457,48 +642,291 @@ namespace Alumni.Api.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("AspNetUserTokens", "Auth");
                 });
 
-            modelBuilder.Entity("Alumni.Student.FurtherStudy.FurtherStudyEntity", b =>
+            modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreApplication", b =>
                 {
-                    b.HasBaseType("Alumni.Student.FurtherStudy.FurtherStudy");
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
 
-                    b.Property<int>("StudentId")
+                    b.Property<string>("ApplicationType")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ClientId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ClientSecret")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClientType")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ConcurrencyToken")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ConsentType")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DisplayNames")
+                        .HasColumnType("text");
+
+                    b.Property<string>("JsonWebKeySet")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Permissions")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PostLogoutRedirectUris")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RedirectUris")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Requirements")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Settings")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId")
+                        .IsUnique();
+
+                    b.ToTable("Applications", "Auth");
+                });
+
+            modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreAuthorization", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ApplicationId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConcurrencyToken")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Scopes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Subject")
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId", "Status", "Subject", "Type");
+
+                    b.ToTable("Authorizations", "Auth");
+                });
+
+            modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreScope", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConcurrencyToken")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Descriptions")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DisplayNames")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Resources")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Scopes", "Auth");
+                });
+
+            modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreToken", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ApplicationId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AuthorizationId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConcurrencyToken")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ExpirationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Payload")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("RedemptionDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ReferenceId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Subject")
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorizationId");
+
+                    b.HasIndex("ReferenceId")
+                        .IsUnique();
+
+                    b.HasIndex("ApplicationId", "Status", "Subject", "Type");
+
+                    b.ToTable("Tokens", "Auth");
+                });
+
+            modelBuilder.Entity("Alumni.Network.FurtherStudies.FurtherStudyEntity", b =>
+                {
+                    b.HasBaseType("Alumni.Network.FurtherStudies.FurtherStudy");
+
+                    b.Property<int>("MemberId")
                         .HasColumnType("integer");
 
-                    b.HasIndex("StudentId");
+                    b.HasIndex("MemberId");
 
                     b.HasDiscriminator().HasValue("FurtherStudyEntity");
                 });
 
-            modelBuilder.Entity("Alumni.Student.Company.CompanyEntity", b =>
+            modelBuilder.Entity("Alumni.Auth.AuthSession", b =>
                 {
-                    b.HasOne("Alumni.Student.StudentEntity", "Student")
+                    b.HasOne("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreAuthorization", null)
+                        .WithMany()
+                        .HasForeignKey("AuthorizationId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Alumni.Auth.AuthUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Alumni.Auth.Invitation", b =>
+                {
+                    b.HasOne("Alumni.Auth.AuthUser", null)
+                        .WithMany()
+                        .HasForeignKey("InvitedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Alumni.Auth.AuthRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Alumni.Auth.AuthUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Alumni.Network.Companies.CompanyEntity", b =>
+                {
+                    b.HasOne("Alumni.Network.MemberEntity", "Member")
                         .WithMany("Companies")
-                        .HasForeignKey("StudentId")
+                        .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Student");
+                    b.Navigation("Member");
                 });
 
-            modelBuilder.Entity("Alumni.Student.Exam.ExamEntity", b =>
+            modelBuilder.Entity("Alumni.Network.Exams.ExamEntity", b =>
                 {
-                    b.HasOne("Alumni.Student.StudentEntity", "Student")
+                    b.HasOne("Alumni.Network.MemberEntity", "Member")
                         .WithMany("Exams")
-                        .HasForeignKey("StudentId")
+                        .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Student");
+                    b.Navigation("Member");
                 });
 
-            modelBuilder.Entity("Alumni.Student.StudentEntity", b =>
+            modelBuilder.Entity("Alumni.Network.MemberEntity", b =>
                 {
-                    b.OwnsOne("Alumni.Student.Address", "CorrespondenceAddress", b1 =>
+                    b.OwnsOne("Alumni.Network.Address", "CorrespondenceAddress", b1 =>
                         {
-                            b1.Property<int>("StudentEntityId")
+                            b1.Property<int>("MemberEntityId")
                                 .HasColumnType("integer");
 
                             b1.Property<string>("City")
@@ -521,17 +949,17 @@ namespace Alumni.Api.Migrations
                                 .IsRequired()
                                 .HasColumnType("varchar(100)");
 
-                            b1.HasKey("StudentEntityId");
+                            b1.HasKey("MemberEntityId");
 
-                            b1.ToTable("students", "Student");
+                            b1.ToTable("members", "Network");
 
                             b1.WithOwner()
-                                .HasForeignKey("StudentEntityId");
+                                .HasForeignKey("MemberEntityId");
                         });
 
-                    b.OwnsOne("Alumni.Student.Address", "CurrentAddress", b1 =>
+                    b.OwnsOne("Alumni.Network.Address", "CurrentAddress", b1 =>
                         {
-                            b1.Property<int>("StudentEntityId")
+                            b1.Property<int>("MemberEntityId")
                                 .HasColumnType("integer");
 
                             b1.Property<string>("City")
@@ -554,12 +982,12 @@ namespace Alumni.Api.Migrations
                                 .IsRequired()
                                 .HasColumnType("varchar(100)");
 
-                            b1.HasKey("StudentEntityId");
+                            b1.HasKey("MemberEntityId");
 
-                            b1.ToTable("students", "Student");
+                            b1.ToTable("members", "Network");
 
                             b1.WithOwner()
-                                .HasForeignKey("StudentEntityId");
+                                .HasForeignKey("MemberEntityId");
                         });
 
                     b.Navigation("CorrespondenceAddress")
@@ -571,7 +999,7 @@ namespace Alumni.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("Alumni.Auth.AuthRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -580,7 +1008,7 @@ namespace Alumni.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("Alumni.Auth.AuthUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -589,7 +1017,7 @@ namespace Alumni.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("Alumni.Auth.AuthUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -598,13 +1026,13 @@ namespace Alumni.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("Alumni.Auth.AuthRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("Alumni.Auth.AuthUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -613,31 +1041,67 @@ namespace Alumni.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("Alumni.Auth.AuthUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Alumni.Student.FurtherStudy.FurtherStudyEntity", b =>
+            modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreAuthorization", b =>
                 {
-                    b.HasOne("Alumni.Student.StudentEntity", "Student")
+                    b.HasOne("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreApplication", "Application")
+                        .WithMany("Authorizations")
+                        .HasForeignKey("ApplicationId");
+
+                    b.Navigation("Application");
+                });
+
+            modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreToken", b =>
+                {
+                    b.HasOne("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreApplication", "Application")
+                        .WithMany("Tokens")
+                        .HasForeignKey("ApplicationId");
+
+                    b.HasOne("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreAuthorization", "Authorization")
+                        .WithMany("Tokens")
+                        .HasForeignKey("AuthorizationId");
+
+                    b.Navigation("Application");
+
+                    b.Navigation("Authorization");
+                });
+
+            modelBuilder.Entity("Alumni.Network.FurtherStudies.FurtherStudyEntity", b =>
+                {
+                    b.HasOne("Alumni.Network.MemberEntity", "Member")
                         .WithMany("FurtherStudies")
-                        .HasForeignKey("StudentId")
+                        .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Student");
+                    b.Navigation("Member");
                 });
 
-            modelBuilder.Entity("Alumni.Student.StudentEntity", b =>
+            modelBuilder.Entity("Alumni.Network.MemberEntity", b =>
                 {
                     b.Navigation("Companies");
 
                     b.Navigation("Exams");
 
                     b.Navigation("FurtherStudies");
+                });
+
+            modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreApplication", b =>
+                {
+                    b.Navigation("Authorizations");
+
+                    b.Navigation("Tokens");
+                });
+
+            modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreAuthorization", b =>
+                {
+                    b.Navigation("Tokens");
                 });
 #pragma warning restore 612, 618
         }

@@ -12,7 +12,7 @@ Generator tests use the same test framework and run Roslyn against small C# inpu
 
 Faculty tests cover required fields, email syntax and normalized length limits, name and extension boundaries, positive mobile numbers, nonempty identifiers, pagination limits and offset overflow, and response mapping. Invalid requests are also executed through the real handlers to verify `BadRequest` without database access. These tests require no database, Docker, API configuration, or secrets. Persistence normalization, duplicate detection, successful CRUD, and actual page contents require separate PostgreSQL integration tests.
 
-Student tests cover required fields and trimmed database length limits, email and mobile-number validation, branch lengths and supported gender values, birth dates and year chronology, nested addresses, lookup identifiers, pagination limits and offset overflow, and Company, Exam, and FurtherStudy validation. Invalid requests execute through real handlers to verify `BadRequest` without database access. Mapping tests cover creation identity, Student audit timestamps, text trimming, email normalization, canonical gender values, and every response mapper. These tests require no database, Docker, API configuration, or secrets. Successful persistence, duplicate detection, relationships, and actual page contents need separate PostgreSQL integration tests.
+Member tests cover required fields and trimmed database length limits, email and mobile-number validation, branch lengths and supported gender values, birth dates and year chronology, nested addresses, lookup identifiers, pagination limits and offset overflow, and Company, Exam, and FurtherStudy validation. Invalid requests execute through real handlers to verify `BadRequest` without database access. Mapping tests cover creation identity, Member audit timestamps, text trimming, email normalization, canonical gender values, and every response mapper. These tests require no database, Docker, API configuration, or secrets. Successful persistence, duplicate detection, relationships, and actual page contents need separate PostgreSQL integration tests.
 
 Build the solution and run its tests through Cake:
 
@@ -33,11 +33,11 @@ dotnet build Tests/Generators.UnitTests/Generators.UnitTests.csproj --configurat
 dotnet Tests/Generators.UnitTests/bin/Release/net10.0/Generators.UnitTests.dll
 ```
 
-Build and run only the Student suite without build servers:
+Build and run only the Member suite without build servers:
 
 ```sh
-dotnet build Tests/Alumni.Student.UnitTests/Alumni.Student.UnitTests.csproj --configuration Release --disable-build-servers -m:1
-dotnet Tests/Alumni.Student.UnitTests/bin/Release/net10.0/Alumni.Student.UnitTests.dll
+dotnet build Tests/Alumni.Network.UnitTests/Alumni.Network.UnitTests.csproj --configuration Release --disable-build-servers -m:1
+dotnet Tests/Alumni.Network.UnitTests/bin/Release/net10.0/Alumni.Network.UnitTests.dll
 ```
 
 After a Release build, run all solution tests (including integration tests, requiring Docker) without rebuilding:
@@ -46,7 +46,7 @@ After a Release build, run all solution tests (including integration tests, requ
 dotnet test --solution AlumniService.slnx --configuration Release --no-build --no-restore
 ```
 
-`HandlerExtensions.Execute` returns `BadRequest` for validation failures, preserves handler-returned errors, propagates cancellation, and converts other exceptions to `InternalError`. EF-backed `PaginationQuery.Paginate` is exercised through Faculty and Student PostgreSQL integration tests. Pagination input validation has dedicated Core and domain tests.
+`HandlerExtensions.Execute` returns `BadRequest` for validation failures, preserves handler-returned errors, propagates cancellation, and converts other exceptions to `InternalError`. EF-backed `PaginationQuery.Paginate` is exercised through Faculty and Member PostgreSQL integration tests. Pagination input validation has dedicated Core and domain tests.
 
 ## GraphQL coverage
 
@@ -66,7 +66,7 @@ The Cake dependency chain restores packages, builds the generator in Debug for t
 
 `Tests/Alumni.IntegrationTests` uses the existing xUnit/Microsoft.Testing.Platform runner, Testcontainers.PostgreSql and Respawn. Faculty tests exercise real handlers and `ApplicationContext` against a disposable PostgreSQL 17.6 container, with fresh contexts for persistence assertions. Coverage includes normalized creation, duplicate-email conflicts, retrieval, physical deletion, missing records, ordered pagination and the database's unique email constraint.
 
-Student tests use the same fixture and exercise normalized creation, both owned addresses, audit timestamps, duplicate-email conflicts, retrieval, missing records, ordered pagination and PostgreSQL email uniqueness. Company, Exam and FurtherStudy tests cover normalized persistence, student foreign keys/navigation properties, query isolation between students, empty results, missing-student results and PostgreSQL rejection of orphan records. Child-list tests do not assume ordering because those handlers currently have no explicit sort.
+Member tests use the same fixture and exercise normalized creation, both owned addresses, audit timestamps, duplicate-email conflicts, retrieval, missing records, ordered pagination and PostgreSQL email uniqueness. Company, Exam and FurtherStudy tests cover normalized persistence, member foreign keys/navigation properties, query isolation between members, empty results, missing-member results and PostgreSQL rejection of orphan records. Child-list tests do not assume ordering because those handlers currently have no explicit sort.
 
 Run from the repository root with a running Docker-compatible container runtime:
 
@@ -82,7 +82,7 @@ dotnet test --project Tests/Alumni.IntegrationTests/Alumni.IntegrationTests.cspr
 
 The collection shares one container and resets application tables before each test. Tests sharing that database run sequentially. Credentials and ports belong to the disposable container; local development databases and secrets are not used. Assertions do not depend on identity sequences resetting.
 
-**Schema limitation:** the fixture deliberately uses `EnsureCreatedAsync` with the current production EF model. The checked-in migration snapshot predates auth model changes and Faculty's `AuthUserId` property. This suite does not validate migrations; it must not be used as evidence that a migrated deployment matches the current model. Add migration coverage after the migration history is brought up to date.
+**Schema limitation:** the fixture deliberately uses `EnsureCreatedAsync` with the current production EF model. The migration history now includes the existing auth/Staff model alignment and the Network/Member rename. Unit checks verify the rename operations preserve tables and role keys, but this suite does not apply migrations; it must not be used as evidence that a migrated deployment matches the current model. PostgreSQL migration execution remains a separate check.
 
 Cake `Test` and `CI` execute only `*.UnitTests` projects. The separate `Integration-Test` target and GitHub Actions integration job execute the database suite. Auth workflows and API transport integration coverage remain deferred.
 
@@ -98,7 +98,7 @@ For feature work, follow [Patterns and Request Lifecycle](Patterns-and-Request-L
 
 - [Core tests](../Tests/Core.UnitTests)
 - [Generator tests](../Tests/Generators.UnitTests)
-- [Student tests](../Tests/Alumni.Student.UnitTests)
+- [Member tests](../Tests/Alumni.Network.UnitTests)
 - [Faculty tests](../Tests/Alumni.Staff.UnitTests)
 - [API and GraphQL tests](../Tests/Alumni.Api.UnitTests)
 - [PostgreSQL integration tests](../Tests/Alumni.IntegrationTests)

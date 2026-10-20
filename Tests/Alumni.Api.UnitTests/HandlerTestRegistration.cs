@@ -4,7 +4,7 @@ internal static class HandlerTestRegistration
 {
     internal static Type[] AllHandlers { get; } =
     [
-        typeof(AddStudentHandler), typeof(GetStudentHandler), typeof(GetAllStudentHandler),
+        typeof(AddMemberHandler), typeof(GetMemberHandler), typeof(GetMembersHandler),
         typeof(AddStaffMemberHandler), typeof(GetStaffMemberHandler), typeof(GetStaffMembersHandler), typeof(DeleteStaffMemberHandler),
         typeof(AddCompanyHandler), typeof(GetCompanyHandler), typeof(AddExamHandler), typeof(GetExamHandler),
         typeof(AddFurtherStudyHandler), typeof(GetFurtherStudyHandler), typeof(BootstrapAdminHandler)

@@ -5,12 +5,12 @@ public sealed class FurtherStudyQuery
 {
     [GraphQLName("furtherStudies")]
     public async Task<PaginatedList<FurtherStudyResponse>?> GetFurtherStudyAsync(
-        Guid studentId,
+        Guid memberId,
         [Service] GetFurtherStudyHandler handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.Execute(
-            new GetFurtherStudy { StudentId = studentId }, cancellationToken);
+            new GetFurtherStudy { MemberId = memberId }, cancellationToken);
         return GraphQLResult.Unwrap(result);
     }
 }

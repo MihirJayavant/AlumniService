@@ -13,7 +13,7 @@ public static class ConfigureServices
                options.UseNpgsql(setting.DatabaseSetting.Connection, b => b.MigrationsAssembly("Alumni.Api")));
 
             services.AddScoped<IApplicationContext>(provider => provider.GetRequiredService<ApplicationContext>());
-            services.AddScoped<IStudentDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
+            services.AddScoped<IMemberDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
             services.AddScoped<IStaffDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
             services.AddScoped<IAuthDbContext>(provider => provider.GetRequiredService<IApplicationContext>());
 
@@ -27,9 +27,9 @@ public static class ConfigureServices
             services.AddHealthChecks().AddCheck<DatabaseHealthCheck>("Postgres");
 
             services.AddScoped<BootstrapAdminHandler>();
-            services.AddScoped<GetAllStudentHandler>();
-            services.AddScoped<GetStudentHandler>();
-            services.AddScoped<AddStudentHandler>();
+            services.AddScoped<GetMembersHandler>();
+            services.AddScoped<GetMemberHandler>();
+            services.AddScoped<AddMemberHandler>();
             services.AddScoped<GetStaffMembersHandler>();
             services.AddScoped<GetStaffMemberHandler>();
             services.AddScoped<AddStaffMemberHandler>();
