@@ -67,11 +67,13 @@ namespace Generators
                 if (m is IPropertySymbol { DeclaredAccessibility: Accessibility.Public } p)
                 {
                     members.Add(
-                        new RecordMember(
-                            p.Name,
-                            p.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat
+                        new RecordMember
+                        {
+                            Name = p.Name,
+                            TypeName = p.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat
                                 .WithMiscellaneousOptions(SymbolDisplayFormat.FullyQualifiedFormat.MiscellaneousOptions
-                                    | SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier))));
+                                    | SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier))
+                        });
                 }
             }
 
@@ -79,11 +81,14 @@ namespace Generators
                 ? null
                 : targetSymbol.ContainingNamespace.ToDisplayString();
 
-            return new RecordTargetModel(
-                targetSymbol.Name,
-                ns ?? "",
-                sourceType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-                [.. members]);
+            return new RecordTargetModel
+            {
+                Name = targetSymbol.Name,
+                Namespace = ns ?? "",
+                Accessibility = targetSymbol.DeclaredAccessibility,
+                SourceType = sourceType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+                Members = [.. members]
+            };
         }
 
         private static T GetNamedArg<T>(
@@ -113,8 +118,18 @@ namespace Generators
             }
 
             const string keyword = "record";
+            var accessibility = model.Accessibility switch
+            {
+                Accessibility.Public => "public",
+                Accessibility.Internal => "internal",
+                Accessibility.Private => "private",
+                Accessibility.Protected => "protected",
+                Accessibility.ProtectedAndInternal => "private protected",
+                Accessibility.ProtectedOrInternal => "protected internal",
+                _ => ""
+            };
 
-            sb.AppendLine($"public partial {keyword} {model.Name}");
+            sb.AppendLine($"{accessibility} partial {keyword} {model.Name}");
             sb.AppendLine("{");
 
             foreach (var m in model.Members)
@@ -128,31 +143,19 @@ namespace Generators
         }
     }
 
-    internal sealed class RecordMember
+    internal sealed record RecordMember
     {
-        public string Name { get; }
-        public string TypeName { get; }
-        public RecordMember(string name, string typeName)
-        {
-            Name = name;
-            TypeName = typeName;
-        }
+        public required string Name { get; init; }
+        public required string TypeName { get; init; }
     }
 
-    internal sealed class RecordTargetModel
+    internal sealed record RecordTargetModel
     {
-        public string Name { get; }
-        public string Namespace { get; }
-        public string SourceType { get; }
-        public IReadOnlyList<RecordMember> Members { get; }
-
-        public RecordTargetModel(string name, string ns, string sourceType, IReadOnlyList<RecordMember> members)
-        {
-            Name = name;
-            Namespace = ns;
-            SourceType = sourceType;
-            Members = members;
-        }
+        public required string Name { get; init; }
+        public required string Namespace { get; init; }
+        public required Accessibility Accessibility { get; init; }
+        public required string SourceType { get; init; }
+        public required IReadOnlyList<RecordMember> Members { get; init; }
     }
 
 }

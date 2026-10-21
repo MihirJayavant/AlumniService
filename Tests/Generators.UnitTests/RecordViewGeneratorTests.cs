@@ -7,6 +7,36 @@ namespace Generators.UnitTests;
 
 public class RecordViewGeneratorTests
 {
+    [Theory]
+    [InlineData("public", Accessibility.Public)]
+    [InlineData("internal", Accessibility.Internal)]
+    [InlineData("", Accessibility.Internal)]
+    public void Generate_WhenTargetHasAccessibility_PreservesAccessibility(string modifier, Accessibility expected)
+    {
+        var (_, compilation) = Generate($$"""
+            public record Member(int Id);
+            [Core.RecordView(typeof(Member))]
+            {{modifier}} partial record MemberView;
+            """);
+
+        var view = GetView(compilation, "MemberView");
+        Assert.Equal(expected, view.DeclaredAccessibility);
+        Assert.Equal("Id", Assert.Single(GetProperties(view)).Name);
+    }
+
+    [Fact]
+    public void Generate_WhenAccessibilityIsOnAnotherPartialDeclaration_PreservesAccessibility()
+    {
+        var (_, compilation) = Generate("""
+            public record Member(int Id);
+            [Core.RecordView(typeof(Member))]
+            partial record MemberView;
+            public partial record MemberView;
+            """);
+
+        Assert.Equal(Accessibility.Public, GetView(compilation, "MemberView").DeclaredAccessibility);
+    }
+
     [Fact]
     public void Generate_WhenSourceHasPublicProperties_EmitsRequiredInitProperties()
     {
